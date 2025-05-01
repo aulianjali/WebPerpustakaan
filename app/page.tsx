@@ -51,7 +51,10 @@ export default function Home() {
               placeholder="Pencarian"
               className="pl-10 pr-4 py-2 rounded shadow-sm bg-[#FEFCF3] border border-[#9FA8C2] focus:outline-none focus:ring-1 focus:ring-[#094B9B]"
             />
-            <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+            <span className="absolute left-3 top-2.5">
+              <img src="/search.png" alt="search icon" className="w-5 h-5" />
+            </span>
+
           </div>
         </div>
 
