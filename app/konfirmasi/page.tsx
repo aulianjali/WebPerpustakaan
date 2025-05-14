@@ -61,13 +61,21 @@ export default function KonfirmasiPage() {
         {/* Tabs */}
         <div className="flex gap-6 mb-4">
           <button
-            className={`text-[#0E4D97] font-semibold text-lg px-4 py-2 transition-all duration-300 ${activeTab === "berhasil" ? "border-b-4 border-[#0E4D97]" : "hover:border-b-4 hover:border-[#A1C4E9]"}`}
+            className={`text-[#0E4D97] text-lg px-4 py-2 transition-all duration-300 ${
+              activeTab === "berhasil"
+                ? "border-b-4 border-[#0E4D97] text-[#0E4D97] font-semibold"
+                : "hover:border-b-4 hover:border-[#A1C4E9] text-[#34495E]"
+            }`}
             onClick={() => setActiveTab("berhasil")}
           >
             Berhasil konfirmasi
           </button>
           <button
-            className={`text-[#0E4D97] text-lg px-4 py-2 transition-all duration-300 ${activeTab === "menunggu" ? "border-b-4 border-[#0E4D97]" : "hover:border-b-4 hover:border-[#A1C4E9]"}`}
+            className={`text-[#0E4D97] text-lg px-4 py-2 transition-all duration-300 ${
+              activeTab === "menunggu"
+                ? "border-b-4 border-[#0E4D97] text-[#0E4D97] font-semibold"
+                : "hover:border-b-4 hover:border-[#A1C4E9] text-[#34495E] "
+            }`}
             onClick={() => setActiveTab("menunggu")}
           >
             Menunggu konfirmasi
@@ -77,7 +85,7 @@ export default function KonfirmasiPage() {
         {/* Tabel Berhasil Konfirmasi */}
         {activeTab === "berhasil" && (
           <div className="bg-white p-4 rounded shadow-lg transition-all duration-300">
-            <h2 className="text-lg font-bold mb-4 text-[#0E4D97]">Berhasil Dikonfirmasi</h2>
+            <h2 className="text-lg font-bold mb-4 text-[#0E4D97]">Berhasil Konfirmasi</h2>
             <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
               <table className="min-w-full text-sm text-[#0E4D97] border border-collapse">
                 <thead>
@@ -89,7 +97,7 @@ export default function KonfirmasiPage() {
                 </thead>
                 <tbody>
                   {dataBerhasil.map((item) => (
-                    <tr key={item.no} className="hover:bg-[#F3F4F6]">
+                    <tr key={item.no} className="hover:bg-[#F3F4F6] hover:shadow-md transition-all duration-300">
                       <td className="px-6 py-3 border">{item.no}.</td>
                       <td className="px-6 py-3 border text-[#0E4D97] font-medium hover:underline cursor-pointer">
                         {item.judul}
@@ -121,7 +129,7 @@ export default function KonfirmasiPage() {
                 </thead>
                 <tbody>
                   {dataMenunggu.map((item) => (
-                    <tr key={item.no} className="hover:bg-[#F3F4F6]">
+                    <tr key={item.no} className="hover:bg-[#F3F4F6] hover:shadow-md transition-all duration-300">
                       <td className="px-6 py-3 border">{item.no}.</td>
                       <td className="px-6 py-3 border text-[#0E4D97] font-medium hover:underline cursor-pointer">
                         {item.judul}
@@ -130,7 +138,7 @@ export default function KonfirmasiPage() {
                         <span className="font-bold">{item.tanggalPinjam}</span> {item.waktuPinjam}
                       </td>
                       <td className="px-6 py-3 border text-center">
-                        <button className="text-red-500 font-semibold">Batal</button>
+                        <button className="text-[#F4273F] font-semibold">Batal</button>
                       </td>
                     </tr>
                   ))}
