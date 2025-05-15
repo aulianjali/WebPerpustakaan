@@ -6,7 +6,6 @@ import Image from "next/image";
 export default function KonfirmasiPage() {
   const [activeTab, setActiveTab] = useState("berhasil");
 
-  // Data Berhasil Konfirmasi
   const dataBerhasil = [
     { no: 1, judul: "Pemrograman Dasar", tanggalKonfirm: "17-04-2025", waktuKonfirm: "10.14" },
     { no: 2, judul: "Bandung After Rain", tanggalKonfirm: "18-04-2025", waktuKonfirm: "09.01" },
@@ -14,7 +13,6 @@ export default function KonfirmasiPage() {
     { no: 4, judul: "Desain Web Responsif", tanggalKonfirm: "19-04-2025", waktuKonfirm: "11.45" },
   ];
 
-  // Data Menunggu Konfirmasi
   const dataMenunggu = [
     { no: 1, judul: "Matematika Diskrit", tanggalPinjam: "20-04-2025", waktuPinjam: "08.30" },
     { no: 2, judul: "Jaringan Komputer", tanggalPinjam: "21-04-2025", waktuPinjam: "12.00" },
