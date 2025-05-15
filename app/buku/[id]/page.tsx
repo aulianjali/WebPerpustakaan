@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,7 +29,6 @@ export default function DetailBuku() {
                 </button>
             </div>
         </div>
-
 
         {/* Detail buku */}
         <div className="text-[#0E4D97] text-sm leading-relaxed max-w-4xl">
