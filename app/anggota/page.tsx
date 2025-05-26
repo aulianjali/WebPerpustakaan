@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import SearchInput from "@/app/_components/input"; // bang ini jadiin landing page yh
+import SearchInput from "@/app/_components/input";
 
 export default function Home() {
   const judulBuku = [
@@ -23,7 +23,6 @@ export default function Home() {
 
   return (
     <main className="flex-1 overflow-y-auto p-6 bg-[#D9DBF3] text-[#0E4D97]">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h1 className="text-2xl font-bold text-[#0E4D97]">Halo! Manusia</h1>
 
@@ -33,7 +32,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Grid Buku */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-16">
         {judulBuku.map((judul, i) => (
           <Link key={i} href={`/buku/${i + 1}`}>

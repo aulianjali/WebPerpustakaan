@@ -1,7 +1,28 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
-export function ButtonDemo() {
-  return <Button variant={"default"}>Tersedia</Button>
+// Tombol Batal
+export function ButtonBatal(props: React.ComponentProps<typeof Button>) {
+  return (
+    <Button
+      variant="outline"
+      className={`border-red-600 text-red-600 font-light hover:bg-red-50 hover:text-red-700 ${props.className ?? ""}`}
+      {...props}
+    >
+      Batal
+    </Button>
+  );
 }
 
-export { Button }
+
+export function ButtonPinjam(props: React.ComponentProps<typeof Button>) {
+  return (
+    <Button
+      className={`bg-[#0E4D97] hover:bg-[#0A3A6F] text-white text-sm px-5 py-1 rounded-md shadow ${props.className ?? ""}`}
+      {...props}
+    >
+      {props.children ?? "Pinjam"}
+    </Button>
+  );
+}
+
+export { Button };
