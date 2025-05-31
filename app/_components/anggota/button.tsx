@@ -5,10 +5,10 @@ export function ButtonBatal(props: React.ComponentProps<typeof Button>) {
   return (
     <Button
       variant="outline"
-      className={`border-red-600 text-red-600 font-light hover:bg-red-50 hover:text-red-700 ${props.className ?? ""}`}
+      className={`border-red-600 text-red-600 font-light hover:bg-red-50 hover:border hover:text-red-700 ${props.className ?? ""}`}
       {...props}
     >
-      Batal
+      {props.children ?? "Batal"}
     </Button>
   );
 }

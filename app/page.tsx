@@ -1,58 +1,32 @@
-'use client';
+//page.tsx
+import Image from 'next/image'
 
-import Image from "next/image";
-import Link from "next/link";
-
-import SearchInput from "@/app/_components/input"; // bang ini jadiin landing page yh
-
-export default function Home() {
-  const judulBuku = [
-    "The Psychology of Money",
-    "Laut Bercerita",
-    "Hujan",
-    "Bulan",
-    "Bintang",
-    "Ceros dan Batozar",
-    "Dunia Sophie",
-    "Filosofi Teras",
-    "Obat Dungu Resep Akal Sehat",
-    "3726 MDPL",
-    "Teruslah Bodoh Jangan Pintar",
-    "Emotional Intelligence",
-  ];
-
+export default function LoginPage() { // ini harusnya landing page yak bang
   return (
-    <main className="flex-1 overflow-y-auto p-6 bg-[#D9DBF3] text-[#0E4D97]">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-        <h1 className="text-2xl font-bold text-[#0E4D97]">Halo! Manusia</h1>
-
-        <SearchInput
-          type="text"
-          placeholder="Pencarian"
-        />
+    <div className="min-h-screen flex">
+      {/* Left Panel */}
+      <div className="w-1/2 bg-blue-900 flex items-center justify-center">
+        <img src="/library.png" alt="Library Illustration" className="w-3/4 h-auto" />
       </div>
 
-      {/* Grid Buku */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-16">
-        {judulBuku.map((judul, i) => (
-          <Link key={i} href={`/buku/${i + 1}`}>
-            <div className="relative w-[150px] h-[220px] group cursor-pointer overflow-hidden rounded shadow-md">
-              <Image
-                src={`/books/book-${i + 1}.jpg`}
-                alt={judul}
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                <span className="text-[#0E4D97] text-sm font-semibold text-center px-2">
-                  {judul}
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
+      {/* Right Panel */}
+      <div className="w-1/2 bg-[#E5E5F7] flex items-center justify-center">
+        <div className="w-full max-w-xs">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 mb-4 rounded shadow text-gray-700 placeholder-gray-400"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 mb-4 rounded shadow text-gray-700 placeholder-gray-400"
+          />
+          <button className="w-full bg-blue-900 text-white p-3 rounded shadow hover:bg-blue-800 transition">
+            Login
+          </button>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -45,7 +45,7 @@ function TabsTrigger({
         "inline-flex items-center justify-center px-6 py-3 -mb-px text-base font-semibold cursor-pointer select-none transition-colors",
         "border-b-2 border-transparent",
         "hover:text-gray-900 hover:border-gray-400",
-        "data-[state=active]:border-blue-600 data-[state=active]:text-blue-600",
+        "data-[state=active]:border-blue-500 data-[state=active]:text-blue-500",
         className
       )}
       {...props}
