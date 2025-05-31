@@ -34,15 +34,16 @@ export default function Table<T>({
   noDataMessage = "Data tidak ditemukan",
 }: TableProps<T>) {
   return (
-    <div className="overflow-x-auto max-h-[400px] overflow-y-auto rounded">
-      <ShadTable className="min-w-full text-sm text-[#0E4D97] border border-collapse">
+    <div className="overflow-x-auto rounded border border-[#7B8AA0]">
+      <ShadTable className="min-w-full text-sm text-[#0E4D97] border-collapse">
         {caption && <TableCaption>{caption}</TableCaption>}
+
         <TableHeader>
           <TableRow className="bg-[#E0E7FF]">
             {columns.map((col) => (
               <TableHead
                 key={String(col.key)}
-                className={`px-6 py-3 border text-sm font-semibold ${col.className ?? ""}`}
+                className={`px-6 py-3 border border-[#7B8AA0] text-sm font-semibold ${col.className ?? ""}`}
                 style={{
                   width: col.width,
                   textAlign: col.align ?? "left",
@@ -54,10 +55,14 @@ export default function Table<T>({
             ))}
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={columns.length} className="text-center py-4">
+              <TableCell
+                colSpan={columns.length}
+                className="text-center py-4 border border-[#7B8AA0]"
+              >
                 {noDataMessage}
               </TableCell>
             </TableRow>
@@ -70,7 +75,7 @@ export default function Table<T>({
                 {columns.map((col) => (
                   <TableCell
                     key={String(col.key)}
-                    className={`px-6 py-3 border ${col.className ?? ""}`}
+                    className={`px-6 py-3 border border-[#7B8AA0] ${col.className ?? ""}`}
                     style={{ textAlign: col.align ?? "left" }}
                   >
                     {col.render ? col.render(item) : (item as any)[col.key]}

@@ -34,7 +34,7 @@ export default function Home() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-16">
         {judulBuku.map((judul, i) => (
-          <Link key={i} href={`/buku/${i + 1}`}>
+          <Link key={i} href={`/anggota/buku/${i + 1}`}>
             <div className="relative w-[150px] h-[220px] group cursor-pointer overflow-hidden rounded shadow-md">
               <Image
                 src={`/books/book-${i + 1}.jpg`}
