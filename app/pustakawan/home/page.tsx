@@ -1,215 +1,169 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { ButtonPustakawan } from "@/app/_components/pustakawan/button";
+import SearchInput from "@/app/_components/input";
+import Table from "@/app/_components/pustakawan/table";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ConfirmAlert } from "@/app/_components/pustakawan/alert-dialog";
+import PaginationControls from "@/app/_components/pustakawan/pagination";
 
-export default function HomePustakawanPage() {
-  const [activeTab, setActiveTab] = useState("berhasil");
+type DataMenunggu = {
+  no: number;
+  judul: string;
+  peminjam: string;
+  tanggalPinjam: string;
+  waktuPinjam: string;
+};
 
-  const dataMenungguKonfirmasi = [
-    { no: 1, judul: "Pemrograman Dasar", peminjam: "layla", waktuPengajuan: "20-4-2025" },
-    { no: 2, judul: "Bandung After Rain", peminjam: "layla", waktuPengajuan: "20-4-2025" },
-    { no: 3, judul: "Seporsi Mie Ayam Sebelum", peminjam: "layla", waktuPengajuan: "20-4-2025" },
-    { no: 4, judul: "Desain Web Responsif", peminjam: "layla", waktuPengajuan: "20-4-2025" },
+type DataDipinjam = {
+  no: number;
+  judul: string;
+  peminjam: string;
+  sisaWaktu: string;
+};
+
+type DataPengembalian = {
+  no: number;
+  judul: string;
+  peminjam: string;
+  tanggal: string;
+  status: string;
+};
+
+export default function HomePage() {
+  const dataMenunggu: DataMenunggu[] = [
+    { no: 1, judul: "Matematika Diskrit", peminjam: "Aqila", tanggalPinjam: "20-04-2025", waktuPinjam: "08.30" },
+    { no: 2, judul: "Jaringan Komputer", peminjam: "Rani", tanggalPinjam: "21-04-2025", waktuPinjam: "12.00" },
+    { no: 3, judul: "Struktur Data", peminjam: "Budi", tanggalPinjam: "22-04-2025", waktuPinjam: "10.00" },
+    { no: 4, judul: "Rekayasa Perangkat Lunak", peminjam: "Citra", tanggalPinjam: "23-04-2025", waktuPinjam: "13.45" },
+    { no: 5, judul: "Interaksi Manusia dan Komputer", peminjam: "Eko", tanggalPinjam: "24-04-2025", waktuPinjam: "09.15" },
+    { no: 6, judul: "Algoritma dan Pemrograman", peminjam: "Fitri", tanggalPinjam: "25-04-2025", waktuPinjam: "11.30" },
+    { no: 7, judul: "Etika Profesi", peminjam: "Gilang", tanggalPinjam: "26-04-2025", waktuPinjam: "14.20" },
   ];
 
-  const dataDipinjam = [
-    { no: 1, judul: "Matematika Diskrit", peminjam: "layla", sisaWaktu: "7 hari" },
-    { no: 2, judul: "Jaringan Komputer", peminjam: "layla", sisaWaktu: "7 hari" },
-    { no: 3, judul: "Algoritma dan Struktur Data", peminjam: "layla", sisaWaktu: "7 hari" },
-    { no: 4, judul: "Pengembangan Aplikasi Mobile", peminjam: "layla", sisaWaktu: "7 hari" },
+  const dataDipinjam: DataDipinjam[] = [
+    { no: 1, judul: "Basis Data", peminjam: "Dika", sisaWaktu: "2 hari" },
+    { no: 2, judul: "Sistem Operasi", peminjam: "Nina", sisaWaktu: "1 hari" },
+    { no: 3, judul: "Pemrograman Mobile", peminjam: "Hana", sisaWaktu: "4 hari" },
+    { no: 4, judul: "Kalkulus", peminjam: "Ivan", sisaWaktu: "3 hari" },
+    { no: 5, judul: "Metode Numerik", peminjam: "Joko", sisaWaktu: "5 hari" },
+    { no: 6, judul: "Statistika", peminjam: "Kirana", sisaWaktu: "2 hari" },
+    { no: 7, judul: "Keamanan Jaringan", peminjam: "Leo", sisaWaktu: "6 hari" },
   ];
 
-  const dataPengembalian = [
-    { no: 1, judul: "Matematika Diskrit", peminjam: "layla", tanggal: "20-4-2025", status: "Tidak Terlambat"},
-    { no: 2, judul: "Jaringan Komputer", peminjam: "layla", tanggal: "20-4-2025", status: "Tidak Terlambat" },
-    { no: 3, judul: "Algoritma dan Struktur Data", peminjam: "layla", tanggal: "20-4-2025", status: "Tidak Terlambat"},
-    { no: 4, judul: "Pengembangan Aplikasi Mobile", peminjam: "layla", tanggal: "20-4-2025", status: "Tidak Terlambat"},
+  const dataPengembalian: DataPengembalian[] = [
+    { no: 1, judul: "Pemrograman Web", peminjam: "Ilham", tanggal: "28-04-2025", status: "Sudah Dikembalikan" },
+    { no: 2, judul: "Kecerdasan Buatan", peminjam: "Maya", tanggal: "29-04-2025", status: "Terlambat" },
+    { no: 3, judul: "Sistem Digital", peminjam: "Nina", tanggal: "27-04-2025", status: "Sudah Dikembalikan" },
+    { no: 4, judul: "Pemrograman Berorientasi Objek", peminjam: "Oscar", tanggal: "26-04-2025", status: "Sudah Dikembalikan" },
+    { no: 5, judul: "Sistem Terdistribusi", peminjam: "Putri", tanggal: "25-04-2025", status: "Terlambat" },
+    { no: 6, judul: "Cloud Computing", peminjam: "Qori", tanggal: "24-04-2025", status: "Sudah Dikembalikan" },
+    { no: 7, judul: "UI/UX Design", peminjam: "Rama", tanggal: "23-04-2025", status: "Terlambat" },
+  ];
+
+  const [pageMenunggu, setPageMenunggu] = useState(1);
+  const [perPageMenunggu, setPerPageMenunggu] = useState(5);
+
+  const [pageDipinjam, setPageDipinjam] = useState(1);
+  const [perPageDipinjam, setPerPageDipinjam] = useState(5);
+
+  const [pagePengembalian, setPagePengembalian] = useState(1);
+  const [perPagePengembalian, setPerPagePengembalian] = useState(5);
+
+  const paginated = <T,>(data: T[], page: number, perPage: number) =>
+    data.slice((page - 1) * perPage, page * perPage);
+
+  const columnsMenunggu = [
+    { key: "no", header: "No", width: "50px", align: "center" as const },
+    { key: "judul", header: "Judul", align: "left" as const },
+    { key: "peminjam", header: "Peminjam", align: "left" as const },
+    {
+      key: "waktuPengajuan",
+      header: "Waktu Pengajuan",
+      render: (item: DataMenunggu) => (
+        <>
+          <span className="font-bold">{item.tanggalPinjam}</span> {item.waktuPinjam}
+        </>
+      ),
+      align: "left" as const,
+    },
+    {
+      key: "aksi",
+      header: "Aksi",
+      render: () => <ConfirmAlert onConfirm={() => alert("Berhasil dikonfirmasi")} />,
+      align: "center" as const,
+      width: "80px",
+    },
+  ];
+
+  const columnsDipinjam = [
+    { key: "no", header: "No", width: "50px", align: "center" as const },
+    { key: "judul", header: "Judul", align: "left" as const },
+    { key: "peminjam", header: "Peminjam", align: "left" as const },
+    { key: "sisaWaktu", header: "Sisa Waktu", align: "left" as const },
+    {
+      key: "aksi",
+      header: "Aksi",
+      render: () => <ConfirmAlert onConfirm={() => alert("Konfirmasi pengembalian")} />,
+      align: "center" as const,
+      width: "80px",
+    },
+  ];
+
+  const columnsPengembalian = [
+    { key: "no", header: "No", width: "50px", align: "center" as const },
+    { key: "judul", header: "Judul", align: "left" as const },
+    { key: "peminjam", header: "Peminjam", align: "left" as const },
+    { key: "tanggal", header: "Tanggal", align: "left" as const },
+    { key: "status", header: "Status", align: "left" as const },
   ];
 
   return (
-    <div className="flex h-screen bg-[#D9DBF3] text-[#0E4D97] overflow-hidden">
+    <div className="space-y-6">
+      <div className="flex justify-between">
+        <h1 className="text-lg ">Pustakawan</h1>
+        <SearchInput placeholder="Cari judul atau peminjam..."  />
+      </div>
+      <Tabs defaultValue="menunggu">
+        <TabsList>
+          <TabsTrigger value="menunggu">Menunggu</TabsTrigger>
+          <TabsTrigger value="dipinjam">Dipinjam</TabsTrigger>
+          <TabsTrigger value="pengembalian">Pengembalian</TabsTrigger>
+        </TabsList>
 
-      {/* Konten */}
-      <main className="flex-1 overflow-y-auto p-6">
-        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <h1 className="text-2xl font-bold text-[#0E4D97]">Halo! Pustakawan</h1>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Pencarian"
-              className="pl-10 pr-4 py-2 rounded shadow-sm bg-[#FEFCF3] border border-[#9FA8C2] focus:outline-none focus:ring-1 focus:ring-[#094B9B]"
-            />
-            <span className="absolute left-3 top-2.5">
-              <Image src="/search.png" alt="search icon" width={20} height={20} />
-            </span>
-          </div>
-        </div>
+        <TabsContent value="menunggu">
+          <Table data={paginated(dataMenunggu, pageMenunggu, perPageMenunggu)} columns={columnsMenunggu} />
+          <PaginationControls
+            page={pageMenunggu}
+            setPage={setPageMenunggu}
+            total={dataMenunggu.length}
+            perPage={perPageMenunggu}
+            setPerPage={setPerPageMenunggu}
+          />
+        </TabsContent>
 
-        {/* Tabs */}
-        <div className="flex gap-6 mb-4">
-          <button
-            className={`text-[#0E4D97] text-lg px-4 py-2 transition-all duration-300 ${
-              activeTab === "berhasil"
-                ? "border-b-4 border-[#0E4D97] text-[#0E4D97] font-semibold"
-                : "hover:border-b-4 hover:border-[#A1C4E9] text-[#34495E]"
-            }`}
-            onClick={() => setActiveTab("berhasil")}
-          >
-            Menunggu Konfirmasi
-          </button>
-          <button
-            className={`text-[#0E4D97] text-lg px-4 py-2 transition-all duration-300 ${
-              activeTab === "menunggu"
-                ? "border-b-4 border-[#0E4D97] text-[#0E4D97] font-semibold"
-                : "hover:border-b-4 hover:border-[#A1C4E9] text-[#34495E] "
-            }`}
-            onClick={() => setActiveTab("menunggu")}
-          >
-            Dipinjam
-          </button>
-          <button
-            className={`text-[#0E4D97] text-lg px-4 py-2 transition-all duration-300 ${
-              activeTab === "pengembalian"
-                ? "border-b-4 border-[#0E4D97] text-[#0E4D97] font-semibold"
-                : "hover:border-b-4 hover:border-[#A1C4E9] text-[#34495E] "
-            }`}
-            onClick={() => setActiveTab("pengembalian")}
-          >
-            Pengembalian
-          </button>
-        </div>
+        <TabsContent value="dipinjam">
+          <Table data={paginated(dataDipinjam, pageDipinjam, perPageDipinjam)} columns={columnsDipinjam} />
+          <PaginationControls
+            page={pageDipinjam}
+            setPage={setPageDipinjam}
+            total={dataDipinjam.length}
+            perPage={perPageDipinjam}
+            setPerPage={setPerPageDipinjam}
+          />
+        </TabsContent>
 
-        {/* Tabel Menunggu Konfirmasi */}
-        {activeTab === "berhasil" && (
-          <div className="bg-white p-4 rounded shadow-lg transition-all duration-300">
-            <h2 className="text-lg font-bold mb-4 text-[#0E4D97]">Menunggu Konfirmasi</h2>
-            <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-              <table className="min-w-full text-sm text-[#0E4D97] border border-collapse">
-                <thead>
-                  <tr className="bg-[#E0E7FF] text-left">
-                    <th className="px-6 py-3 border text-sm font-semibold">No</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Judul</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Peminjam</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Waktu Peminjaman</th>
-                    <th className="px-6 py-3 border text-sm font-semibold"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dataMenungguKonfirmasi.map((item) => (
-                    <tr key={item.no} className="hover:bg-[#F3F4F6] hover:shadow-md transition-all duration-300">
-                      <td className="px-6 py-3 border">{item.no}.</td>
-                      <td className="px-6 py-3 border text-[#0E4D97] font-medium hover:underline cursor-pointer">
-                        {item.judul}
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <span className="font-bold">{item.peminjam}</span> 
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <span className="font-bold">{item.waktuPengajuan}</span> 
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <ButtonPustakawan/>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Tabel Dipinjam */}
-        {activeTab === "menunggu" && (
-          <div className="bg-white p-4 rounded shadow-lg transition-all duration-300">
-            <h2 className="text-lg font-bold mb-4 text-[#0E4D97]">Dipinjam</h2>
-            <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-              <table className="min-w-full text-sm text-[#0E4D97] border border-collapse">
-                <thead>
-                  <tr className="bg-[#E0E7FF] text-left">
-                    <th className="px-6 py-3 border text-sm font-semibold">No</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Judul</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Peminjam</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Sisa Waktu</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dataDipinjam.map((item) => (
-                    <tr key={item.no} className="hover:bg-[#F3F4F6] hover:shadow-md transition-all duration-300">
-                      <td className="px-6 py-3 border">{item.no}.</td>
-                      <td className="px-6 py-3 border text-[#0E4D97] font-medium hover:underline cursor-pointer">
-                        {item.judul}
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <span className="font-bold">{item.peminjam}</span> {item.peminjam}
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <span className="font-bold">{item.sisaWaktu}</span> {item.sisaWaktu}
-                      </td>
-                      <td className="px-6 py-3 border text-center">
-                        <button className="text-[#F4273F] font-semibold">Batal</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Tabel Pengembalian */}
-        {activeTab === "pengembalian" && (
-          <div className="bg-white p-4 rounded shadow-lg transition-all duration-300">
-            <h2 className="text-lg font-bold mb-4 text-[#0E4D97]">Pengembalian</h2>
-            <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-              <table className="min-w-full text-sm text-[#0E4D97] border border-collapse">
-                <thead>
-                  <tr className="bg-[#E0E7FF] text-left">
-                    <th className="px-6 py-3 border text-sm font-semibold">No</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Judul</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Peminjam</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Tanggal</th>
-                    <th className="px-6 py-3 border text-sm font-semibold">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dataPengembalian.map((item) => (
-                    <tr key={item.no} className="hover:bg-[#F3F4F6] hover:shadow-md transition-all duration-300">
-                      <td className="px-6 py-3 border">{item.no}.</td>
-                      <td className="px-6 py-3 border text-[#0E4D97] font-medium hover:underline cursor-pointer">
-                        {item.judul}
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <span className="font-bold">{item.peminjam}</span> 
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <span className="font-bold">{item.tanggal}</span> 
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <span className="font-bold">{item.status}</span> 
-                      </td>
-                      <td className="px-6 py-3 border">
-                        <ButtonPustakawan/>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-      </main>
-    </div>
-  );
-}
-
-function SidebarItem({ label, icon }: { label: string; icon: string }) {
-  return (
-    <div className="flex items-center gap-2 px-4 py-2 rounded hover:bg-[#1E5CA9] transition cursor-pointer">
-      <Image src={icon} alt={label} width={20} height={20} />
-      <span className="ml-2">{label}</span>
+        <TabsContent value="pengembalian">
+          <Table data={paginated(dataPengembalian, pagePengembalian, perPagePengembalian)} columns={columnsPengembalian} />
+          <PaginationControls
+            page={pagePengembalian}
+            setPage={setPagePengembalian}
+            total={dataPengembalian.length}
+            perPage={perPagePengembalian}
+            setPerPage={setPerPagePengembalian}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

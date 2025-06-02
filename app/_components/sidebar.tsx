@@ -24,8 +24,8 @@ const menuAdmin: MenuItem[] = [
 ];
 
 const menuPustakawan: MenuItem[] = [
-  { label: "Home", icon: "/home.png", path: "/pustakawan" },
-  { label: "Ubah Status", icon: "/pinjam.png", path: "/pustakawan/ubahstatus" },
+  { label: "Home", icon: "/home.png", path: "/pustakawan/home" },
+  { label: "Ubah Status", icon: "/edit.png", path: "/pustakawan/ubahstatus" },
 
 ];
 
