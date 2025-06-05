@@ -1,7 +1,28 @@
-import React from 'react'
-import AdminHomePage from './client-page'
+"use client"
 
-const PageAdmin = () => {
+import { useState, useEffect } from "react"
+import { StatCard } from "@/app/_components/admin/card"
+import { ChartBar } from "@/app/_components/admin/chart-bar"
+import { ChartPie } from "@/app/_components/admin/chart-pie"
+
+export default function AdminHomePage() {
+  const [isLoading, setIsLoading] = useState(true)
+  // Simpan tinggi skeleton bar chart supaya konsisten
+  const [barSkeletonHeights, setBarSkeletonHeights] = useState<number[]>([])
+
+  useEffect(() => {
+    // Generate tinggi skeleton bar satu kali saat mount
+    setBarSkeletonHeights(
+      Array.from({ length: 5 }).map(() => Math.random() * 100 + 50)
+    )
+
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <main className="flex-1 overflow-y-auto p-6 bg-[#D9DBF3] text-[#0E4D97]">
       {/* Breadcrumb */}
@@ -109,7 +130,7 @@ const PageAdmin = () => {
               textColor="text-blue-600"
               ringColor="ring-blue-300"
               glowColor="0 0 12px rgba(59,130,246,0.6)"
-              className="bg-blue-50 "
+              className="bg-blue-50"
             />
 
             <StatCard
@@ -163,5 +184,3 @@ const PageAdmin = () => {
     </main>
   )
 }
-
-export default PageAdmin
