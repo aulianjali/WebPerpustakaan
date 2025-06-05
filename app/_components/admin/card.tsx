@@ -43,8 +43,8 @@ export function StatCard({
             <Image
               src={iconSrc}
               alt={title}
-              width={72}
-              height={72}
+              width={64}
+              height={64}
               className="mx-auto"
             />
           </div>
