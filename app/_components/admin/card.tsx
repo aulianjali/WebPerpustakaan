@@ -26,31 +26,30 @@ export function StatCard({
   return (
     <Card
       className={`
-        h-56 flex flex-col items-center text-center border border-[#B3B5D1]
-        transition-all duration-300
-        hover:shadow-xl hover:scale-[1.02] hover:ring-3 ${ringColor} ${className}
+        h-30 flex flex-col border border-[#B3B5D1]
+        transition-all duration-300 py-0 items-center justify-center
+        
       `}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      style={{
-        boxShadow: hover ? undefined : "0 0 5px 0 #868896",
-        filter: hover ? `drop-shadow(${glowColor})` : "none",
-      }}
+
     >
-      <div className="flex flex-col items-center pt-4">
+      <div className="flex gap-2">
         {iconSrc && (
-          <div className="mb-5"> {/* <<-- Jarak icon ke title */}
+          <div className=""> {/* <<-- Jarak icon ke title */}
             <Image
               src={iconSrc}
               alt={title}
-              width={64}
-              height={64}
+              width={48}
+              height={48}
               className="mx-auto"
             />
           </div>
         )}
-        <div className="text-base font-semibold mb-1">{title}</div>
-        <div className={`text-4xl font-bold ${textColor}`}>{value}</div>
+        <div className="flex flex-col"> 
+          <div className={`text-base font-semibold mb-1 ${textColor}`}>{title}</div>
+          <div className={`font-bold `}>{value}</div>
+        </div>
       </div>
     </Card>
   );

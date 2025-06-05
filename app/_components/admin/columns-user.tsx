@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Edit, Trash2 } from "lucide-react"
+import { Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type DataAnggota = {
@@ -27,111 +27,24 @@ export const columnsAnggota = (
   onDelete?: (id: number) => void,
 ): ColumnDef<DataAnggota>[] => [
   {
-    accessorKey: "no",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          No
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-center font-medium">{row.getValue("no")}</div>
-    },
-  },
-  {
     accessorKey: "idPerpus",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          ID Perpus
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: () => <div className="pl-4">ID Perpus</div>,
     cell: ({ row }) => {
-      return <div className="font-medium text-[#0E4D97]">{row.getValue("idPerpus")}</div>
+      return <div className="font-medium text-black pl-4">{row.getValue("idPerpus")}</div>
     },
   },
   {
     accessorKey: "nama",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          Nama
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: "Nama",
     cell: ({ row }) => {
-      return <div className="font-medium">{row.getValue("nama")}</div>
+      return <div className="text-black">{row.getValue("nama")}</div>
     },
   },
   {
     accessorKey: "gmail",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: "Email",
     cell: ({ row }) => {
-      return <div className="text-sm">{row.getValue("gmail")}</div>
-    },
-  },
-  {
-    accessorKey: "nomorTelepon",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          No. Telepon
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-sm">{row.getValue("nomorTelepon")}</div>
-    },
-  },
-  {
-    accessorKey: "alamat",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          Alamat
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-sm max-w-xs truncate">{row.getValue("alamat")}</div>
+      return <div className="text-black">{row.getValue("gmail")}</div>
     },
   },
   {
@@ -145,19 +58,19 @@ export const columnsAnggota = (
             variant="outline"
             size="sm"
             onClick={() => onEdit?.(user.no)}
-            className="h-8 px-3 text-xs border-yellow-300 text-yellow-700 hover:bg-yellow-50"
+            className="h-8 text-xs border-none shadow-none"
           >
-            <Edit className="h-3 w-3 mr-1" />
-            Edit
+            <Edit className="h-3 w-3" />
+            
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => onDelete?.(user.no)}
-            className="h-8 px-3 text-xs border-red-300 text-red-700 hover:bg-red-50"
+            className="h-8 text-xs border-none text-red-500 hover:text-red-600 shadow-none"
           >
-            <Trash2 className="h-3 w-3 mr-1" />
-            Hapus
+            <Trash2 className="h-3 w-3" />
+          
           </Button>
         </div>
       )
@@ -170,111 +83,24 @@ export const columnsPustakawan = (
   onDelete?: (id: number) => void,
 ): ColumnDef<DataPustakawan>[] => [
   {
-    accessorKey: "no",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          No
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-center font-medium">{row.getValue("no")}</div>
-    },
-  },
-  {
     accessorKey: "idPerpus",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          ID Perpus
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: () => <div className="pl-4">ID Perpus</div>,
     cell: ({ row }) => {
-      return <div className="font-medium text-[#0E4D97]">{row.getValue("idPerpus")}</div>
+      return <div className="font-medium text-black pl-4">{row.getValue("idPerpus")}</div>
     },
   },
   {
     accessorKey: "nama",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          Nama
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: "Nama",
     cell: ({ row }) => {
-      return <div className="font-medium">{row.getValue("nama")}</div>
+      return <div className="text-black">{row.getValue("nama")}</div>
     },
   },
   {
     accessorKey: "gmail",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: "Email",
     cell: ({ row }) => {
-      return <div className="text-sm">{row.getValue("gmail")}</div>
-    },
-  },
-  {
-    accessorKey: "nomorTelepon",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          No. Telepon
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-sm">{row.getValue("nomorTelepon")}</div>
-    },
-  },
-  {
-    accessorKey: "alamat",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold"
-        >
-          Alamat
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      return <div className="text-sm max-w-xs truncate">{row.getValue("alamat")}</div>
+      return <div className="text-black">{row.getValue("gmail")}</div>
     },
   },
   {
@@ -288,19 +114,18 @@ export const columnsPustakawan = (
             variant="outline"
             size="sm"
             onClick={() => onEdit?.(user.no)}
-            className="h-8 px-3 text-xs border-yellow-300 text-yellow-700 hover:bg-yellow-50"
+            className="h-8 text-xs border-none shadow-none"
           >
             <Edit className="h-3 w-3 mr-1" />
-            Edit
+           
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => onDelete?.(user.no)}
-            className="h-8 px-3 text-xs border-red-300 text-red-700 hover:bg-red-50"
+            className="h-8 text-xs border-none text-red-500 hover:text-red-600 shadow-none"
           >
             <Trash2 className="h-3 w-3 mr-1" />
-            Hapus
           </Button>
         </div>
       )

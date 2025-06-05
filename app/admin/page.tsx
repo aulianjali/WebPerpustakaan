@@ -130,7 +130,7 @@ export default function AdminHomePage() {
               textColor="text-blue-600"
               ringColor="ring-blue-300"
               glowColor="0 0 12px rgba(59,130,246,0.6)"
-              className="bg-blue-50"
+              className="bg-blue-50 "
             />
 
             <StatCard

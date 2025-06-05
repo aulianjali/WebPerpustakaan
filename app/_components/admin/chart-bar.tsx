@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/card";
 
 const dataPinjam = [
-  { name: 'Jan', pinjam: 20 },
-  { name: 'Feb', pinjam: 35 },
+  { name: 'Jan', pinjam: 20, telat: 30 },
+  { name: 'Feb', pinjam: 35, telat: 30 },
   { name: 'Mar', pinjam: 40 },
   { name: 'Apr', pinjam: 55 },
   { name: 'May', pinjam: 45 },
@@ -61,6 +61,12 @@ export function ChartBar() {
             />
             <Bar
               dataKey="pinjam"
+              fill="#0E4D97"
+              radius={[6, 6, 0, 0]}
+              barSize={32}
+            />
+            <Bar
+              dataKey="telat"
               fill="#0E4D97"
               radius={[6, 6, 0, 0]}
               barSize={32}

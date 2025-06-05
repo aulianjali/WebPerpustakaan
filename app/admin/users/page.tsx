@@ -308,7 +308,6 @@ export default function ManajemenUsersPage() {
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Data Anggota</h2>
                       <p className="text-sm text-gray-600 mt-1">Kelola data anggota perpustakaan</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredDataAnggota.length} data</div>
                   </div>
 
                   <div className="flex items-center justify-between mb-6 gap-4">
@@ -352,7 +351,6 @@ export default function ManajemenUsersPage() {
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Data Pustakawan</h2>
                       <p className="text-sm text-gray-600 mt-1">Kelola data pustakawan perpustakaan</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredDataPustakawan.length} data</div>
                   </div>
 
                   <div className="flex items-center justify-between mb-6 gap-4">
