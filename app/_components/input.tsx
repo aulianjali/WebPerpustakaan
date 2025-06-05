@@ -13,7 +13,7 @@ interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export default function SearchInput(props: SearchInputProps) {
   return (
     <div className="relative w-72 ">
-      <input
+      <Input
         {...props}
         className="pl-10 focus-visible:ring-1 focus-visible:ring-offset-0" 
       />
