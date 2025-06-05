@@ -7,12 +7,18 @@ import { ChartPie } from "@/app/_components/admin/chart-pie"
 
 export default function AdminHomePage() {
   const [isLoading, setIsLoading] = useState(true)
+  // Simpan tinggi skeleton bar chart supaya konsisten
+  const [barSkeletonHeights, setBarSkeletonHeights] = useState<number[]>([])
 
-  // Simulasi loading saat halaman dimuat
   useEffect(() => {
+    // Generate tinggi skeleton bar satu kali saat mount
+    setBarSkeletonHeights(
+      Array.from({ length: 5 }).map(() => Math.random() * 100 + 50)
+    )
+
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 1000) // Loading selama 1 detik
+    }, 1000)
 
     return () => clearTimeout(timer)
   }, [])
@@ -74,15 +80,16 @@ export default function AdminHomePage() {
               <div className="p-6">
                 <div className="h-6 bg-gray-200 rounded w-40 animate-pulse mb-4"></div>
                 <div className="space-y-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="flex items-end space-x-2">
-                      <div className="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
-                      <div
-                        className="bg-gray-200 rounded-t animate-pulse w-8"
-                        style={{ height: `${Math.random() * 100 + 50}px` }}
-                      ></div>
-                    </div>
-                  ))}
+                  {barSkeletonHeights.length === 5 &&
+                    barSkeletonHeights.map((height, i) => (
+                      <div key={i} className="flex items-end space-x-2">
+                        <div className="h-4 bg-gray-200 rounded w-8 animate-pulse"></div>
+                        <div
+                          className="bg-gray-200 rounded-t animate-pulse w-8"
+                          style={{ height: `${height}px` }}
+                        ></div>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
