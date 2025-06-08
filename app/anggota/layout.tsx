@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
-import { SidebarAnggota } from "@/app/_components/sidebar";
-import { Inter } from "next/font/google";
+import type { ReactNode } from "react"
+import { SidebarAnggota } from "@/app/_components/sidebar"
+import { Inter } from "next/font/google"
+import { Toaster } from "@/app/_components/sonner"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
 export default function AnggotaLayout({ children }: { children: ReactNode }) {
   return (
@@ -11,9 +12,10 @@ export default function AnggotaLayout({ children }: { children: ReactNode }) {
         <SidebarAnggota />
       </div>
 
-      <main className="h-full overflow-y-auto pl-[285px] bg-[#D9DBF3] text-[#0E4D97] p-6">
-        {children}
-      </main>
+      <main className="h-full overflow-y-auto pl-[285px] bg-[#D9DBF3] text-[#0E4D97] p-6">{children}</main>
+
+      {/* Tambahkan Toaster di sini */}
+      <Toaster expand={true} visibleToasts={5} />
     </div>
-  );
+  )
 }

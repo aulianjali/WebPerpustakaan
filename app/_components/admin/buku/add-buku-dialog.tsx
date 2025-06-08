@@ -1,27 +1,26 @@
 "use client"
 
 import type React from "react"
+import type { DataBuku } from "./columns-buku"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { BookCheck, X, Upload, ImageIcon } from "lucide-react"
+import { BookPlus, X, Upload, ImageIcon } from "lucide-react"
 import Image from "next/image"
-import type { DataBuku } from "./columns-buku"
+import { toast } from "sonner"
 
-interface EditBukuDialogProps {
+interface AddBukuDialogProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (bukuData: DataBuku) => void
-  bukuData: DataBuku | null
+  onSubmit: (bukuData: Omit<DataBuku, "no">) => void
 }
 
-export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBukuDialogProps) {
+export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps) {
   const [formData, setFormData] = useState({
-    no: 0,
     idBuku: "",
     stok: "",
     judulBuku: "",
@@ -31,32 +30,14 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     sinopsis: "",
     imageCover: "",
   })
+  const [isImageExpanded, setIsImageExpanded] = useState(false)
   const [previewImage, setPreviewImage] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-
-  // Update form data ketika bukuData berubah
-  useEffect(() => {
-    if (bukuData) {
-      setFormData({
-        no: bukuData.no,
-        idBuku: bukuData.idBuku,
-        stok: bukuData.stok.toString(),
-        judulBuku: bukuData.judulBuku,
-        penulis: bukuData.penulis,
-        penerbit: bukuData.penerbit,
-        tahunTerbit: bukuData.tahunTerbit,
-        sinopsis: bukuData.sinopsis,
-        imageCover: bukuData.imageCover,
-      })
-      setPreviewImage(bukuData.imageCover) // Set initial preview
-      setSelectedFile(null) // Reset selected file
-    }
-  }, [bukuData])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Simulasi: Jika ada file baru yang dipilih, gunakan URL simulasi
+    // Simulasi: Jika ada file yang dipilih, gunakan URL simulasi
     // Nanti ini akan diganti dengan upload ke database/storage
     let finalImageCover = formData.imageCover
     if (selectedFile) {
@@ -69,7 +50,26 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       stok: Number.parseInt(formData.stok) || 0,
       imageCover: finalImageCover,
     })
+
+    toast.success("Data buku berhasil ditambah!", {
+      description: `Buku dengan ID "${formData.idBuku}" telah ditambah.`,
+      duration: 3000,
+    })
+
     onClose()
+    // Reset form
+    setFormData({
+      idBuku: "",
+      stok: "",
+      judulBuku: "",
+      penulis: "",
+      penerbit: "",
+      tahunTerbit: "",
+      sinopsis: "",
+      imageCover: "",
+    })
+    setSelectedFile(null)
+    setPreviewImage("")
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -109,7 +109,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
 
   const handleRemoveImage = () => {
     setSelectedFile(null)
-    setPreviewImage(formData.imageCover) // Kembali ke gambar asli
+    setPreviewImage("")
     // Reset file input
     const fileInput = document.getElementById("imageCover") as HTMLInputElement
     if (fileInput) {
@@ -121,17 +121,13 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-4 border border-gray-200 shadow-lg rounded-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="text-center space-y-3">
-            {/* Edit Icon */}
-            <div className="flex justify-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 border-2 border-orange-200">
-                <BookCheck className="h-5 w-5 text-orange-600" />
-              </div>
-            </div>
-
-            <DialogTitle className="text-[#0E4D97] font-semibold text-base leading-relaxed">Edit Buku</DialogTitle>
+          <DialogHeader className="text-center">
+          
+            <DialogTitle className="text-[#0E4D97] font-semibold text-base leading-relaxed">
+              Tambah Buku Baru
+            </DialogTitle>
             <DialogDescription className="text-xs text-gray-600">
-              Ubah data buku <span className="font-medium text-[#0E4D97]">{bukuData?.judulBuku}</span>
+              Lengkapi form di bawah untuk menambah buku baru ke koleksi
             </DialogDescription>
           </DialogHeader>
 
@@ -241,7 +237,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
                   className="w-full h-8 text-xs border-[#0E4D97] text-[#0E4D97] hover:bg-[#0E4D97] hover:text-white"
                 >
                   <Upload className="h-3 w-3 mr-2" />
-                  {selectedFile ? "Ganti Cover" : "Pilih Cover Baru"}
+                  {selectedFile ? "Ganti Cover" : "Pilih Cover"}
                 </Button>
               </div>
 
@@ -268,16 +264,13 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
             {/* Image Preview */}
             {previewImage && (
               <div className="space-y-1">
-                <Label className="text-xs font-medium text-[#0E4D97]">
-                  Preview Cover {selectedFile && <span className="text-green-600">(Baru)</span>}
-                </Label>
+                <Label className="text-xs font-medium text-[#0E4D97]">Preview Cover</Label>
                 <div className="relative w-20 h-28 mx-auto">
                   <Image
                     src={previewImage || "/placeholder.svg"}
                     alt="Cover preview"
                     fill
-                    className="object-cover rounded border border-gray-300"
-                    onError={() => setPreviewImage("/placeholder.svg")}
+                    className="object-cover rounded cursor-pointer border border-gray-300"
                   />
                 </div>
               </div>
@@ -302,21 +295,46 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
                 type="button"
                 onClick={onClose}
                 variant="ghost"
-                className="bg-gray-500 hover:bg-gray-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+                className="bg-red-500 hover:bg-red-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
               >
                 Batal
               </Button>
               <Button
                 type="submit"
                 variant="ghost"
-                className="bg-orange-500 hover:bg-orange-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+                className="bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
               >
-                Update
+                Simpan
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Expanded Image Dialog */}
+      {isImageExpanded && previewImage && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setIsImageExpanded(false)}
+        >
+          <div className="relative max-w-2xl max-h-[90vh] p-4">
+            <Button
+              onClick={() => setIsImageExpanded(false)}
+              className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-white text-black hover:bg-gray-100 z-10"
+              size="sm"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <Image
+              src={previewImage || "/placeholder.svg"}
+              alt="Cover expanded"
+              width={400}
+              height={600}
+              className="object-contain rounded"
+            />
+          </div>
+        </div>
+      )}
     </>
   )
 }

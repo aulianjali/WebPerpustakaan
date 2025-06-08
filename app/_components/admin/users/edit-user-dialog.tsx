@@ -1,15 +1,14 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { UserCheck } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import type { DataAnggota, DataPustakawan } from "./columns-user"
+import { toast } from "sonner" 
 
 interface EditUserDialogProps {
   isOpen: boolean
@@ -20,13 +19,14 @@ interface EditUserDialogProps {
 }
 
 export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }: EditUserDialogProps) {
+  const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     no: 0,
     idPerpus: "",
     nama: "",
     gmail: "",
-    nomorTelepon: "",
-    alamat: "",
+    username: "",
+    password: "",
   })
 
   // Update form data ketika userData berubah
@@ -37,8 +37,8 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
         idPerpus: userData.idPerpus,
         nama: userData.nama,
         gmail: userData.gmail,
-        nomorTelepon: userData.nomorTelepon,
-        alamat: userData.alamat,
+        username: userData.username || "",
+        password: userData.password || "",
       })
     }
   }, [userData])
@@ -46,6 +46,12 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onSubmit(formData)
+
+    toast.success("Data user berhasil diperbarui!", {
+          description: `User dengan ID "${formData.idPerpus}" telah diupdate.`,
+          duration: 3000,
+        })
+
     onClose()
   }
 
@@ -59,14 +65,7 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-4 border border-gray-200 shadow-lg rounded-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="text-center space-y-3">
-          {/* Edit Icon */}
-          <div className="flex justify-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 border-2 border-orange-200">
-              <UserCheck className="h-5 w-5 text-orange-600" />
-            </div>
-          </div>
-
+        <DialogHeader className="text-center">
           <DialogTitle className="text-[#0E4D97] font-semibold text-base leading-relaxed">
             Edit {userType === "anggota" ? "Anggota" : "Pustakawan"}
           </DialogTitle>
@@ -83,7 +82,6 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
             </Label>
             <Input
               id="idPerpus"
-              placeholder={`Masukkan ID ${userType === "anggota" ? "anggota" : "pustakawan"}`}
               value={formData.idPerpus}
               onChange={(e) => handleInputChange("idPerpus", e.target.value)}
               className="focus-visible:ring-1 focus-visible:ring-[#0E4D97] focus-visible:ring-offset-0 border-[#0E4D97] focus:border-[#0E4D97] h-8 text-sm"
@@ -121,31 +119,48 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="nomorTelepon" className="text-xs font-medium text-[#0E4D97]">
-              Nomor Telepon
+            <Label htmlFor="username" className="text-xs font-medium text-[#0E4D97]">
+              Username
             </Label>
             <Input
-              id="nomorTelepon"
-              placeholder="Masukkan nomor telepon"
-              value={formData.nomorTelepon}
-              onChange={(e) => handleInputChange("nomorTelepon", e.target.value)}
+              id="username"
+              placeholder="Masukkan username"
+              value={formData.username}
+              onChange={(e) => handleInputChange("username", e.target.value)}
               className="focus-visible:ring-1 focus-visible:ring-[#0E4D97] focus-visible:ring-offset-0 border-[#0E4D97] focus:border-[#0E4D97] h-8 text-sm"
               required
             />
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="alamat" className="text-xs font-medium text-[#0E4D97]">
-              Alamat
+            <Label htmlFor="password" className="text-xs font-medium text-[#0E4D97]">
+              Password
             </Label>
-            <Textarea
-              id="alamat"
-              placeholder="Masukkan alamat lengkap"
-              value={formData.alamat}
-              onChange={(e) => handleInputChange("alamat", e.target.value)}
-              className="focus-visible:ring-1 focus-visible:ring-[#0E4D97] focus-visible:ring-offset-0 border-[#0E4D97] focus:border-[#0E4D97] min-h-[60px] text-sm"
-              required
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Masukkan password"
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                className="focus-visible:ring-1 focus-visible:ring-[#0E4D97] focus-visible:ring-offset-0 border-[#0E4D97] focus:border-[#0E4D97] h-8 text-sm pr-10"
+                required
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-200 rounded-full"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-3 w-3 text-gray-600" />
+                ) : (
+                  <Eye className="h-3 w-3 text-gray-600" />
+                )}
+                <span className="sr-only">{showPassword ? "Sembunyikan password" : "Tampilkan password"}</span>
+              </Button>
+            </div>
           </div>
 
           <div className="flex gap-2 justify-center mt-6 pt-2">
@@ -153,14 +168,14 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
               type="button"
               onClick={onClose}
               variant="ghost"
-              className="bg-gray-500 hover:bg-gray-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+              className="bg-red-500 hover:bg-red-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
             >
               Batal
             </Button>
             <Button
               type="submit"
               variant="ghost"
-              className="bg-orange-500 hover:bg-orange-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+              className="bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
             >
               Update
             </Button>

@@ -1,12 +1,12 @@
 import React from 'react'
-import ClientPageHome from './client-page'
+import ClientHomeAnggota from './client-page'
 
-const Home = () => {
+const AnggotaHome = () => {
   return (
     <div>
-      <ClientPageHome/>
+      <ClientHomeAnggota/>
     </div>
   )
 }
 
-export default Home
+export default AnggotaHome

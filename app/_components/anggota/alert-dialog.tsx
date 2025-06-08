@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -21,6 +23,18 @@ export function HapusAlert({
   onConfirm: () => void
 }) {
   const [open, setOpen] = useState(false)
+
+  const handleConfirm = () => {
+    setOpen(false)
+
+    // Tampilkan sonner toast untuk konfirmasi hapus
+    toast.success("Data berhasil dihapus!", {
+      description: `"${judul}" telah dihapus dari daftar peminjaman.`,
+    })
+
+    // Panggil callback onConfirm
+    onConfirm()
+  }
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -52,10 +66,7 @@ export function HapusAlert({
             Tidak
           </Button>
           <Button
-            onClick={() => {
-              setOpen(false)
-              onConfirm()
-            }}
+            onClick={handleConfirm}
             variant="ghost"
             className="bg-green-500 hover:bg-green-600 text-white hover:text-white font-medium px-8 py-2.5 rounded-md transition-colors duration-200 min-w-[80px]"
           >
@@ -68,8 +79,85 @@ export function HapusAlert({
 }
 
 // Tombol Pinjam dengan Alert
-export function PinjamAlert({ onConfirm }: { onConfirm: () => void }) {
+export function PinjamAlert({
+  bookData,
+  onConfirm,
+}: {
+  bookData?: {
+    judul: string
+    penulis: string
+    penerbit: string
+    tahun: string
+  }
+  onConfirm?: () => void
+}) {
   const [open, setOpen] = useState(false)
+  const router = useRouter()
+
+  const handleConfirm = () => {
+    setOpen(false)
+
+    // Debug log
+    console.log("Attempting to show toast...")
+
+    // Tampilkan sonner toast dengan try-catch untuk debugging
+    try {
+      toast.success("Buku berhasil dipinjam!", {
+        description: `"${bookData?.judul || "Buku"}" telah ditambahkan ke daftar peminjaman Anda.`,
+      })
+      console.log("Toast called successfully")
+    } catch (error) {
+      console.error("Toast error:", error)
+    }
+
+    // Simpan data ke localStorage untuk ditampilkan di halaman konfirmasi
+    if (bookData) {
+      const currentDate = new Date()
+      const tanggalPinjam = currentDate
+        .toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replace(/\//g, "-")
+
+      const waktuPinjam = currentDate.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+
+      const newBorrowing = {
+        no: Date.now(), // Menggunakan timestamp sebagai ID unik
+        judul: bookData.judul,
+        tanggalPinjam,
+        waktuPinjam,
+        penulis: bookData.penulis,
+        penerbit: bookData.penerbit,
+        tahun: bookData.tahun,
+      }
+
+      // Ambil data existing dari localStorage
+      const existingData = localStorage.getItem("pendingBorrowings")
+      const pendingBorrowings = existingData ? JSON.parse(existingData) : []
+
+      // Tambahkan data baru
+      pendingBorrowings.push(newBorrowing)
+
+      // Simpan kembali ke localStorage
+      localStorage.setItem("pendingBorrowings", JSON.stringify(pendingBorrowings))
+    }
+
+    // Redirect ke halaman konfirmasi setelah delay singkat
+    setTimeout(() => {
+      router.push("/anggota/konfirmasi")
+    }, 1500)
+
+    // Panggil callback jika ada
+    if (onConfirm) {
+      onConfirm()
+    }
+  }
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -98,10 +186,7 @@ export function PinjamAlert({ onConfirm }: { onConfirm: () => void }) {
             Tidak
           </Button>
           <Button
-            onClick={() => {
-              setOpen(false)
-              onConfirm()
-            }}
+            onClick={handleConfirm}
             variant="ghost"
             className="bg-green-500 hover:bg-green-600 text-white hover:text-white font-medium px-8 py-2.5 rounded-md transition-colors duration-200 min-w-[80px]"
           >

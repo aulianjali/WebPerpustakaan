@@ -9,16 +9,28 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
 import { AlertTriangle } from "lucide-react"
-import type { DataBuku } from "./columns-buku"
+import type { DataAnggota, DataPustakawan } from "./columns-user"
+import { toast } from "sonner" 
 
-interface DeleteBukuDialogProps {
+interface DeleteUserDialogProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
-  bukuData: DataBuku | null
+  userData: DataAnggota | DataPustakawan | null
 }
 
-export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: DeleteBukuDialogProps) {
+export function DeleteUserDialog({ isOpen, onClose, onConfirm, userData }: DeleteUserDialogProps) {
+  
+  const handleConfirm = () => {
+    if (userData) {
+      toast.success("Data berhasil dihapus!", {
+        description: `User dengan ID "${userData?.idPerpus}" telah dihapus dari sistem.`,
+        duration: 3000,
+      })
+    }
+    onConfirm()  // Jalankan aksi penghapusan
+    onClose()    // Tutup dialog
+  }
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-6 border border-gray-200 shadow-lg rounded-lg">
@@ -33,13 +45,13 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
           <AlertDialogTitle className="text-[#0E4D97] font-semibold text-lg leading-relaxed">
             Apakah kamu yakin
             <br />
-            untuk menghapus "{bukuData?.judulBuku}"?
+            untuk menghapus "{userData?.nama}"?
           </AlertDialogTitle>
 
           {/* Additional warning text */}
-          <p className="text-sm text-gray-600 mt-2">
-            Buku dengan ID <span className="font-medium text-[#0E4D97]">{bukuData?.idBuku}</span> akan dihapus permanen
-            dari koleksi
+          <p className="text-sm text-gray-600">
+            Data user dengan ID <span className="font-medium text-[#0E4D97]">{userData?.idPerpus}</span> akan dihapus
+            permanen
           </p>
         </AlertDialogHeader>
 
@@ -52,10 +64,7 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
             Tidak
           </Button>
           <Button
-            onClick={() => {
-              onConfirm()
-              onClose()
-            }}
+            onClick={handleConfirm}
             variant="ghost"
             className="bg-green-500 hover:bg-green-600 text-white hover:text-white font-medium px-8 py-2.5 rounded-md transition-colors duration-200 min-w-[80px]"
           >

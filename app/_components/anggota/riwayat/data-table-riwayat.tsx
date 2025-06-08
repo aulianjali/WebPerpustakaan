@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -63,11 +63,20 @@ export function DataTableRiwayat<TData, TValue>({
         pageSize: perPage,
       },
     },
-    manualPagination: true,
+    manualPagination: false, // Changed to false for client-side pagination
     pageCount: Math.ceil(total / perPage),
   })
 
-  const totalPages = Math.ceil(total / perPage)
+  // Update table pagination when props change
+  useEffect(() => {
+    table.setPageSize(perPage)
+  }, [perPage, table])
+
+  useEffect(() => {
+    table.setPageIndex(page - 1)
+  }, [page, table])
+
+  const totalPages = Math.ceil(data.length / perPage) // Use data.length instead of total for client-side pagination
 
   // Generate pagination items with ellipsis (max 3 pages in middle)
   const getPaginationItems = () => {
@@ -121,6 +130,22 @@ export function DataTableRiwayat<TData, TValue>({
     return items
   }
 
+  const handlePerPageChange = (value: string) => {
+    const newPerPage = Number(value)
+    setPerPage?.(newPerPage)
+    // Reset to first page when changing page size
+    setPage?.(1)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    setPage?.(newPage)
+  }
+
+  const currentPageIndex = table.getState().pagination.pageIndex
+  const currentPage = currentPageIndex + 1
+  const startItem = currentPageIndex * perPage + 1
+  const endItem = Math.min((currentPageIndex + 1) * perPage, data.length)
+
   return (
     <div className="w-full">
       <div className="rounded-lg border border-[#7B8AA0] overflow-hidden">
@@ -163,7 +188,7 @@ export function DataTableRiwayat<TData, TValue>({
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-muted-foreground">
-          Menampilkan {(page - 1) * perPage + 1}-{Math.min(page * perPage, total)} data dari {total} data
+          Menampilkan {startItem}-{endItem} data dari {data.length} data
         </div>
         <div className="flex items-center space-x-3">
           {/* Page Numbers with Ellipsis */}
@@ -181,14 +206,14 @@ export function DataTableRiwayat<TData, TValue>({
               return (
                 <Button
                   key={pageNum}
-                  variant={pageNum === page ? "default" : "outline"}
+                  variant={pageNum === currentPage ? "default" : "outline"}
                   size="sm"
                   className={`h-8 w-8 p-0 ${
-                    pageNum === page
+                    pageNum === currentPage
                       ? "bg-[#0E4D97] text-white hover:bg-[#0E4D97]/90"
                       : "border-[#7B8AA0] text-gray-700 hover:bg-gray-50"
                   }`}
-                  onClick={() => setPage?.(pageNum)}
+                  onClick={() => handlePageChange(pageNum)}
                 >
                   {pageNum}
                 </Button>
@@ -198,12 +223,7 @@ export function DataTableRiwayat<TData, TValue>({
 
           {/* Show Dropdown */}
           <div className="flex items-center">
-            <Select
-              value={`${perPage}`}
-              onValueChange={(value) => {
-                setPerPage?.(Number(value))
-              }}
-            >
+            <Select value={`${perPage}`} onValueChange={handlePerPageChange}>
               <SelectTrigger className="h-8 w-[115px] rounded-lg border-[#7B8AA0] text-sm">
                 <span className="text-gray-600 mr-1">Show</span>
                 <SelectValue />

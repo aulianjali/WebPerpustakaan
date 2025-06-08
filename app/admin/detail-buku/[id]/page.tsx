@@ -1,7 +1,7 @@
 import React from 'react'
 import ClientDetailBuku from './client-page'
 
-const AnggotaDetailBuku = () => {
+const AdminDetailBuku = () => {
   return (
     <div>
       <ClientDetailBuku/>
@@ -9,4 +9,4 @@ const AnggotaDetailBuku = () => {
   )
 }
 
-export default AnggotaDetailBuku
+export default AdminDetailBuku
