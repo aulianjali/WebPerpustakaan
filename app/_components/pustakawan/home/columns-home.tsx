@@ -1,8 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Trash2, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -12,6 +9,8 @@ import {
   AlertDialogTitle,
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
+import { Check } from "lucide-react"
+import type { ColumnDef } from "@tanstack/react-table"
 
 export type DataMenunggu = {
   no: number;
@@ -44,20 +43,12 @@ function handleKonfirmasi(data: any) {
 export const columnsMenunggu: ColumnDef<DataMenunggu>[] = [
   {
     accessorKey: "no",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        No<ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: "No",
     cell: ({ row }) => <div className="text-center font-medium">{row.getValue("no")}</div>,
   },
   {
     accessorKey: "judul",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Judul<ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: "Judul",
     cell: ({ row }) => <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>,
   },
   {

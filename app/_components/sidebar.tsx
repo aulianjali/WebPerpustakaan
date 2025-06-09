@@ -44,7 +44,7 @@ export function SidebarAdmin() {
 export function SidebarPustakawan() {
   const menuPustakawan: MenuItem[] = [
     { label: "Home", icon: <Home size={20} />, path: "/pustakawan/home" },
-    { label: "Ubah Status", icon: <Edit size={20} />, path: "/pustakawan/ubahstatus" },
+    { label: "Manajemen Buku", icon: <BookMarked size={20} />, path: "/pustakawan/buku" },
   ]
 
   return <Sidebar menu={menuPustakawan} />
@@ -58,7 +58,7 @@ function Sidebar({ menu }: { menu: MenuItem[] }) {
   const handleLogout = () => {
     localStorage.removeItem("refreshToken")
     localStorage.removeItem("userRole")
-    router.push("/login")
+    router.push("/landingpage")
   }
 
   return (

@@ -1,0 +1,47 @@
+"use client"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { ChevronDown } from "lucide-react"
+
+export default function Header() {
+  const [selectedRole, setSelectedRole] = useState("Anggota")
+
+  const handleRoleSelect = (role: string) => {
+    setSelectedRole(role)
+  }
+
+  return (
+    <header className="w-full py-6 px-8">
+      <div className="max-w-6xl mx-auto flex justify-between items-center">
+        <div className="flex items-center space-x-8">
+          <h1 className="text-2xl font-bold text-blue-600">Perpustakaan Digital</h1>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center space-x-2">
+                <span>{selectedRole}</span>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSelect("Anggota")}>
+                <span>Anggota</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSelect("Admin")}>
+                <span>Admin</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSelect("Pustakawan")}>
+                <span>Pustakawan</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button className="bg-blue-600 hover:bg-blue-700">Login</Button>
+        </div>
+      </div>
+    </header>
+  )
+}
