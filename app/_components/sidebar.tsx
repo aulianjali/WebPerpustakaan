@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { BookOpen, Home, FileCheck, History, Users, BookMarked, Edit, LogOut } from "lucide-react"
+import { BookOpen, Home, FileCheck, History, Users, BookMarked, LogOut, ClipboardList } from "lucide-react"
 import { Poppins } from "next/font/google"
 
 // Inisialisasi font Poppins
@@ -36,6 +36,7 @@ export function SidebarAdmin() {
     { label: "Home", icon: <Home size={20} />, path: "/admin" },
     { label: "Manajemen User", icon: <Users size={20} />, path: "/admin/users" },
     { label: "Manajemen Buku", icon: <BookMarked size={20} />, path: "/admin/buku" },
+    { label: "Manajemen Peminjaman", icon: <ClipboardList size={20} />, path: "/admin/peminjaman" },
   ]
 
   return <Sidebar menu={menuAdmin} />
