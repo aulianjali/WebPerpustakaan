@@ -44,7 +44,7 @@ export function SidebarAdmin() {
 
 export function SidebarPustakawan() {
   const menuPustakawan: MenuItem[] = [
-    { label: "Home", icon: <Home size={20} />, path: "/pustakawan/home" },
+    { label: "Home", icon: <Home size={20} />, path: "/pustakawan" },
     { label: "Manajemen Buku", icon: <BookMarked size={20} />, path: "/pustakawan/buku" },
   ]
 
