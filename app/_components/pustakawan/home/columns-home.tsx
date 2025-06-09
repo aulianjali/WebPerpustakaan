@@ -5,11 +5,10 @@ import {
   AlertDialog,
   AlertDialogTrigger,
   AlertDialogContent,
-  AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
-import { Check } from "lucide-react"
+import { Check, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 import type { ColumnDef } from "@tanstack/react-table"
 
@@ -92,18 +91,41 @@ export const columnsMenunggu: ColumnDef<DataMenunggu>[] = [
               <Check className="w-4 h-4" />
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Konfirmasi Peminjaman</AlertDialogTitle>
-            </AlertDialogHeader>
-            <div>
-              Apakah kamu yakin ingin mengonfirmasi peminjaman <b>{data.judul}</b> oleh <b>{data.peminjam}</b>?
+          <AlertDialogContent className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl border-0 p-0">
+            {/* Icon Section */}
+            <div className="flex justify-center pt-8 pb-4">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-8 h-8 text-yellow-600" />
+              </div>
             </div>
-            <AlertDialogFooter>
+
+            {/* Content Section */}
+            <div className="px-8 pb-6 text-center">
+              <AlertDialogTitle className="text-xl font-semibold text-gray-900 mb-3">
+                Apakah kamu yakin untuk mengonfirmasi peminjaman "{data.judul}"?
+              </AlertDialogTitle>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Peminjaman oleh <span className="font-medium">{data.peminjam}</span> akan dikonfirmasi dan status buku
+                akan berubah menjadi dipinjam.
+              </p>
+            </div>
+
+            {/* Button Section */}
+            <AlertDialogFooter className="flex gap-3 p-6 pt-0 border-0">
               <AlertDialogTrigger asChild>
-                <Button variant="outline">Batal</Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 h-11 bg-red-500 hover:bg-red-600 text-white border-0 rounded-lg font-medium"
+                >
+                  Tidak
+                </Button>
               </AlertDialogTrigger>
-              <Button onClick={() => handleKonfirmasi(data)}>Konfirmasi</Button>
+              <Button
+                onClick={() => handleKonfirmasi(data)}
+                className="flex-1 h-11 bg-green-500 hover:bg-green-600 text-white border-0 rounded-lg font-medium"
+              >
+                Iya
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -149,18 +171,41 @@ export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
               <Check className="w-4 h-4" />
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Konfirmasi Status</AlertDialogTitle>
-            </AlertDialogHeader>
-            <div>
-              Konfirmasi bahwa buku <b>{data.judul}</b> masih dipinjam oleh <b>{data.peminjam}</b>?
+          <AlertDialogContent className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl border-0 p-0">
+            {/* Icon Section */}
+            <div className="flex justify-center pt-8 pb-4">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-8 h-8 text-yellow-600" />
+              </div>
             </div>
-            <AlertDialogFooter>
+
+            {/* Content Section */}
+            <div className="px-8 pb-6 text-center">
+              <AlertDialogTitle className="text-xl font-semibold text-gray-900 mb-3">
+                Apakah kamu yakin untuk mengonfirmasi pengembalian "{data.judul}"?
+              </AlertDialogTitle>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Pengembalian oleh <span className="font-medium">{data.peminjam}</span> akan dikonfirmasi dan buku akan
+                tersedia kembali untuk dipinjam.
+              </p>
+            </div>
+
+            {/* Button Section */}
+            <AlertDialogFooter className="flex gap-3 p-6 pt-0 border-0">
               <AlertDialogTrigger asChild>
-                <Button variant="outline">Batal</Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 h-11 bg-red-500 hover:bg-red-600 text-white border-0 rounded-lg font-medium"
+                >
+                  Tidak
+                </Button>
               </AlertDialogTrigger>
-              <Button onClick={() => handleKonfirmasiPengembalian(data)}>Konfirmasi</Button>
+              <Button
+                onClick={() => handleKonfirmasiPengembalian(data)}
+                className="flex-1 h-11 bg-green-500 hover:bg-green-600 text-white border-0 rounded-lg font-medium"
+              >
+                Iya
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
