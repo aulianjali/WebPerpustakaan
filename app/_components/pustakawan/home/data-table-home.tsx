@@ -136,7 +136,7 @@ export function DataTableHome<TData, TValue>({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="bg-[#f0f2ff] text-black font-semibold" // warna hitam untuk header
+                    className="bg-[#f0f2ff] text-black font-semibold"
                   >
                     {header.isPlaceholder
                       ? null

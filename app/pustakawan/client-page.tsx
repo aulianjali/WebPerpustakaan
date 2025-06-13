@@ -43,10 +43,10 @@ export default function HomePage() {
   ])
 
   const [dataPengembalian, setDataPengembalian] = useState<DataPengembalian[]>([
-    { no: 1, judul: "Statistika", peminjam: "Ika", tanggalKembali: "18-04-2025", waktuKembali: "10:00" },
-    { no: 2, judul: "Keamanan Jaringan", peminjam: "Joko", tanggalKembali: "19-04-2025", waktuKembali: "11:30" },
-    { no: 3, judul: "Machine Learning", peminjam: "Kiki", tanggalKembali: "20-04-2025", waktuKembali: "09:45" },
-    { no: 4, judul: "Grafika Komputer", peminjam: "Lina", tanggalKembali: "21-04-2025", waktuKembali: "15:20" },
+    { no: 1, judul: "Statistika", peminjam: "Ika", tanggalKembali: "18-04-2025", waktuKembali: "10:00",status: "Tidak Terlambat"},
+    { no: 2, judul: "Keamanan Jaringan", peminjam: "Joko", tanggalKembali: "19-04-2025", waktuKembali: "11:30", status: "Terlambat" },
+    { no: 3, judul: "Machine Learning", peminjam: "Kiki", tanggalKembali: "20-04-2025", waktuKembali: "09:45",status: "Tidak Terlambat"},
+    { no: 4, judul: "Grafika Komputer", peminjam: "Lina", tanggalKembali: "21-04-2025", waktuKembali: "15:20",status: "Tidak Terlambat" },
   ])
 
   // Simulasi loading saat halaman dimuat
@@ -194,7 +194,7 @@ export default function HomePage() {
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Menunggu Konfirmasi</h2>
                       <p className="text-sm text-gray-600 mt-1">Daftar buku yang masih menunggu konfirmasi</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredMenunggu.length} data</div>
+
                   </div>
 
                   <div className="relative mb-6 w-full">
@@ -240,7 +240,6 @@ export default function HomePage() {
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Saat Ini Dipinjam</h2>
                       <p className="text-sm text-gray-600 mt-1">Daftar buku yang sedang dipinjam</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredDipinjam.length} data</div>
                   </div>
 
                   <div className="relative mb-6 w-full">
@@ -286,7 +285,6 @@ export default function HomePage() {
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Pengembalian</h2>
                       <p className="text-sm text-gray-600 mt-1">Daftar buku yang sudah dikembalikan</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredPengembalian.length} data</div>
                   </div>
 
                   <div className="relative mb-6 w-full">

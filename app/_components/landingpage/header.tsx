@@ -3,8 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react"
 
 export default function Header() {
   const [selectedRole, setSelectedRole] = useState("Anggota")
@@ -24,27 +22,8 @@ export default function Header() {
         <div className="flex items-center space-x-8">
           <h1 className="text-2xl font-bold text-blue-600">Perpustakaan Digital</h1>
         </div>
-
         <div className="flex items-center space-x-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center space-x-2">
-                <span>{selectedRole}</span>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSelect("Anggota")}>
-                <span>Anggota</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSelect("Admin")}>
-                <span>Admin</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => handleRoleSelect("Pustakawan")}>
-                <span>Pustakawan</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <h3>Jangan Lupa Login Dulu !</h3>
           <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleLoginClick}>
             Login
           </Button>
