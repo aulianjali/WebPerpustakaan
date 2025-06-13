@@ -12,7 +12,7 @@ export default function PustakawanLayout({ children }: { children: ReactNode }) 
         <SidebarPustakawan />
       </div>
 
-      <main className="h-full overflow-y-auto pl-[285px] bg-[#D9DBF3] text-[#0E4D97] p-6">
+      <main className="h-full overflow-y-auto pl-[285px] bg-[#D9DBF3] text-[#000000] p-6">
         {children}
       </main>
       <Toaster expand={true} visibleToasts={5} />

@@ -18,6 +18,7 @@ const pathLabels: Record<string, string> = {
   "/admin": "Home",
   "/admin/users": "Manajemen User",
   "/admin/buku": "Manajemen Buku",
+  "/admin/peminjaman": "Manajemen Peminjaman",
 
   // Anggota paths
   "/anggota": "Home",
@@ -26,8 +27,7 @@ const pathLabels: Record<string, string> = {
 
   // Pustakawan paths
   "/pustakawan": "Home",
-  "/pustakawan/home": "Home",
-  "/pustakawan/ubahstatus": "Ubah Status",
+  "/pustakawan/buku": "Manajemen Buku",
 }
 
 export function DynamicBreadcrumb() {

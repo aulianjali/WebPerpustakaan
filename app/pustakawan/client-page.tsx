@@ -13,6 +13,8 @@ import {
   type DataDipinjam,
   type DataPengembalian,
 } from "@/app/_components/pustakawan/home/columns-home"
+import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
+
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -120,11 +122,8 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#D9DBF3] text-[#0E4D97]">
       <main className="flex-1 p-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-          <span className="hover:text-[#0E4D97] cursor-pointer">Home</span>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-[#0E4D97] font-medium">Daftar Buku</span>
+        <div className="mb-2">
+          <DynamicBreadcrumb />
         </div>
 
         {/* Header */}

@@ -9,6 +9,8 @@ import { AddBukuDialog } from "@/app/_components/pustakawan/buku/add-buku-dialog
 import { EditBukuDialog } from "@/app/_components/pustakawan/buku/edit-buku-dialog"
 import { DeleteBukuDialog } from "@/app/_components/pustakawan/buku/delete-buku-dialog"
 import { columnsBuku, type DataBuku } from "@/app/_components/pustakawan/buku/columns-buku"
+import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
+
 
 export default function ClientManajemenBuku() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -209,6 +211,11 @@ export default function ClientManajemenBuku() {
   return (
     <div className="flex flex-col min-h-screen bg-[#D9DBF3] text-[#0E4D97]">
       <main className="flex-1 p-6">
+
+        <div className="mb-2">
+          <DynamicBreadcrumb />
+        </div>
+
         {/* Header */}
         <div className="mb-6">
           {isLoading ? (

@@ -1,16 +1,21 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ChevronDown } from "lucide-react"
 
-
 export default function Header() {
   const [selectedRole, setSelectedRole] = useState("Anggota")
+  const router = useRouter()
 
   const handleRoleSelect = (role: string) => {
     setSelectedRole(role)
+  }
+
+  const handleLoginClick = () => {
+    router.push("/login")
   }
 
   return (
@@ -40,7 +45,9 @@ export default function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button className="bg-blue-600 hover:bg-blue-700">Login</Button>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleLoginClick}>
+            Login
+          </Button>
         </div>
       </div>
     </header>

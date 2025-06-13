@@ -59,7 +59,7 @@ function Sidebar({ menu }: { menu: MenuItem[] }) {
   const handleLogout = () => {
     localStorage.removeItem("refreshToken")
     localStorage.removeItem("userRole")
-    router.push("/landingpage")
+    router.push("/")
   }
 
   return (

@@ -3,35 +3,36 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { dummyUsers, type DummyUser } from "@/app/_data/dummy-users"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
-    email: "",
+    emailOrUsername: "",
     password: "",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({
-    email: "",
+    emailOrUsername: "",
     password: "",
   })
 
+  const router = useRouter()
+
   const validateForm = () => {
-    const newErrors = { email: "", password: "" }
+    const newErrors = { emailOrUsername: "", password: "" }
     let isValid = true
 
-    // Validasi email
-    if (!formData.email) {
-      newErrors.email = "Email harus diisi"
-      isValid = false
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Format email tidak valid"
+    // Validasi email atau username
+    if (!formData.emailOrUsername) {
+      newErrors.emailOrUsername = "Email atau username harus diisi"
       isValid = false
     }
 
@@ -48,6 +49,31 @@ export default function LoginPage() {
     return isValid
   }
 
+  // Fungsi untuk autentikasi user dari dummy data
+  const authenticateUser = (emailOrUsername: string, password: string): DummyUser | null => {
+    const user = dummyUsers.find(
+      (u) => (u.email === emailOrUsername || u.username === emailOrUsername) && u.password === password,
+    )
+    return user || null
+  }
+
+  // Fungsi untuk menyimpan user session
+  const saveUserSession = (user: DummyUser) => {
+    // Simpan ke cookie (simulasi - nanti bisa pakai library seperti js-cookie)
+    const userSession = {
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      name: user.name,
+    }
+
+    // Set cookie dengan expires 7 hari
+    const expires = new Date()
+    expires.setDate(expires.getDate() + 7)
+
+    document.cookie = `user-session=${JSON.stringify(userSession)}; expires=${expires.toUTCString()}; path=/`
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -60,12 +86,24 @@ export default function LoginPage() {
 
     try {
       // Simulasi API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      toast.success("Login berhasil! Selamat datang kembali")
+      // Cek apakah user ada di dummy data
+      const user = authenticateUser(formData.emailOrUsername, formData.password)
 
-      // Redirect logic bisa ditambahkan di sini
-      console.log("Login successful:", formData)
+      if (!user) {
+        toast.error("Email atau password salah")
+        setIsLoading(false)
+        return
+      }
+
+      // Simpan user session
+      saveUserSession(user)
+
+      toast.success(`Login berhasil! Selamat datang, ${user.name}`)
+
+      // Redirect berdasarkan role
+      router.push(`/${user.role}`)
     } catch (error) {
       toast.error("Login gagal. Silakan coba lagi")
     } finally {
@@ -121,24 +159,26 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-700 font-medium">
-                Email
+              <Label htmlFor="emailOrUsername" className="text-gray-700 font-medium">
+                Email atau Username
               </Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="Masukkan email Anda"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
+                id="emailOrUsername"
+                type="text"
+                placeholder="Masukkan email atau username Anda"
+                value={formData.emailOrUsername}
+                onChange={(e) => handleInputChange("emailOrUsername", e.target.value)}
                 className={`h-12 transition-all duration-300 ${
-                  errors.email
+                  errors.emailOrUsername
                     ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:border-[#0E4D97] focus:ring-[#0E4D97]"
                 }`}
                 disabled={isLoading}
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">{errors.email}</p>
+              {errors.emailOrUsername && (
+                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">
+                  {errors.emailOrUsername}
+                </p>
               )}
             </div>
 
@@ -193,10 +233,6 @@ export default function LoginPage() {
           {/* Additional links */}
           <div className="text-center space-y-2">
             <button className="text-[#0E4D97] hover:underline text-sm transition-colors">Lupa password?</button>
-            <p className="text-gray-600 text-sm">
-              Belum punya akun?{" "}
-              <button className="text-[#0E4D97] hover:underline font-medium transition-colors">Daftar sekarang</button>
-            </p>
           </div>
         </div>
       </div>

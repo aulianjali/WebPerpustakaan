@@ -5,6 +5,7 @@ import { Search, ChevronRight } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTablePeminjaman } from "@/app/_components/admin/peminjaman/data-table-peminjaman"
+import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 import {
   columnsMenunggu,
   columnsDipinjam,
@@ -120,11 +121,8 @@ export default function PeminjamanPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#D9DBF3] text-[#0E4D97]">
       <main className="flex-1 p-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-          <span className="hover:text-[#0E4D97] cursor-pointer">Manajemen Peminjaman</span>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-[#0E4D97] font-medium">Daftar Buku</span>
+        <div className="mb-2">
+          <DynamicBreadcrumb />
         </div>
 
         {/* Header */}
