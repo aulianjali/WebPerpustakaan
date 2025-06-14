@@ -33,6 +33,7 @@ export type DataPengembalian = {
   peminjam: string
   tanggalKembali: string
   waktuKembali: string
+  status: "Terlambat" | "Tidak Terlambat"
 }
 
 function handleKonfirmasi(data: any) {
@@ -56,27 +57,27 @@ function handleKonfirmasiPengembalian(data: any) {
 export const columnsMenunggu: ColumnDef<DataMenunggu>[] = [
   {
     accessorKey: "no",
-    header: "No",
+    header: () => <div className="text-center">No</div>,
     cell: ({ row }) => <div className="text-center font-medium">{row.getValue("no")}</div>,
   },
   {
     accessorKey: "judul",
     header: "Judul",
-    cell: ({ row }) => <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>,
+    cell: ({ row }) => <div className="font-medium text-[#000000]">{row.getValue("judul")}</div>,
   },
   {
     accessorKey: "peminjam",
-    header: "Peminjam",
+    header: () => <div className="text-center">Peminjam</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("peminjam")}</div>,
   },
   {
     accessorKey: "tanggalPinjam",
-    header: "Tanggal Pinjam",
+    header: () => <div className="text-center">Tanggal Pinjam</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("tanggalPinjam")}</div>,
   },
   {
     accessorKey: "waktuPinjam",
-    header: "Waktu Pinjam",
+    header: () => <div className="text-center">Waktu Pinjam</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("waktuPinjam")}</div>,
   },
   {
@@ -137,22 +138,22 @@ export const columnsMenunggu: ColumnDef<DataMenunggu>[] = [
 export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
   {
     accessorKey: "no",
-    header: "No",
+    header: () => <div className="text-center">No</div>,
     cell: ({ row }) => <div className="text-center font-medium">{row.getValue("no")}</div>,
   },
   {
     accessorKey: "judul",
     header: "Judul",
-    cell: ({ row }) => <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.getValue("judul")}</div>,
   },
   {
     accessorKey: "peminjam",
-    header: "Peminjam",
+    header: () => <div className="text-center">Peminjam</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("peminjam")}</div>,
   },
   {
     accessorKey: "sisaWaktu",
-    header: "Sisa Waktu",
+    header: () => <div className="text-center">Sisa Waktu</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("sisaWaktu")}</div>,
   },
   {
@@ -217,27 +218,45 @@ export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
 export const columnsPengembalian: ColumnDef<DataPengembalian>[] = [
   {
     accessorKey: "no",
-    header: "No",
+    header: () => <div className="text-center">No</div>,
     cell: ({ row }) => <div className="text-center font-medium">{row.getValue("no")}</div>,
   },
   {
     accessorKey: "judul",
     header: "Judul",
-    cell: ({ row }) => <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>,
+    cell: ({ row }) => <div className="font-medium text-[#000000]">{row.getValue("judul")}</div>,
   },
   {
     accessorKey: "peminjam",
-    header: "Peminjam",
+    header: () => <div className="text-center">Peminjam</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("peminjam")}</div>,
   },
   {
     accessorKey: "tanggalKembali",
-    header: "Tanggal Kembali",
+    header: () => <div className="text-center">Tanggal Kembali</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("tanggalKembali")}</div>,
   },
   {
     accessorKey: "waktuKembali",
-    header: "Waktu Kembali",
+    header: () => <div className="text-center">Waktu Kembali</div>,
     cell: ({ row }) => <div className="text-center">{row.getValue("waktuKembali")}</div>,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string
+      return (
+        <div className="text-black">
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              status === "Terlambat" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+            }`}
+          >
+            {status}
+          </span>
+        </div>
+      )
+    },
   },
 ]
