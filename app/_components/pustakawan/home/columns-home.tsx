@@ -153,13 +153,30 @@ export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
   },
   {
     accessorKey: "sisaWaktu",
-    header: () => <div className="text-center">Sisa Waktu</div>,
-    cell: ({ row }) => <div className="text-center">{row.getValue("sisaWaktu")}</div>,
-  },
-  {
-    id: "aksi",
-    header: "Aksi",
+    header: "Sisa Waktu",
     cell: ({ row }) => {
+      const sisaWaktu = row.getValue("sisaWaktu") as string
+
+          // Cek jika sisaWaktu mengandung angka minus di awal (misal: "-2 hari")
+          const isMinus = /^\s*-\d+/.test(sisaWaktu)
+
+          return (
+            <div className="text-black">
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  isMinus ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+                }`}
+              >
+                {sisaWaktu}
+              </span>
+            </div>
+          )
+        },
+      },
+      {
+        id: "aksi",
+        header: "Aksi",
+        cell: ({ row }) => {
       const data = row.original
       return (
         <AlertDialog>
