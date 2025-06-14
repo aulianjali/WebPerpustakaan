@@ -36,7 +36,7 @@ export default function HomePage() {
   ])
 
   const [dataDipinjam, setDataDipinjam] = useState<DataDipinjam[]>([
-    { no: 1, judul: "Basis Data", peminjam: "Eka", sisaWaktu: "2 hari" },
+    { no: 1, judul: "Basis Data", peminjam: "Eka", sisaWaktu: "-2 hari" },
     { no: 2, judul: "Pemrograman Java", peminjam: "Fajar", sisaWaktu: "1 hari" },
     { no: 3, judul: "Sistem Operasi", peminjam: "Gita", sisaWaktu: "5 jam" },
     { no: 4, judul: "Kalkulus", peminjam: "Hadi", sisaWaktu: "3 hari" },
