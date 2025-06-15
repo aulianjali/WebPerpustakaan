@@ -136,6 +136,8 @@ export default function ClientHomeAdmin() {
                 valueSize="text-5xl"
                 valueColor="text-white"
                 isLarge={true}
+                detailHref="/admin/users"
+                showDetail={true}
               />
             </div>
 
@@ -150,6 +152,8 @@ export default function ClientHomeAdmin() {
                 iconBgColor="bg-[#4338CA]/10"
                 className="bg-white h-full shadow-sm"
                 valueColor="text-gray-900"
+                detailHref="/admin/buku"
+                showDetail={true}
               />
             </div>
 
@@ -163,6 +167,8 @@ export default function ClientHomeAdmin() {
                 iconBgColor="bg-[#059669]/10"
                 className="bg-white h-full shadow-sm"
                 valueColor="text-gray-900"
+                detailHref="/admin/buku"
+                showDetail={true}
               />
             </div>
 
@@ -177,6 +183,8 @@ export default function ClientHomeAdmin() {
                 iconBgColor="bg-[#D97706]/10"
                 className="bg-white h-full shadow-sm"
                 valueColor="text-gray-900"
+                detailHref="/admin/peminjaman?tab=dipinjam"
+                showDetail={true} 
               />
             </div>
 
@@ -190,6 +198,8 @@ export default function ClientHomeAdmin() {
                 iconBgColor="bg-[#DC2626]/10"
                 className="bg-white h-full shadow-sm"
                 valueColor="text-gray-900"
+                detailHref="/admin/peminjaman?tab=dipinjam"
+                showDetail={true}
               />
             </div>
           </div>

@@ -1,12 +1,12 @@
 import React from 'react'
-import ClientHome from './client-page'
+import ClientPeminjamanAdmin from './client-page'
 
-const PustakawanManajemenPeminjaman = () => {
+const AdminManajemenPeminjaman = () => {
   return (
     <div>
-      <ClientHome/>
+      <ClientPeminjamanAdmin/>
     </div>
   )
 }
 
-export default PustakawanManajemenPeminjaman
+export default AdminManajemenPeminjaman

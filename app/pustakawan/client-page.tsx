@@ -135,9 +135,9 @@ export default function HomePage() {
             </div>
           ) : (
             <>
-              <h1 className="text-3xl font-bold">Daftar Peminjaman</h1>
+              <h1 className="text-3xl font-bold">Manajaemen Peminjaman</h1>
               <p className="text-gray-600 text-sm mt-2">
-                Kelola daftar buku yang sedang menunggu, dipinjam, atau perlu dikembalikan
+                Kelola daftar buku yang harus di konfirmasi, sedang dipinjam, atau perlu dikembalikan
               </p>
             </>
           )}
@@ -191,8 +191,8 @@ export default function HomePage() {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-xl font-semibold text-[#0E4D97]">Menunggu Konfirmasi</h2>
-                      <p className="text-sm text-gray-600 mt-1">Daftar buku yang masih menunggu konfirmasi</p>
+                      <h2 className="text-xl font-semibold text-[#0E4D97]">Konfirmasi Peminjaman</h2>
+                      <p className="text-sm text-gray-600 mt-1">Daftar peminjaman buku yang harus di konfirmasi</p>
                     </div>
 
                   </div>
@@ -238,7 +238,7 @@ export default function HomePage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Saat Ini Dipinjam</h2>
-                      <p className="text-sm text-gray-600 mt-1">Daftar buku yang sedang dipinjam</p>
+                      <p className="text-sm text-gray-600 mt-1">Daftar buku yang sedang dipinjam serta tenggat waktu pengembalian</p>
                     </div>
                   </div>
 

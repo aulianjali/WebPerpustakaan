@@ -22,7 +22,7 @@ export const columnsRiwayat: ColumnDef<DataRiwayat>[] = [
     accessorKey: "no",
     header: () => <div className="pl-4">No</div>,
     cell: ({ row }) => (
-      <div className="text-black pl-6">{row.getValue("no")}</div>
+      <div className="text-black pl-5">{row.getValue("no")}</div>
     ),
   },
   {
@@ -66,12 +66,12 @@ export const columnsRiwayat: ColumnDef<DataRiwayat>[] = [
   },
 ]
 
-export const createColumnsDipinjam = (onReturn?: (id: number) => void): ColumnDef<DataDipinjam>[] => [
+export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
   {
     accessorKey: "no",
-    header: "No",
+    header: () => <div className="pl-4">No</div>,
     cell: ({ row }) => (
-      <div className="text-black pl-6">{row.getValue("no")}</div>
+      <div className="text-black pl-5">{row.getValue("no")}</div>
     ),
   },
   {
@@ -93,37 +93,6 @@ export const createColumnsDipinjam = (onReturn?: (id: number) => void): ColumnDe
     header: "Deadline Kembali",
     cell: ({ row }) => (
       <div className="text-black">{row.getValue("deadlineKembali")}</div>
-    ),
-  },
-]
-
-export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
-  {
-    accessorKey: "no",
-    header: "No",
-    cell: ({ row }) => (
-      <div className="text-center font-medium">{row.getValue("no")}</div>
-    ),
-  },
-  {
-    accessorKey: "judul",
-    header: "Judul",
-    cell: ({ row }) => (
-      <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>
-    ),
-  },
-  {
-    accessorKey: "tanggalPinjam",
-    header: "Tanggal Pinjam",
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("tanggalPinjam")}</div>
-    ),
-  },
-  {
-    accessorKey: "deadlineKembali",
-    header: "Deadline Kembali",
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("deadlineKembali")}</div>
     ),
   },
 ]

@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import { Search, ChevronRight } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DataTablePeminjaman } from "@/app/_components/admin/peminjaman/data-table-peminjaman"
-import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
+import { DataTableHome } from "@/app/_components/pustakawan/home/data-table-home"
 import {
   columnsMenunggu,
   columnsDipinjam,
@@ -14,10 +13,20 @@ import {
   type DataDipinjam,
   type DataPengembalian,
 } from "@/app/_components/admin/peminjaman/columns-peminjaman"
+import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
+import { useSearchParams } from 'next/navigation'
 
-export default function PeminjamanPage() {
+export default function ClientPeminjamanAdmin() {
+
+  const searchParams = useSearchParams()
+  const tabFromUrl = searchParams.get('tab') as "menunggu" | "dipinjam" | "pengembalian" | null
+  
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeTab, setActiveTab] = useState<"menunggu" | "dipinjam" | "pengembalian">("menunggu")
+  const [activeTab, setActiveTab] = useState<"menunggu" | "dipinjam" | "pengembalian">(
+    tabFromUrl && ["menunggu", "dipinjam", "pengembalian"].includes(tabFromUrl) 
+      ? tabFromUrl 
+      : "menunggu"
+  )
   const [isLoading, setIsLoading] = useState(true)
 
   const [pagination, setPagination] = useState({
@@ -25,6 +34,12 @@ export default function PeminjamanPage() {
     dipinjam: { page: 1, perPage: 5 },
     pengembalian: { page: 1, perPage: 5 },
   })
+
+  useEffect(() => {
+    if (tabFromUrl && ["menunggu", "dipinjam", "pengembalian"].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl)
+    }
+  }, [tabFromUrl])
 
   // Contoh data awal
   const [dataMenunggu, setDataMenunggu] = useState<DataMenunggu[]>([
@@ -35,17 +50,18 @@ export default function PeminjamanPage() {
   ])
 
   const [dataDipinjam, setDataDipinjam] = useState<DataDipinjam[]>([
-    { no: 1, judul: "Basis Data", peminjam: "Eka", sisaWaktu: "2 hari" },
+    { no: 1, judul: "Basis Data", peminjam: "Eka", sisaWaktu: "-2 hari" },
     { no: 2, judul: "Pemrograman Java", peminjam: "Fajar", sisaWaktu: "1 hari" },
-    { no: 3, judul: "Sistem Operasi", peminjam: "Gita", sisaWaktu: "5 jam" },
+    { no: 3, judul: "Sistem Operasi", peminjam: "Gita", sisaWaktu: "0 hari" },
     { no: 4, judul: "Kalkulus", peminjam: "Hadi", sisaWaktu: "3 hari" },
+    { no: 5, judul: "Laut Bercerita", peminjam: "Aulia", sisaWaktu: "5 hari" },
   ])
 
   const [dataPengembalian, setDataPengembalian] = useState<DataPengembalian[]>([
-    { no: 1, judul: "Statistika", peminjam: "Ika", tanggalKembali: "18-04-2025", waktuKembali: "10:00" },
-    { no: 2, judul: "Keamanan Jaringan", peminjam: "Joko", tanggalKembali: "19-04-2025", waktuKembali: "11:30" },
-    { no: 3, judul: "Machine Learning", peminjam: "Kiki", tanggalKembali: "20-04-2025", waktuKembali: "09:45" },
-    { no: 4, judul: "Grafika Komputer", peminjam: "Lina", tanggalKembali: "21-04-2025", waktuKembali: "15:20" },
+    { no: 1, judul: "Statistika", peminjam: "Ika", tanggalKembali: "18-04-2025", waktuKembali: "10:00",status: "Tidak Terlambat"},
+    { no: 2, judul: "Keamanan Jaringan", peminjam: "Joko", tanggalKembali: "19-04-2025", waktuKembali: "11:30", status: "Terlambat" },
+    { no: 3, judul: "Machine Learning", peminjam: "Kiki", tanggalKembali: "20-04-2025", waktuKembali: "09:45",status: "Tidak Terlambat"},
+    { no: 4, judul: "Grafika Komputer", peminjam: "Lina", tanggalKembali: "21-04-2025", waktuKembali: "15:20",status: "Tidak Terlambat" },
   ])
 
   // Simulasi loading saat halaman dimuat
@@ -134,9 +150,9 @@ export default function PeminjamanPage() {
             </div>
           ) : (
             <>
-              <h1 className="text-3xl font-bold">Daftar Peminjaman</h1>
+              <h1 className="text-3xl font-bold">Manajemen Peminjaman</h1>
               <p className="text-gray-600 text-sm mt-2">
-                Kelola daftar buku yang sedang menunggu, dipinjam, atau perlu dikembalikan
+                 Kelola daftar buku yang harus di konfirmasi, sedang dipinjam, atau perlu dikembalikan
               </p>
             </>
           )}
@@ -168,7 +184,7 @@ export default function PeminjamanPage() {
                     value="menunggu"
                     className="data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white data-[state=active]:text-[#0E4D97] data-[state=active]:shadow-none px-6 py-4 rounded-none border-b-2 border-transparent font-medium text-gray-600 hover:text-[#0E4D97] transition-colors"
                   >
-                    Menunggu
+                    Konfirmasi
                   </TabsTrigger>
                   <TabsTrigger
                     value="dipinjam"
@@ -190,10 +206,10 @@ export default function PeminjamanPage() {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-xl font-semibold text-[#0E4D97]">Menunggu Konfirmasi</h2>
-                      <p className="text-sm text-gray-600 mt-1">Daftar buku yang masih menunggu konfirmasi</p>
+                      <h2 className="text-xl font-semibold text-[#0E4D97]">Konfirmasi Peminjaman</h2>
+                      <p className="text-sm text-gray-600 mt-1">Daftar peminjaman buku yang harus di konfirmasi</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredMenunggu.length} data</div>
+
                   </div>
 
                   <div className="relative mb-6 w-full">
@@ -206,7 +222,7 @@ export default function PeminjamanPage() {
                     />
                   </div>
 
-                  <DataTablePeminjaman
+                  <DataTableHome
                     columns={columnsMenunggu}
                     data={filteredMenunggu.slice(
                       (pagination.menunggu.page - 1) * pagination.menunggu.perPage,
@@ -237,9 +253,8 @@ export default function PeminjamanPage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Saat Ini Dipinjam</h2>
-                      <p className="text-sm text-gray-600 mt-1">Daftar buku yang sedang dipinjam</p>
+                      <p className="text-sm text-gray-600 mt-1">Daftar buku yang sedang dipinjam serta tenggat waktu pengembalian</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredDipinjam.length} data</div>
                   </div>
 
                   <div className="relative mb-6 w-full">
@@ -252,7 +267,7 @@ export default function PeminjamanPage() {
                     />
                   </div>
 
-                  <DataTablePeminjaman
+                  <DataTableHome
                     columns={columnsDipinjam}
                     data={filteredDipinjam.slice(
                       (pagination.dipinjam.page - 1) * pagination.dipinjam.perPage,
@@ -285,7 +300,6 @@ export default function PeminjamanPage() {
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Pengembalian</h2>
                       <p className="text-sm text-gray-600 mt-1">Daftar buku yang sudah dikembalikan</p>
                     </div>
-                    <div className="text-sm text-gray-500">Total: {filteredPengembalian.length} data</div>
                   </div>
 
                   <div className="relative mb-6 w-full">
@@ -298,7 +312,7 @@ export default function PeminjamanPage() {
                     />
                   </div>
 
-                  <DataTablePeminjaman
+                  <DataTableHome
                     columns={columnsPengembalian}
                     data={filteredPengembalian.slice(
                       (pagination.pengembalian.page - 1) * pagination.pengembalian.perPage,

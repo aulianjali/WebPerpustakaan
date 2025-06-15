@@ -9,7 +9,7 @@ import {
   columnsRiwayat,
   type DataRiwayat,
   type DataDipinjam,
-  createColumnsDipinjam,
+  columnsDipinjam,
 } from "@/app/_components/anggota/riwayat/columns-riwayat"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 
@@ -102,15 +102,6 @@ export default function ClientRiwayat() {
   const filteredDataDipinjam = dataDipinjam.filter((item) =>
     item.judul.toLowerCase().includes(searchQuery.toLowerCase()),
   )
-
-  const handleReturnBook = (id: number) => {
-    // Move book from dipinjam to riwayat
-    const bookToReturn = dataDipinjam.find((book) => book.no === id)
-    if (bookToReturn) {
-      // Add logic to move book to riwayat with current date as return date
-      console.log("Returning book:", bookToReturn)
-    }
-  }
 
   // Skeleton untuk tabel
   const TableSkeleton = () => (
@@ -239,7 +230,7 @@ export default function ClientRiwayat() {
                   </div>
 
                   <DataTableRiwayat
-                    columns={createColumnsDipinjam(handleReturnBook)}
+                    columns={columnsDipinjam}
                     data={filteredDataDipinjam}
                     page={pagination.dipinjam.page}
                     setPage={(page) =>

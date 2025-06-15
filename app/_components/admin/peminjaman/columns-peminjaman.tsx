@@ -1,16 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogTitle,
-  AlertDialogFooter,
-} from "@/components/ui/alert-dialog"
-import { Check, AlertTriangle } from "lucide-react"
+import { Check } from "lucide-react"
 import { toast } from "sonner"
 import type { ColumnDef } from "@tanstack/react-table"
+import { useState } from "react"
+import { ConfirmPeminjamanDialog } from "./confirm-peminjaman-dialog"
+import { ConfirmPengembalianDialog } from "./confirm-pengembalian-dialog"
 
 export type DataMenunggu = {
   no: number
@@ -33,103 +29,119 @@ export type DataPengembalian = {
   peminjam: string
   tanggalKembali: string
   waktuKembali: string
+  status: "Terlambat" | "Tidak Terlambat"
 }
 
 function handleKonfirmasi(data: any) {
   console.log("Konfirmasi:", data)
-
-  // Tampilkan toast sukses dengan format yang diminta
-  toast.success(`${data.peminjam} berhasil meminjam buku ${data.judul}`)
-
   // Tambahkan aksi lain seperti fetch/axios untuk update status
+  // Toast sudah dihandle di dalam dialog component
 }
 
 function handleKonfirmasiPengembalian(data: any) {
   console.log("Konfirmasi Pengembalian:", data)
-
-  // Tampilkan toast sukses untuk pengembalian
-  toast.success(`${data.peminjam} berhasil melakukan pengembalian buku ${data.judul}`)
-
   // Tambahkan aksi lain seperti fetch/axios untuk update status
+  // Toast sudah dihandle di dalam dialog component
+}
+
+// Component untuk Action Cell Menunggu
+function ActionCellMenunggu({ data }: { data: DataMenunggu }) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleConfirm = () => {
+    handleKonfirmasi(data)
+    // Dialog akan tertutup otomatis dari component dialog
+  }
+
+  return (
+    <>
+      <Button 
+        variant="ghost" 
+        className="text-green-600 hover:bg-green-100 p-2 rounded-full" 
+        title="Konfirmasi"
+        onClick={() => setIsDialogOpen(true)}
+      >
+        <Check className="w-4 h-4" />
+      </Button>
+      
+      <ConfirmPeminjamanDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleConfirm}
+        peminjamanData={{
+          judul: data.judul,
+          peminjam: data.peminjam
+        }}
+      />
+    </>
+  )
+}
+
+// Component untuk Action Cell Dipinjam
+function ActionCellDipinjam({ data }: { data: DataDipinjam }) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleConfirm = () => {
+    handleKonfirmasiPengembalian(data)
+    // Dialog akan tertutup otomatis dari component dialog
+  }
+
+  return (
+    <>
+      <Button
+        variant="ghost"
+        className="text-green-600 hover:bg-green-100 p-2 rounded-full"
+        title="Konfirmasi Pengembalian"
+        onClick={() => setIsDialogOpen(true)}
+      >
+        <Check className="w-4 h-4" />
+      </Button>
+      
+      <ConfirmPengembalianDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleConfirm}
+        pengembalianData={{
+          judul: data.judul,
+          peminjam: data.peminjam
+        }}
+      />
+    </>
+  )
 }
 
 export const columnsMenunggu: ColumnDef<DataMenunggu>[] = [
   {
     accessorKey: "no",
-    header: "No",
-    cell: ({ row }) => <div className="text-center font-medium">{row.getValue("no")}</div>,
+    header: () => <div className="pl-4">No</div>,
+    cell: ({ row }) => <div className=" text-black pl-5">{row.getValue("no")}</div>,
   },
   {
     accessorKey: "judul",
     header: "Judul",
-    cell: ({ row }) => <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>,
+    cell: ({ row }) => <div className=" text-black">{row.getValue("judul")}</div>,
   },
   {
     accessorKey: "peminjam",
     header: "Peminjam",
-    cell: ({ row }) => <div className="text-center">{row.getValue("peminjam")}</div>,
+    cell: ({ row }) => <div className=" text-black">{row.getValue("peminjam")}</div>,
   },
   {
     accessorKey: "tanggalPinjam",
     header: "Tanggal Pinjam",
-    cell: ({ row }) => <div className="text-center">{row.getValue("tanggalPinjam")}</div>,
+    cell: ({ row }) => <div className=" text-black">{row.getValue("tanggalPinjam")}</div>,
   },
   {
     accessorKey: "waktuPinjam",
     header: "Waktu Pinjam",
-    cell: ({ row }) => <div className="text-center">{row.getValue("waktuPinjam")}</div>,
+    cell: ({ row }) => <div className=" text-black">{row.getValue("waktuPinjam")}</div>,
   },
   {
     id: "aksi",
     header: "Aksi",
     cell: ({ row }) => {
       const data = row.original
-      return (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" className="text-green-600 hover:bg-green-100 p-2 rounded-full" title="Konfirmasi">
-              <Check className="w-4 h-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl border-0 p-0">
-            {/* Icon Section */}
-            <div className="flex justify-center pt-8 pb-4">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-8 h-8 text-yellow-600" />
-              </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="px-8 pb-6 text-center">
-              <AlertDialogTitle className="text-xl font-semibold text-gray-900 mb-3">
-                Apakah kamu yakin untuk mengonfirmasi peminjaman "{data.judul}"?
-              </AlertDialogTitle>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Peminjaman oleh <span className="font-medium">{data.peminjam}</span> akan dikonfirmasi dan status buku
-                akan berubah menjadi dipinjam.
-              </p>
-            </div>
-
-            {/* Button Section */}
-            <AlertDialogFooter className="flex gap-3 p-6 pt-0 border-0">
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="flex-1 h-11 bg-red-500 hover:bg-red-600 text-white border-0 rounded-lg font-medium"
-                >
-                  Tidak
-                </Button>
-              </AlertDialogTrigger>
-              <Button
-                onClick={() => handleKonfirmasi(data)}
-                className="flex-1 h-11 bg-green-500 hover:bg-green-600 text-white border-0 rounded-lg font-medium"
-              >
-                Iya
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )
+      return <ActionCellMenunggu data={data} />
     },
   },
 ]
@@ -137,79 +149,57 @@ export const columnsMenunggu: ColumnDef<DataMenunggu>[] = [
 export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
   {
     accessorKey: "no",
-    header: "No",
-    cell: ({ row }) => <div className="text-center font-medium">{row.getValue("no")}</div>,
+    header: () => <div className="pl-4">No</div>,
+    cell: ({ row }) => <div className=" text-black pl-5">{row.getValue("no")}</div>,
   },
   {
     accessorKey: "judul",
     header: "Judul",
-    cell: ({ row }) => <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>,
+    cell: ({ row }) => <div className="text-black">{row.getValue("judul")}</div>,
   },
   {
     accessorKey: "peminjam",
     header: "Peminjam",
-    cell: ({ row }) => <div className="text-center">{row.getValue("peminjam")}</div>,
+    cell: ({ row }) => <div className="text-black">{row.getValue("peminjam")}</div>,
   },
-  {
-    accessorKey: "sisaWaktu",
-    header: "Sisa Waktu",
-    cell: ({ row }) => <div className="text-center">{row.getValue("sisaWaktu")}</div>,
+ 
+  // Versi yang lebih simple dan clean
+{
+  accessorKey: "sisaWaktu",
+  header: "Sisa Waktu",
+  cell: ({ row }) => {
+    const sisaWaktu = row.getValue("sisaWaktu") as string
+
+    // Cek kondisi berdasarkan format yang ada
+const isOverdue = /^\s*-\d+/.test(sisaWaktu) || sisaWaktu.toLowerCase().includes('lewat')
+const isToday = sisaWaktu.includes('0 hari') || sisaWaktu.toLowerCase().includes('hari ini')
+const isNearDeadline = !isOverdue && !isToday && sisaWaktu.match(/^[12]\s+hari/)
+
+let badgeClass = ''
+
+if (isOverdue || isToday) {
+  badgeClass = 'bg-red-100 text-red-700 border border-red-200'
+} else if (isNearDeadline) {
+  badgeClass = 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+} else {
+  badgeClass = 'bg-green-100 text-green-700 border border-green-200'
+}
+
+    return (
+      <div>
+        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${badgeClass}`}>
+          {sisaWaktu}
+        </span>
+      </div>
+    )
   },
+},
   {
     id: "aksi",
     header: "Aksi",
     cell: ({ row }) => {
       const data = row.original
-      return (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              className="text-green-600 hover:bg-green-100 p-2 rounded-full"
-              title="Konfirmasi Pengembalian"
-            >
-              <Check className="w-4 h-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl border-0 p-0">
-            {/* Icon Section */}
-            <div className="flex justify-center pt-8 pb-4">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-8 h-8 text-yellow-600" />
-              </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="px-8 pb-6 text-center">
-              <AlertDialogTitle className="text-xl font-semibold text-gray-900 mb-3">
-                Apakah kamu yakin untuk mengonfirmasi pengembalian "{data.judul}"?
-              </AlertDialogTitle>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Pengembalian oleh <span className="font-medium">{data.peminjam}</span> akan dikonfirmasi dan buku akan
-                tersedia kembali untuk dipinjam.
-              </p>
-            </div>
-
-            {/* Button Section */}
-            <AlertDialogFooter className="flex gap-3 p-6 pt-0 border-0">
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="flex-1 h-11 bg-red-500 hover:bg-red-600 text-white border-0 rounded-lg font-medium"
-                >
-                  Tidak
-                </Button>
-              </AlertDialogTrigger>
-              <Button
-                onClick={() => handleKonfirmasiPengembalian(data)}
-                className="flex-1 h-11 bg-green-500 hover:bg-green-600 text-white border-0 rounded-lg font-medium"
-              >
-                Iya
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )
+      return <ActionCellDipinjam data={data} />
     },
   },
 ]
@@ -217,27 +207,45 @@ export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
 export const columnsPengembalian: ColumnDef<DataPengembalian>[] = [
   {
     accessorKey: "no",
-    header: "No",
-    cell: ({ row }) => <div className="text-center font-medium">{row.getValue("no")}</div>,
+    header: () => <div className="pl-4">No</div>,
+    cell: ({ row }) => <div className="text-black pl-5">{row.getValue("no")}</div>,
   },
   {
     accessorKey: "judul",
     header: "Judul",
-    cell: ({ row }) => <div className="font-medium text-[#0E4D97]">{row.getValue("judul")}</div>,
+    cell: ({ row }) => <div className="text-black">{row.getValue("judul")}</div>,
   },
   {
     accessorKey: "peminjam",
     header: "Peminjam",
-    cell: ({ row }) => <div className="text-center">{row.getValue("peminjam")}</div>,
+    cell: ({ row }) => <div className="text-black">{row.getValue("peminjam")}</div>,
   },
   {
     accessorKey: "tanggalKembali",
     header: "Tanggal Kembali",
-    cell: ({ row }) => <div className="text-center">{row.getValue("tanggalKembali")}</div>,
+    cell: ({ row }) => <div className="text-black">{row.getValue("tanggalKembali")}</div>,
   },
   {
     accessorKey: "waktuKembali",
     header: "Waktu Kembali",
-    cell: ({ row }) => <div className="text-center">{row.getValue("waktuKembali")}</div>,
+    cell: ({ row }) => <div className="text-black">{row.getValue("waktuKembali")}</div>,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string
+      return (
+        <div className="text-black">
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              status === "Terlambat" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+            }`}
+          >
+            {status}
+          </span>
+        </div>
+      )
+    },
   },
 ]
