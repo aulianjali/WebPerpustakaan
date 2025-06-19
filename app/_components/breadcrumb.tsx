@@ -20,10 +20,10 @@ const pathLabels: Record<string, string> = {
   "/admin/buku": "Manajemen Buku",
   "/admin/peminjaman": "Manajemen Peminjaman",
 
-  // Anggota paths
-  "/anggota": "Home",
-  "/anggota/konfirmasi": "Konfirmasi",
-  "/anggota/riwayat": "Riwayat",
+  // member paths
+  "/member": "Home",
+  "/member/konfirmasi": "Konfirmasi",
+  "/member/riwayat": "Riwayat",
 
   // Pustakawan paths
   "/pustakawan": "Home",

@@ -9,14 +9,14 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
 import { AlertTriangle } from "lucide-react"
-import type { DataAnggota, DataPustakawan } from "./columns-user"
+import type { Datamember, DataPustakawan } from "./columns-user"
 import { toast } from "sonner" 
 
 interface DeleteUserDialogProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
-  userData: DataAnggota | DataPustakawan | null
+  userData: Datamember | DataPustakawan | null
 }
 
 export function DeleteUserDialog({ isOpen, onClose, onConfirm, userData }: DeleteUserDialogProps) {

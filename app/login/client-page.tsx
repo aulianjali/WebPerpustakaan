@@ -1,47 +1,61 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import Cookies from "js-cookie"
+import { toast } from "sonner"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import { dummyUsers, type DummyUser } from "@/app/_data/dummy-users"
+import axios from "axios"
+import { API_URL } from "@/lib/constant"
+import { login } from "@/lib/auth"
 
 export default function LoginPage() {
+  const router = useRouter()
+
   const [formData, setFormData] = useState({
-    emailOrUsername: "",
+    email: "",
     password: "",
   })
+
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({
-    emailOrUsername: "",
+    email: "",
     password: "",
   })
 
-  const router = useRouter()
+  // Redirect kalau sudah login (token tersedia di cookies)
+  useEffect(() => {
+    const token = Cookies.get("token")
+    const role = Cookies.get("role") // role bisa disimpan saat login
+
+    if (token && role) {
+      router.replace(`/${role}`)
+    }
+  }, [router])
 
   const validateForm = () => {
-    const newErrors = { emailOrUsername: "", password: "" }
+    const newErrors = { email: "", password: "" }
     let isValid = true
 
-    // Validasi email atau username
-    if (!formData.emailOrUsername) {
-      newErrors.emailOrUsername = "Email atau username harus diisi"
+    if (!formData.email) {
+      newErrors.email = "Email harus diisi"
+      isValid = false
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Format email tidak valid"
       isValid = false
     }
 
-    // Validasi password
     if (!formData.password) {
       newErrors.password = "Password harus diisi"
       isValid = false
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password minimal 6 karakter"
+    } else if (formData.password.length < 4) {
+      newErrors.password = "Password minimal 4 karakter"
       isValid = false
     }
 
@@ -49,29 +63,11 @@ export default function LoginPage() {
     return isValid
   }
 
-  // Fungsi untuk autentikasi user dari dummy data
-  const authenticateUser = (emailOrUsername: string, password: string): DummyUser | null => {
-    const user = dummyUsers.find(
-      (u) => (u.email === emailOrUsername || u.username === emailOrUsername) && u.password === password,
-    )
-    return user || null
-  }
-
-  // Fungsi untuk menyimpan user session
-  const saveUserSession = (user: DummyUser) => {
-    // Simpan ke cookie (simulasi - nanti bisa pakai library seperti js-cookie)
-    const userSession = {
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      name: user.name,
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    if (errors[field as keyof typeof errors]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }))
     }
-
-    // Set cookie dengan expires 7 hari
-    const expires = new Date()
-    expires.setDate(expires.getDate() + 7)
-
-    document.cookie = `user-session=${JSON.stringify(userSession)}; expires=${expires.toUTCString()}; path=/`
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,46 +81,34 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // Simulasi API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const result = await login(formData.email, formData.password)
+      // //const { email, password } = formData
+      // const result = await axios.post(
+      //   `${process.env.NEXT_PUBLIC_API_URL}/login`, {email, password}
+      // )
 
-      // Cek apakah user ada di dummy data
-      const user = authenticateUser(formData.emailOrUsername, formData.password)
+      const user = result.data.user
+      const token = result.data.token
 
-      if (!user) {
-        toast.error("Email atau password salah")
-        setIsLoading(false)
-        return
-      }
-
-      // Simpan user session
-      saveUserSession(user)
+      // Simpan token dan role ke cookies
+      Cookies.set("token", token, { expires: 1 }) // 1 hari
+      Cookies.set("role", user.role.toLowerCase(), { expires: 1 })
 
       toast.success(`Login berhasil! Selamat datang, ${user.name}`)
 
-      // Redirect berdasarkan role
-      router.push(`/${user.role}`)
-    } catch (error) {
-      toast.error("Login gagal. Silakan coba lagi")
+      // Redirect ke halaman sesuai role
+      router.push(`/${user.role.toLowerCase()}`)
+    } catch (error: any) {
+      toast.error(error.message || "Login gagal. Silakan coba lagi.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-
-    // Clear error saat user mulai mengetik
-    if (errors[field as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }))
-    }
-  }
-
   return (
     <div className="min-h-screen flex animate-in fade-in duration-1000">
-      {/* Left side - Library illustration */}
+      {/* Kiri: ilustrasi */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#0E4D97] items-center justify-center p-8 relative overflow-hidden">
-        {/* Background decoration */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
@@ -133,15 +117,13 @@ export default function LoginPage() {
           <div className="transform hover:scale-105 transition-transform duration-500">
             <Image
               src="/library.png"
-              alt="Library illustration with people reading and organizing books"
+              alt="Library illustration"
               width={400}
               height={400}
               className="w-full h-auto drop-shadow-2xl"
               priority
             />
           </div>
-
-          {/* Welcome text */}
           <div className="text-center mt-8 text-white animate-in slide-in-from-bottom duration-1000 delay-700">
             <h2 className="text-2xl font-bold mb-2">Selamat Datang</h2>
             <p className="text-blue-100">di Perpustakaan Digital</p>
@@ -149,7 +131,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right side - Login form */}
+      {/* Kanan: form login */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
         <div className="w-full max-w-md space-y-6 animate-in slide-in-from-right duration-1000 delay-500">
           <div className="text-center">
@@ -159,25 +141,25 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="emailOrUsername" className="text-gray-700 font-medium">
-                Email atau Username
+              <Label htmlFor="email" className="text-gray-700 font-medium">
+                Email
               </Label>
               <Input
-                id="emailOrUsername"
-                type="text"
-                placeholder="Masukkan email atau username Anda"
-                value={formData.emailOrUsername}
-                onChange={(e) => handleInputChange("emailOrUsername", e.target.value)}
+                id="email"
+                type="email"
+                placeholder="Masukkan email Anda"
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className={`h-12 transition-all duration-300 ${
-                  errors.emailOrUsername
+                  errors.email
                     ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                     : "border-gray-200 focus:border-[#0E4D97] focus:ring-[#0E4D97]"
                 }`}
                 disabled={isLoading}
               />
-              {errors.emailOrUsername && (
+              {errors.email && (
                 <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">
-                  {errors.emailOrUsername}
+                  {errors.email}
                 </p>
               )}
             </div>
@@ -210,7 +192,9 @@ export default function LoginPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">{errors.password}</p>
+                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">
+                  {errors.password}
+                </p>
               )}
             </div>
 
@@ -230,9 +214,10 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Additional links */}
           <div className="text-center space-y-2">
-            <button className="text-[#0E4D97] hover:underline text-sm transition-colors">Lupa password?</button>
+            <button className="text-[#0E4D97] hover:underline text-sm transition-colors">
+              Lupa password?
+            </button>
           </div>
         </div>
       </div>

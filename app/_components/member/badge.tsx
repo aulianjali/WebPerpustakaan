@@ -2,11 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 
-interface BadgeAnggotaProps extends React.HTMLAttributes<HTMLDivElement> {
+interface BadgememberProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
 }
 
-export function BadgeAnggota({ label, className, ...props }: BadgeAnggotaProps) {
+export function Badgemember({ label, className, ...props }: BadgememberProps) {
   return (
     <Badge className={cn(className)} {...props}>
       {label}

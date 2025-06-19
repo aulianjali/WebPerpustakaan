@@ -4,13 +4,13 @@ import { useState, useEffect } from "react"
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DataTableRiwayat } from "@/app/_components/anggota/riwayat/data-table-riwayat"
+import { DataTableRiwayat } from "@/app/_components/member/riwayat/data-table-riwayat"
 import {
   columnsRiwayat,
   type DataRiwayat,
   type DataDipinjam,
   columnsDipinjam,
-} from "@/app/_components/anggota/riwayat/columns-riwayat"
+} from "@/app/_components/member/riwayat/columns-riwayat"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 
 export default function ClientRiwayat() {

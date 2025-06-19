@@ -150,7 +150,7 @@ export function PinjamAlert({
 
     // Redirect ke halaman konfirmasi setelah delay singkat
     setTimeout(() => {
-      router.push("/anggota/konfirmasi")
+      router.push("/member/konfirmasi")
     }, 1500)
 
     // Panggil callback jika ada

@@ -8,29 +8,29 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { toast } from "sonner"
-import type { DataAnggota, DataPustakawan } from "./columns-user"
+import type { Datamember, DataPustakawan } from "./columns-user"
 
 interface AddUserDialogProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (userData: Omit<DataAnggota | DataPustakawan, "no">) => void
-  userType: "anggota" | "pustakawan"
-  dataAnggota: DataAnggota[]
+  onSubmit: (userData: Omit<Datamember | DataPustakawan, "no">) => void
+  userType: "member" | "pustakawan"
+  datamember: Datamember[]
   dataPustakawan: DataPustakawan[]
 }
 
-export function AddUserDialog({ isOpen, onClose, onSubmit, dataAnggota, dataPustakawan }: AddUserDialogProps) {
+export function AddUserDialog({ isOpen, onClose, onSubmit, datamember, dataPustakawan }: AddUserDialogProps) {
   const [formData, setFormData] = useState({
     nama: "",
     gmail: "",
-    role: "" as "anggota" | "pustakawan" | "",
+    role: "" as "member" | "pustakawan" | "",
   })
 
   // Function to generate next ID based on role
-  const generateNextId = (role: "anggota" | "pustakawan"): string => {
-    if (role === "anggota") {
+  const generateNextId = (role: "member" | "pustakawan"): string => {
+    if (role === "member") {
       const lastId =
-        dataAnggota
+        datamember
           .map((user) => Number.parseInt(user.idPerpus.substring(1))) // Remove 'A' and convert to number
           .filter((num) => !isNaN(num))
           .sort((a, b) => b - a)[0] || 0 // Get highest number or 0 if none
@@ -158,7 +158,7 @@ export function AddUserDialog({ isOpen, onClose, onSubmit, dataAnggota, dataPust
                 <SelectValue placeholder="Pilih role user" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="anggota">Anggota</SelectItem>
+                <SelectItem value="member">member</SelectItem>
                 <SelectItem value="pustakawan">Pustakawan</SelectItem>
               </SelectContent>
             </Select>

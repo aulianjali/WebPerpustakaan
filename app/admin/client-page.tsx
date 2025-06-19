@@ -45,7 +45,7 @@ export default function ClientHomeAdmin() {
         <div className="space-y-6">
           {/* Stat Cards Skeleton */}
           <div className="grid grid-cols-3 gap-4 h-[200px]">
-            {/* Total Anggota Skeleton (besar) */}
+            {/* Total member Skeleton (besar) */}
             <div className="col-span-1 row-span-2 bg-white border border-gray-200 rounded-lg p-4 h-full">
               <div className="flex flex-col h-full justify-between">
                 <div className="flex items-center space-x-4">
@@ -123,10 +123,10 @@ export default function ClientHomeAdmin() {
         <div className="space-y-6">
           {/* Stat Cards - Layout baru */}
           <div className="grid grid-cols-3 gap-4 h-[200px]">
-            {/* Total Anggota (besar) - Redesigned dengan gradient biru muda-ungu muda */}
+            {/* Total member (besar) - Redesigned dengan gradient biru muda-ungu muda */}
             <div className="col-span-1 row-span-2">
               <StatCard
-                title="Total Anggota"
+                title="Total member"
                 value={45}
                 icon={<Users size={28} />}
                 textColor="text-white"

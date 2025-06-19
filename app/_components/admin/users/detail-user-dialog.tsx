@@ -4,12 +4,12 @@ import { useState } from "react"
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Eye, EyeOff, Key, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { DataAnggota, DataPustakawan } from "./columns-user"
+import type { Datamember, DataPustakawan } from "./columns-user"
 
 interface DetailUserDialogProps {
   isOpen: boolean
   onClose: () => void
-  userData: DataAnggota | DataPustakawan | null
+  userData: Datamember | DataPustakawan | null
 }
 
 export function DetailUserDialog({ isOpen, onClose, userData }: DetailUserDialogProps) {

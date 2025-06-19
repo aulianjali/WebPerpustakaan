@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 
 export default function Header() {
-  const [selectedRole, setSelectedRole] = useState("Anggota")
+  const [selectedRole, setSelectedRole] = useState("member")
   const router = useRouter()
 
   const handleRoleSelect = (role: string) => {

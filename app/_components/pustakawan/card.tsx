@@ -8,7 +8,7 @@ interface CardPustakawanProps {
   className?: string
 }
 
-export function CardAnggota({ title, children, className }: CardPustakawanProps) {
+export function Cardmember({ title, children, className }: CardPustakawanProps) {
   return (
     <Card className={className}>
       {title && (

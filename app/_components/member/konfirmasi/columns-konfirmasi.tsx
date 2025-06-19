@@ -124,8 +124,7 @@ export const createColumnsMenunggu = (onDelete: (id: number) => void): ColumnDef
               <AlertDialogHeader className="text-center space-y-2">
                 <AlertDialogTitle className="text-[#0E4D97] font-semibold text-lg leading-relaxed">
                   Apakah kamu yakin
-                  <br />
-                  untuk menghapus "{judul}"?
+                  untuk membatalkan peminjaman buku "{judul}"?
                 </AlertDialogTitle>
               </AlertDialogHeader>
               <AlertDialogFooter className="flex gap-3 justify-center mt-6 pt-2">

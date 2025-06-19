@@ -5,7 +5,7 @@ import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-export type DataAnggota = {
+export type Datamember = {
   no: number
   idPerpus: string
   nama: string
@@ -23,11 +23,11 @@ export type DataPustakawan = {
   password?: string
 }
 
-export const columnsAnggota = (
+export const columnsmember = (
   onEdit?: (id: number) => void,
   onDelete?: (id: number) => void,
-  onDetail?: (user: DataAnggota) => void,
-): ColumnDef<DataAnggota>[] => [
+  onDetail?: (user: Datamember) => void,
+): ColumnDef<Datamember>[] => [
   {
     accessorKey: "idPerpus",
     header: () => <div className="pl-4">ID Perpus</div>,
@@ -60,7 +60,7 @@ export const columnsAnggota = (
     id: "actions",
     header: "Aksi",
     cell: ({ row }) => {
-      const anggota = row.original
+      const member = row.original
 
       return (
         <DropdownMenu>
@@ -72,21 +72,21 @@ export const columnsAnggota = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => onDetail?.(anggota)}
+              onClick={() => onDetail?.(member)}
               className="text-[#0E4D97] hover:bg-[#E8F1FB] focus:text-[#0E4D97]"
             >
               <Eye className="mr-2 h-4 w-4 text-[#0E4D97]" />
               Detail
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => onEdit?.(anggota.no)}
+              onClick={() => onEdit?.(member.no)}
               className="text-[#F4B400] hover:bg-[#FFF8E1] focus:text-[#F4B400]"
             >
               <Edit className="mr-2 h-4 w-4 text-[#F4B400]" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => onDelete?.(anggota.no)}
+              onClick={() => onDelete?.(member.no)}
               className="text-[#D32F2F] hover:bg-[#FFEBEE] focus:text-[#D32F2F]"
             >
               <Trash2 className="mr-2 h-4 w-4 text-[#D32F2F]" />
