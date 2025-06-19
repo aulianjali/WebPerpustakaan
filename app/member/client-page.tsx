@@ -8,7 +8,7 @@ import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 
 import SearchInput from "@/app/_components/input"
 
-export default function ClientHomeAnggota() {
+export default function ClientHomemember() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({})
@@ -122,7 +122,7 @@ export default function ClientHomeAnggota() {
                 const imageLoaded = loadedImages[bookIndex]
 
                 return (
-                  <Link key={i} href={`/anggota/buku/${bookIndex}`}>
+                  <Link key={i} href={`/member/buku/${bookIndex}`}>
                     <div className="relative w-[150px] h-[220px] group cursor-pointer overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
                       {/* Loading Spinner */}
                       {!imageLoaded && (

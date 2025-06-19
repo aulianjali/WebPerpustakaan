@@ -13,29 +13,29 @@ import { DetailUserDialog } from "@/app/_components/admin/users/detail-user-dial
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 
 import {
-  columnsAnggota,
+  columnsmember,
   columnsPustakawan,
-  type DataAnggota,
+  type Datamember,
   type DataPustakawan,
 } from "@/app/_components/admin/users/columns-user"
 
 export default function ClientManajemenUsers() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeTab, setActiveTab] = useState<"anggota" | "pustakawan">("anggota")
+  const [activeTab, setActiveTab] = useState<"member" | "pustakawan">("member")
   const [isLoading, setIsLoading] = useState(true)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<DataAnggota | DataPustakawan | null>(null)
+  const [selectedUser, setSelectedUser] = useState<Datamember | DataPustakawan | null>(null)
 
   const [pagination, setPagination] = useState({
-    anggota: { page: 1, perPage: 5 },
+    member: { page: 1, perPage: 5 },
     pustakawan: { page: 1, perPage: 5 },
   })
 
   // State untuk data yang bisa diubah - Hanya field yang diperlukan
-  const [dataAnggota, setDataAnggota] = useState<DataAnggota[]>([
+  const [datamember, setDatamember] = useState<Datamember[]>([
     {
       no: 1,
       idPerpus: "A001",
@@ -147,13 +147,13 @@ export default function ClientManajemenUsers() {
   }, [])
 
   // Fungsi untuk menambah user baru
-  const handleAddUser = (userData: Omit<DataAnggota | DataPustakawan, "no">) => {
-    if (activeTab === "anggota") {
-      const newUser: DataAnggota = {
+  const handleAddUser = (userData: Omit<Datamember | DataPustakawan, "no">) => {
+    if (activeTab === "member") {
+      const newUser: Datamember = {
         ...userData,
-        no: Math.max(...dataAnggota.map((u) => u.no)) + 1,
-      } as DataAnggota
-      setDataAnggota((prev) => [...prev, newUser])
+        no: Math.max(...datamember.map((u) => u.no)) + 1,
+      } as Datamember
+      setDatamember((prev) => [...prev, newUser])
     } else {
       const newUser: DataPustakawan = {
         ...userData,
@@ -165,10 +165,10 @@ export default function ClientManajemenUsers() {
 
   // Fungsi untuk edit user
   const handleEdit = (id: number) => {
-    let user: DataAnggota | DataPustakawan | undefined
+    let user: Datamember | DataPustakawan | undefined
 
-    if (activeTab === "anggota") {
-      user = dataAnggota.find((u) => u.no === id)
+    if (activeTab === "member") {
+      user = datamember.find((u) => u.no === id)
     } else {
       user = dataPustakawan.find((u) => u.no === id)
     }
@@ -180,15 +180,15 @@ export default function ClientManajemenUsers() {
   }
 
   // Fungsi untuk detail user
-  const handleDetail = (user: DataAnggota | DataPustakawan) => {
+  const handleDetail = (user: Datamember | DataPustakawan) => {
     setSelectedUser(user)
     setIsDetailDialogOpen(true)
   }
 
   // Fungsi untuk update user setelah edit
-  const handleUpdateUser = (updatedUser: DataAnggota | DataPustakawan) => {
-    if (activeTab === "anggota") {
-      setDataAnggota((prev) => prev.map((user) => (user.no === updatedUser.no ? (updatedUser as DataAnggota) : user)))
+  const handleUpdateUser = (updatedUser: Datamember | DataPustakawan) => {
+    if (activeTab === "member") {
+      setDatamember((prev) => prev.map((user) => (user.no === updatedUser.no ? (updatedUser as Datamember) : user)))
     } else {
       setDataPustakawan((prev) =>
         prev.map((user) => (user.no === updatedUser.no ? (updatedUser as DataPustakawan) : user)),
@@ -198,10 +198,10 @@ export default function ClientManajemenUsers() {
 
   // Fungsi untuk hapus user
   const handleDelete = (id: number) => {
-    let user: DataAnggota | DataPustakawan | undefined
+    let user: Datamember | DataPustakawan | undefined
 
-    if (activeTab === "anggota") {
-      user = dataAnggota.find((u) => u.no === id)
+    if (activeTab === "member") {
+      user = datamember.find((u) => u.no === id)
     } else {
       user = dataPustakawan.find((u) => u.no === id)
     }
@@ -215,8 +215,8 @@ export default function ClientManajemenUsers() {
   // Fungsi untuk konfirmasi hapus user
   const handleConfirmDelete = () => {
     if (selectedUser) {
-      if (activeTab === "anggota") {
-        setDataAnggota((prev) => prev.filter((user) => user.no !== selectedUser.no))
+      if (activeTab === "member") {
+        setDatamember((prev) => prev.filter((user) => user.no !== selectedUser.no))
       } else {
         setDataPustakawan((prev) => prev.filter((user) => user.no !== selectedUser.no))
       }
@@ -225,7 +225,7 @@ export default function ClientManajemenUsers() {
     }
   }
 
-  const filteredDataAnggota = dataAnggota.filter(
+  const filteredDatamember = datamember.filter(
     (item) =>
       item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.idPerpus.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -309,7 +309,7 @@ export default function ClientManajemenUsers() {
           ) : (
             <>
               <h1 className="text-3xl font-bold">Manajemen User</h1>
-              <p className="text-gray-600 text-sm mt-2">Kelola data anggota dan pustakawan perpustakaan</p>
+              <p className="text-gray-600 text-sm mt-2">Kelola data member dan pustakawan perpustakaan</p>
             </>
           )}
         </div>
@@ -328,15 +328,15 @@ export default function ClientManajemenUsers() {
               <TableSkeleton />
             </div>
           ) : (
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "anggota" | "pustakawan")}>
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "member" | "pustakawan")}>
               {/* Tab Header */}
               <div className="border-b border-gray-200 bg-gray-50/50">
                 <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
                   <TabsTrigger
-                    value="anggota"
+                    value="member"
                     className="data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white data-[state=active]:text-[#0E4D97] data-[state=active]:shadow-none px-6 py-4 rounded-none border-b-2 border-transparent font-medium text-gray-600 hover:text-[#0E4D97] transition-colors"
                   >
-                    Anggota
+                    member
                   </TabsTrigger>
                   <TabsTrigger
                     value="pustakawan"
@@ -348,12 +348,12 @@ export default function ClientManajemenUsers() {
               </div>
 
               {/* Tab Content */}
-              <TabsContent value="anggota" className="mt-0">
+              <TabsContent value="member" className="mt-0">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-xl font-semibold text-[#0E4D97]">Data Anggota</h2>
-                      <p className="text-sm text-gray-600 mt-1">Kelola data anggota perpustakaan</p>
+                      <h2 className="text-xl font-semibold text-[#0E4D97]">Data member</h2>
+                      <p className="text-sm text-gray-600 mt-1">Kelola data member perpustakaan</p>
                     </div>
                   </div>
 
@@ -372,21 +372,21 @@ export default function ClientManajemenUsers() {
                       className="bg-[#0E4D97] hover:bg-[#0E4D97]/90 text-white"
                     >
                       <Plus className="h-4 w-4 mr-2" />
-                      Tambah Anggota
+                      Tambah member
                     </Button>
                   </div>
 
                   <DataTableUsers
-                    columns={columnsAnggota(handleEdit, handleDelete, handleDetail)}
-                    data={filteredDataAnggota.slice(
-                      (pagination.anggota.page - 1) * pagination.anggota.perPage,
-                      pagination.anggota.page * pagination.anggota.perPage,
+                    columns={columnsmember(handleEdit, handleDelete, handleDetail)}
+                    data={filteredDatamember.slice(
+                      (pagination.member.page - 1) * pagination.member.perPage,
+                      pagination.member.page * pagination.member.perPage,
                     )}
-                    page={pagination.anggota.page}
-                    setPage={(p) => setPagination((prev) => ({ ...prev, anggota: { ...prev.anggota, page: p } }))}
-                    perPage={pagination.anggota.perPage}
-                    setPerPage={(pp) => setPagination((prev) => ({ ...prev, anggota: { page: 1, perPage: pp } }))}
-                    total={filteredDataAnggota.length}
+                    page={pagination.member.page}
+                    setPage={(p) => setPagination((prev) => ({ ...prev, member: { ...prev.member, page: p } }))}
+                    perPage={pagination.member.perPage}
+                    setPerPage={(pp) => setPagination((prev) => ({ ...prev, member: { page: 1, perPage: pp } }))}
+                    total={filteredDatamember.length}
                   />
                 </div>
               </TabsContent>
@@ -443,7 +443,7 @@ export default function ClientManajemenUsers() {
           onClose={() => setIsAddDialogOpen(false)}
           onSubmit={handleAddUser}
           userType={activeTab}
-          dataAnggota={dataAnggota}         // <-- tambahkan ini
+          datamember={datamember}         // <-- tambahkan ini
           dataPustakawan={dataPustakawan} 
         />
 

@@ -4,24 +4,66 @@ import { useState, useEffect } from "react"
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DataTableConfirm } from "@/app/_components/anggota/konfirmasi/data-table-konfirmasi"
+import { DataTableConfirm } from "@/app/_components/member/konfirmasi/data-table-konfirmasi"
 import {
   columnsBerhasil,
   createColumnsMenunggu,
   type DataBerhasil,
   type DataMenunggu,
-} from "@/app/_components/anggota/konfirmasi/columns-konfirmasi"
+} from "@/app/_components/member/konfirmasi/columns-konfirmasi"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
+import axios from "axios"
+import Cookies from "js-cookie"
 
 export default function ClientKonfirmasi() {
+  const token = Cookies.get("token")
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeTab, setActiveTab] = useState<"berhasil" | "menunggu">("menunggu") // Default ke tab menunggu
+  const [activeTab, setActiveTab] = useState<"berhasil" | "menunggu">("menunggu")
   const [isLoading, setIsLoading] = useState(true)
 
+  const [dataMenunggu, setDataMenunggu] = useState<DataMenunggu[]>([])
   const [pagination, setPagination] = useState({
     berhasil: { page: 1, perPage: 5 },
     menunggu: { page: 1, perPage: 5 },
   })
+
+  const fetchDataConfirm = async () => {
+    try {
+      if (!token) {
+        console.error("Token tidak tersedia")
+        return
+      }
+
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/borrow/active`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      })
+        console.log(response);
+        
+      const formattedData: DataMenunggu[] = response.data.data.map((item: any, index: number) => ({
+        no: index + 1,
+        judul: item.buku,
+        tanggalPinjam: new Date().toLocaleDateString("id-ID"),
+        waktuPinjam: item.waktu_peminjaman,
+      }))
+
+      setDataMenunggu(formattedData)
+    } catch (error: any) {
+      console.error("Gagal ambil data menunggu konfirmasi:", error.response?.data || error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDataConfirm()
+  }, [])
+
+  const handleDelete = (id: number) => {
+    setDataMenunggu((prev) => prev.filter((item) => item.no !== id))
+  }
 
   const dataBerhasil: DataBerhasil[] = Array.from({ length: 100 }, (_, i) => ({
     no: i + 1,
@@ -29,61 +71,6 @@ export default function ClientKonfirmasi() {
     tanggalKonfirm: "20-04-2025",
     waktuKonfirm: `${String(8 + (i % 8)).padStart(2, "0")}:${String(15 + (i % 45)).padStart(2, "0")}`,
   }))
-
-  const [dataMenunggu, setDataMenunggu] = useState<DataMenunggu[]>([
-    { no: 1, judul: "Matematika Diskrit", tanggalPinjam: "20-04-2025", waktuPinjam: "08.30" },
-    { no: 2, judul: "Jaringan Komputer", tanggalPinjam: "21-04-2025", waktuPinjam: "12.00" },
-    { no: 3, judul: "Algoritma dan Struktur Data", tanggalPinjam: "22-04-2025", waktuPinjam: "13.15" },
-    { no: 4, judul: "Pengembangan Aplikasi Mobile", tanggalPinjam: "23-04-2025", waktuPinjam: "14.50" },
-  ])
-
-  // Load data dari localStorage saat komponen dimount
-  useEffect(() => {
-    const loadPendingBorrowings = () => {
-      try {
-        const savedData = localStorage.getItem("pendingBorrowings")
-        if (savedData) {
-          const pendingBorrowings = JSON.parse(savedData)
-          // Gabungkan dengan data existing
-          setDataMenunggu((prev) => {
-            // Hindari duplikasi berdasarkan ID
-            const existingIds = prev.map((item) => item.no)
-            const newItems = pendingBorrowings.filter((item: any) => !existingIds.includes(item.no))
-            return [...prev, ...newItems]
-          })
-        }
-      } catch (error) {
-        console.error("Error loading pending borrowings:", error)
-      }
-    }
-
-    const timer = setTimeout(() => {
-      loadPendingBorrowings()
-      setIsLoading(false)
-    }, 1200)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleDelete = (id: number) => {
-    setDataMenunggu((prevData) => {
-      const updatedData = prevData.filter((item) => item.no !== id)
-
-      // Update localStorage juga
-      try {
-        const savedData = localStorage.getItem("pendingBorrowings")
-        if (savedData) {
-          const pendingBorrowings = JSON.parse(savedData)
-          const updatedPendingBorrowings = pendingBorrowings.filter((item: any) => item.no !== id)
-          localStorage.setItem("pendingBorrowings", JSON.stringify(updatedPendingBorrowings))
-        }
-      } catch (error) {
-        console.error("Error updating localStorage:", error)
-      }
-
-      return updatedData
-    })
-  }
 
   const filteredDataBerhasil = dataBerhasil.filter((item) =>
     item.judul.toLowerCase().includes(searchQuery.toLowerCase()),

@@ -2,13 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface CardAnggotaProps {
+interface CardmemberProps {
   title?: string
   children: React.ReactNode
   className?: string
 }
 
-export function CardAnggota({ title, children, className }: CardAnggotaProps) {
+export function Cardmember({ title, children, className }: CardmemberProps) {
   return (
     <Card className={className}>
       {title && (

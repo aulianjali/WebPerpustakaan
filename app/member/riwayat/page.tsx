@@ -1,7 +1,7 @@
 import React from 'react'
 import ClientRiwayat from './client-page'
 
-const AnggotaRiwayat = () => {
+const memberRiwayat = () => {
   return (
     <div>
       <ClientRiwayat/>
@@ -9,4 +9,4 @@ const AnggotaRiwayat = () => {
   )
 }
 
-export default AnggotaRiwayat
+export default memberRiwayat

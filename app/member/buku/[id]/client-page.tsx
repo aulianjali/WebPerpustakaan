@@ -1,9 +1,9 @@
 "use client"
 
 import Image from "next/image"
-import { BadgeAnggota } from "@/app/_components/anggota/badge"
-import { Card } from "@/app/_components/anggota/card"
-import { PinjamAlert } from "@/app/_components/anggota/alert-dialog"
+import { Badgemember } from "@/app/_components/member/badge"
+import { Card } from "@/app/_components/member/card"
+import { PinjamAlert } from "@/app/_components/member/alert-dialog"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 
 export default function ClientDetailBuku() {
@@ -32,7 +32,7 @@ export default function ClientDetailBuku() {
               </div>
 
               <div className="flex gap-3 mt-6 w-full justify-center">
-                <BadgeAnggota
+                <Badgemember
                   label="Tersedia"
                   className="bg-green-100 text-green-600 px-4 py-1.5 text-sm font-medium rounded-md"
                 />

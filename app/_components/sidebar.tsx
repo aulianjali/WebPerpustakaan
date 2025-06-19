@@ -4,6 +4,7 @@ import type React from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { BookOpen, Home, FileCheck, History, Users, BookMarked, LogOut, ClipboardList } from "lucide-react"
 import { Poppins } from "next/font/google"
+import Cookies from "js-cookie"
 
 // Inisialisasi font Poppins
 const poppins = Poppins({
@@ -18,17 +19,17 @@ type MenuItem = {
   path: string
 }
 
-type Role = "anggota" | "admin" | "pustakawan"
+type Role = "member" | "admin" | "pustakawan"
 
 // Komponen Role-Specific
-export function SidebarAnggota() {
-  const menuAnggota: MenuItem[] = [
-    { label: "Home", icon: <Home size={20} />, path: "/anggota" },
-    { label: "Konfirmasi", icon: <FileCheck size={20} />, path: "/anggota/konfirmasi" },
-    { label: "Riwayat", icon: <History size={20} />, path: "/anggota/riwayat" },
+export function Sidebarmember() {
+  const menumember: MenuItem[] = [
+    { label: "Home", icon: <Home size={20} />, path: "/member" },
+    { label: "Konfirmasi", icon: <FileCheck size={20} />, path: "/member/konfirmasi" },
+    { label: "Riwayat", icon: <History size={20} />, path: "/member/riwayat" },
   ]
 
-  return <Sidebar menu={menuAnggota} />
+  return <Sidebar menu={menumember} />
 }
 
 export function SidebarAdmin() {
@@ -57,9 +58,10 @@ function Sidebar({ menu }: { menu: MenuItem[] }) {
   const pathname = usePathname()
 
   const handleLogout = () => {
-    localStorage.removeItem("refreshToken")
-    localStorage.removeItem("userRole")
-    router.push("/")
+  Cookies.remove("token")
+  Cookies.remove("role")
+  localStorage.removeItem("refreshToken") // Jika kamu masih pakai untuk API
+  router.push("/")
   }
 
   return (

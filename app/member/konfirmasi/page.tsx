@@ -1,7 +1,7 @@
 import React from 'react'
 import ClientKonfirmasi from './client-page'
 
-const AnggotaKonfirmasi = () => {
+const memberKonfirmasi = () => {
   return (
     <div>
       <ClientKonfirmasi/>
@@ -9,4 +9,4 @@ const AnggotaKonfirmasi = () => {
   )
 }
 
-export default AnggotaKonfirmasi
+export default memberKonfirmasi
