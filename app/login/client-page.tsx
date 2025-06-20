@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -10,8 +12,6 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import axios from "axios"
-import { API_URL } from "@/lib/constant"
 import { login } from "@/lib/auth"
 
 export default function LoginPage() {
@@ -82,10 +82,8 @@ export default function LoginPage() {
 
     try {
       const result = await login(formData.email, formData.password)
-      // //const { email, password } = formData
-      // const result = await axios.post(
-      //   `${process.env.NEXT_PUBLIC_API_URL}/login`, {email, password}
-      // )
+
+      console.log("Login response:", result) // Debug log
 
       const user = result.data.user
       const token = result.data.token
@@ -94,11 +92,18 @@ export default function LoginPage() {
       Cookies.set("token", token, { expires: 1 }) // 1 hari
       Cookies.set("role", user.role.toLowerCase(), { expires: 1 })
 
+      // 🔥 TAMBAHAN: Simpan data user lengkap
+      Cookies.set("user", JSON.stringify(user), { expires: 1 })
+      localStorage.setItem("user", JSON.stringify(user))
+
+      console.log("User data saved:", user) // Debug log
+
       toast.success(`Login berhasil! Selamat datang, ${user.name}`)
 
       // Redirect ke halaman sesuai role
       router.push(`/${user.role.toLowerCase()}`)
     } catch (error: any) {
+      console.error("Login error:", error) // Debug log
       toast.error(error.message || "Login gagal. Silakan coba lagi.")
     } finally {
       setIsLoading(false)
@@ -158,9 +163,7 @@ export default function LoginPage() {
                 disabled={isLoading}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">
-                  {errors.email}
-                </p>
+                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">{errors.email}</p>
               )}
             </div>
 
@@ -192,9 +195,7 @@ export default function LoginPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">
-                  {errors.password}
-                </p>
+                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">{errors.password}</p>
               )}
             </div>
 
@@ -215,9 +216,7 @@ export default function LoginPage() {
           </form>
 
           <div className="text-center space-y-2">
-            <button className="text-[#0E4D97] hover:underline text-sm transition-colors">
-              Lupa password?
-            </button>
+            <button className="text-[#0E4D97] hover:underline text-sm transition-colors">Lupa password?</button>
           </div>
         </div>
       </div>
