@@ -12,114 +12,111 @@ import {
   columnsDipinjam,
 } from "@/app/_components/member/riwayat/columns-riwayat"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
+import axios from "axios"
+import Cookies from "js-cookie"
 
 export default function ClientRiwayat() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<"dipinjam" | "riwayat">("dipinjam")
   const [isLoading, setIsLoading] = useState(true)
+  const [dataDipinjam, setDataDipinjam] = useState<DataDipinjam[]>([])
+  const [dataRiwayat, setDataRiwayat] = useState<DataRiwayat[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const token = Cookies.get("token")
 
   const [pagination, setPagination] = useState({
     riwayat: { page: 1, perPage: 5 },
     dipinjam: { page: 1, perPage: 5 },
   })
 
-  const dataRiwayat: DataRiwayat[] = [
-    {
-      no: 1,
-      judul: "Basis Data",
-      tanggalPinjam: "10-04-2025",
-      tanggalKembali: "17-04-2025",
-      status: "Tidak Terlambat",
-    },
-    { no: 2, judul: "Pemrograman Web", tanggalPinjam: "11-04-2025", tanggalKembali: "20-04-2025", status: "Terlambat" },
-    { no: 3, judul: "AI Dasar", tanggalPinjam: "12-04-2025", tanggalKembali: "19-04-2025", status: "Tidak Terlambat" },
-    {
-      no: 4,
-      judul: "Sistem Informasi",
-      tanggalPinjam: "13-04-2025",
-      tanggalKembali: "22-04-2025",
-      status: "Terlambat",
-    },
-    {
-      no: 5,
-      judul: "Jaringan Komputer",
-      tanggalPinjam: "14-04-2025",
-      tanggalKembali: "21-04-2025",
-      status: "Tidak Terlambat",
-    },
-    { no: 6, judul: "Struktur Data", tanggalPinjam: "15-04-2025", tanggalKembali: "23-04-2025", status: "Terlambat" },
-    {
-      no: 7,
-      judul: "Pemrograman Mobile",
-      tanggalPinjam: "16-04-2025",
-      tanggalKembali: "24-04-2025",
-      status: "Tidak Terlambat",
-    },
-    {
-      no: 8,
-      judul: "Keamanan Informasi",
-      tanggalPinjam: "17-04-2025",
-      tanggalKembali: "25-04-2025",
-      status: "Terlambat",
-    },
-    {
-      no: 9,
-      judul: "Cloud Computing",
-      tanggalPinjam: "18-04-2025",
-      tanggalKembali: "26-04-2025",
-      status: "Tidak Terlambat",
-    },
-    {
-      no: 10,
-      judul: "Machine Learning",
-      tanggalPinjam: "19-04-2025",
-      tanggalKembali: "27-04-2025",
-      status: "Terlambat",
-    },
-  ]
+  const fetchDataDipinjam = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
 
-  const dataDipinjam: DataDipinjam[] = [
-    { no: 1, judul: "Sistem Operasi", tanggalPinjam: "24-05-2025", deadlineKembali: "31-05-2025" },
-    { no: 2, judul: "Jaringan", tanggalPinjam: "25-05-2025", deadlineKembali: "01-06-2025" },
-    { no: 3, judul: "Database", tanggalPinjam: "26-05-2025", deadlineKembali: "02-06-2025" },
-    { no: 4, judul: "Web Programming", tanggalPinjam: "27-05-2025", deadlineKembali: "03-06-2025" },
-    { no: 5, judul: "Mobile Development", tanggalPinjam: "28-05-2025", deadlineKembali: "04-06-2025" },
-    { no: 6, judul: "AI & Machine Learning", tanggalPinjam: "29-05-2025", deadlineKembali: "05-06-2025" },
-    { no: 7, judul: "Cloud Computing", tanggalPinjam: "30-05-2025", deadlineKembali: "06-06-2025" },
-  ]
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/borrow/active`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      })
 
-  // Simulasi loading saat halaman dimuat
-  useEffect(() => {
-    const timer = setTimeout(() => {
+      if (response.data?.success && response.data?.data) {
+        const formattedData: DataDipinjam[] = response.data.data.map((item: any, index: number) => ({
+          no: index + 1,
+          judul: item.judul,
+          tanggalPinjam: new Date(item.tanggal_peminjaman).toLocaleDateString("id-ID"),
+          deadlineKembali: new Date(item.batas_pengembalian).toLocaleDateString("id-ID"),
+        }))
+        setDataDipinjam(formattedData)
+      } else {
+        setDataDipinjam([])
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || "Gagal memuat data sedang dipinjam")
+      setDataDipinjam([])
+    } finally {
       setIsLoading(false)
-    }, 1200) // Loading selama 1.2 detik
+    }
+  }
 
-    return () => clearTimeout(timer)
-  }, [])
+  const fetchDataRiwayat = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
 
-  const filteredDataRiwayat = dataRiwayat.filter((item) => item.judul.toLowerCase().includes(searchQuery.toLowerCase()))
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/borrow/history`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      })
 
-  const filteredDataDipinjam = dataDipinjam.filter((item) =>
-    item.judul.toLowerCase().includes(searchQuery.toLowerCase()),
+      if (response.data?.success && response.data?.data) {
+        const formattedData: DataRiwayat[] = response.data.data.map((item: any, index: number) => ({
+          no: index + 1,
+          judul: item.judul,
+          tanggalPinjam: new Date(item.tanggal_peminjaman).toLocaleDateString("id-ID"),
+          tanggalKembali: new Date(item.tanggal_pengembalian).toLocaleDateString("id-ID"),
+          status: item.terlambat ? "Terlambat" : "Tidak Terlambat",
+        }))
+        setDataRiwayat(formattedData)
+      } else {
+        setDataRiwayat([])
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || "Gagal memuat data riwayat")
+      setDataRiwayat([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (token) {
+      fetchDataDipinjam()
+      fetchDataRiwayat()
+    }
+  }, [token])
+
+  const filteredDataRiwayat = dataRiwayat.filter((item) =>
+    item.judul.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // Skeleton untuk tabel
+  const filteredDataDipinjam = dataDipinjam.filter((item) =>
+    item.judul.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   const TableSkeleton = () => (
     <div className="space-y-4">
-      {/* Header skeleton */}
       <div className="flex items-center justify-between">
         <div className="space-y-2">
           <div className="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
           <div className="h-4 bg-gray-200 rounded w-64 animate-pulse"></div>
         </div>
       </div>
-
-      {/* Search skeleton */}
       <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-
-      {/* Table skeleton */}
       <div className="border border-gray-200 rounded-lg overflow-hidden">
-        {/* Table header */}
         <div className="bg-gray-50 p-4 border-b">
           <div className="grid grid-cols-5 gap-4">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -127,8 +124,6 @@ export default function ClientRiwayat() {
             ))}
           </div>
         </div>
-
-        {/* Table rows */}
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="p-4 border-b last:border-b-0">
             <div className="grid grid-cols-5 gap-4">
@@ -139,8 +134,6 @@ export default function ClientRiwayat() {
           </div>
         ))}
       </div>
-
-      {/* Pagination skeleton */}
       <div className="flex items-center justify-between">
         <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
         <div className="flex gap-2">
@@ -152,14 +145,22 @@ export default function ClientRiwayat() {
     </div>
   )
 
+  const EmptyState = ({ title, description }: { title: string; description: string }) => (
+    <div className="text-center py-12">
+      <div className="text-gray-400 mb-2">
+        <Search className="h-12 w-12 mx-auto" />
+      </div>
+      <h3 className="text-lg font-medium text-gray-900 mb-1">{title}</h3>
+      <p className="text-gray-500">{description}</p>
+    </div>
+  )
+
   return (
     <div className="flex flex-col min-h-screen bg-[#D9DBF3] text-[#0E4D97]">
       <main className="flex-1 p-6">
-        {/* Breadcrumb */}
         <div className="mb-2">
-            <DynamicBreadcrumb />
+          <DynamicBreadcrumb />
         </div>
-        {/* Header */}
         <div className="mb-6">
           {isLoading ? (
             <div className="space-y-2">
@@ -176,40 +177,29 @@ export default function ClientRiwayat() {
           )}
         </div>
 
-        {/* Tab Terintegrasi */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {isLoading ? (
             <div className="p-6">
-              {/* Tab skeleton */}
               <div className="flex gap-4 mb-6 border-b pb-4">
                 <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
                 <div className="h-10 bg-gray-200 rounded w-24 animate-pulse"></div>
               </div>
-
-              {/* Content skeleton */}
               <TableSkeleton />
             </div>
           ) : (
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "dipinjam" | "riwayat")}>
-              {/* Tab Header */}
               <div className="border-b border-gray-200 bg-gray-50/50">
                 <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
-                  <TabsTrigger
-                    value="dipinjam"
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white data-[state=active]:text-[#0E4D97] data-[state=active]:shadow-none px-6 py-4 rounded-none border-b-2 border-transparent font-medium text-gray-600 hover:text-[#0E4D97] transition-colors"
-                  >
+                  <TabsTrigger value="dipinjam" className="px-6 py-4 text-gray-600 font-medium border-b-2 border-transparent data-[state=active]:text-[#0E4D97] data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white">
                     Sedang Dipinjam
                   </TabsTrigger>
-                  <TabsTrigger
-                    value="riwayat"
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white data-[state=active]:text-[#0E4D97] data-[state=active]:shadow-none px-6 py-4 rounded-none border-b-2 border-transparent font-medium text-gray-600 hover:text-[#0E4D97] transition-colors"
-                  >
+                  <TabsTrigger value="riwayat" className="px-6 py-4 text-gray-600 font-medium border-b-2 border-transparent data-[state=active]:text-[#0E4D97] data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white">
                     Riwayat
                   </TabsTrigger>
                 </TabsList>
               </div>
 
-              {/* Tab Content */}
+              {/* === DIPINJAM === */}
               <TabsContent value="dipinjam" className="mt-0">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
@@ -218,7 +208,6 @@ export default function ClientRiwayat() {
                       <p className="text-sm text-gray-600 mt-1">Daftar buku yang sedang dalam masa peminjaman</p>
                     </div>
                   </div>
-
                   <div className="relative mb-6 w-full">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
@@ -229,28 +218,39 @@ export default function ClientRiwayat() {
                     />
                   </div>
 
-                  <DataTableRiwayat
-                    columns={columnsDipinjam}
-                    data={filteredDataDipinjam}
-                    page={pagination.dipinjam.page}
-                    setPage={(page) =>
-                      setPagination((prev) => ({
-                        ...prev,
-                        dipinjam: { ...prev.dipinjam, page },
-                      }))
-                    }
-                    total={filteredDataDipinjam.length}
-                    perPage={pagination.dipinjam.perPage}
-                    setPerPage={(perPage) =>
-                      setPagination((prev) => ({
-                        ...prev,
-                        dipinjam: { page: 1, perPage },
-                      }))
-                    }
-                  />
+                  {filteredDataDipinjam.length === 0 ? (
+                    <EmptyState
+                      title="Tidak ada data sedang dipinjam"
+                      description="Belum ada buku yang sedang dipinjam"
+                    />
+                  ) : (
+                    <DataTableRiwayat
+                      columns={columnsDipinjam}
+                      data={filteredDataDipinjam.slice(
+                        (pagination.dipinjam.page - 1) * pagination.dipinjam.perPage,
+                        pagination.dipinjam.page * pagination.dipinjam.perPage
+                      )}
+                      page={pagination.dipinjam.page}
+                      setPage={(page) =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          dipinjam: { ...prev.dipinjam, page },
+                        }))
+                      }
+                      total={filteredDataDipinjam.length}
+                      perPage={pagination.dipinjam.perPage}
+                      setPerPage={(perPage) =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          dipinjam: { page: 1, perPage },
+                        }))
+                      }
+                    />
+                  )}
                 </div>
               </TabsContent>
 
+              {/* === RIWAYAT === */}
               <TabsContent value="riwayat" className="mt-0">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
@@ -259,7 +259,6 @@ export default function ClientRiwayat() {
                       <p className="text-sm text-gray-600 mt-1">Daftar riwayat peminjaman yang telah selesai</p>
                     </div>
                   </div>
-
                   <div className="relative mb-6 w-full">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
@@ -270,25 +269,35 @@ export default function ClientRiwayat() {
                     />
                   </div>
 
-                  <DataTableRiwayat
-                    columns={columnsRiwayat}
-                    data={filteredDataRiwayat}
-                    page={pagination.riwayat.page}
-                    setPage={(page) =>
-                      setPagination((prev) => ({
-                        ...prev,
-                        riwayat: { ...prev.riwayat, page },
-                      }))
-                    }
-                    total={filteredDataRiwayat.length}
-                    perPage={pagination.riwayat.perPage}
-                    setPerPage={(perPage) =>
-                      setPagination((prev) => ({
-                        ...prev,
-                        riwayat: { page: 1, perPage },
-                      }))
-                    }
-                  />
+                  {filteredDataRiwayat.length === 0 ? (
+                    <EmptyState
+                      title="Tidak ada data riwayat peminjaman"
+                      description="Belum ada riwayat peminjaman yang tersimpan"
+                    />
+                  ) : (
+                    <DataTableRiwayat
+                      columns={columnsRiwayat}
+                      data={filteredDataRiwayat.slice(
+                        (pagination.riwayat.page - 1) * pagination.riwayat.perPage,
+                        pagination.riwayat.page * pagination.riwayat.perPage
+                      )}
+                      page={pagination.riwayat.page}
+                      setPage={(page) =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          riwayat: { ...prev.riwayat, page },
+                        }))
+                      }
+                      total={filteredDataRiwayat.length}
+                      perPage={pagination.riwayat.perPage}
+                      setPerPage={(perPage) =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          riwayat: { page: 1, perPage },
+                        }))
+                      }
+                    />
+                  )}
                 </div>
               </TabsContent>
             </Tabs>

@@ -41,15 +41,26 @@ export function DynamicBreadcrumb() {
   let currentPath = ""
 
   for (let i = 0; i < pathSegments.length; i++) {
-    currentPath += `/${pathSegments[i]}`
-    const label = pathLabels[currentPath] || pathSegments[i]
-
+  if (i === pathSegments.length - 2 && pathSegments[i] === "buku") {
+    const combinedLabel = `buku ${pathSegments[i + 1]}`
+    const combinedPath = `/${pathSegments.slice(0, i + 2).join("/")}`
     breadcrumbItems.push({
-      path: currentPath,
-      label: label,
-      isLast: i === pathSegments.length - 1,
+      path: combinedPath,
+      label: combinedLabel,
+      isLast: true,
     })
+    break 
   }
+
+  currentPath += `/${pathSegments[i]}`
+  const label = pathLabels[currentPath] || pathSegments[i]
+  breadcrumbItems.push({
+    path: currentPath,
+    label: label,
+    isLast: i === pathSegments.length - 1,
+  })
+}
+
 
   return (
     <Breadcrumb>

@@ -1,0 +1,6 @@
+<svg width="150" height="220" viewBox="0 0 150 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="150" height="220" rx="8" fill="#E5E7EB"></rect>
+  <path d="M40 150h70l-20-30-15 20-10-10-25 20z" fill="#9CA3AF"></path>
+  <circle cx="75" cy="80" r="20" fill="#9CA3AF"></circle>
+  <text x="50%" y="200" dominant-baseline="middle" text-anchor="middle" font-size="12" fill="#6B7280" font-family="sans-serif">No Cover</text>
+</svg>
