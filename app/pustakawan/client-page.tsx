@@ -41,14 +41,11 @@ export default function HomePage() {
       }
 
       try {
-        const [resMenunggu, resDipinjam, resPengembalian] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/borrow/need-confirm`, {
+        const [resMenunggu, resLoans] = await Promise.all([
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/pending`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/borrow/active`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/borrow/returned`, {
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ])
@@ -71,21 +68,27 @@ export default function HomePage() {
           waktuPinjam: formatTime(item.waktu_peminjaman),
         }))
 
-        const mappedDipinjam: DataDipinjam[] = resDipinjam.data.data.map((item: any, i: number) => ({
-          no: i + 1,
-          judul: item.buku,
-          peminjam: item.user.name,
-          sisaWaktu: item.sisa_waktu ?? "-",
-        }))
+        const allLoans = resLoans.data.data
 
-        const mappedPengembalian: DataPengembalian[] = resPengembalian.data.data.map((item: any, i: number) => ({
-          no: i + 1,
-          judul: item.buku,
-          peminjam: item.user.name,
-          tanggalKembali: formatDate(item.waktu_kembali),
-          waktuKembali: formatTime(item.waktu_kembali),
-          status: item.terlambat ? "Terlambat" : "Tidak Terlambat",
-        }))
+        const mappedDipinjam: DataDipinjam[] = allLoans
+          .filter((item: any) => item.status === "dipinjam")
+          .map((item: any, i: number) => ({
+            no: i + 1,
+            judul: item.buku,
+            peminjam: item.user.name,
+            sisaWaktu: item.sisa_waktu ?? "-",
+          }))
+
+        const mappedPengembalian: DataPengembalian[] = allLoans
+          .filter((item: any) => item.status === "returned")
+          .map((item: any, i: number) => ({
+            no: i + 1,
+            judul: item.buku,
+            peminjam: item.user.name,
+            tanggalKembali: formatDate(item.waktu_kembali),
+            waktuKembali: formatTime(item.waktu_kembali),
+            status: item.terlambat ? "Terlambat" : "Tidak Terlambat",
+          }))
 
         setDataMenunggu(mappedMenunggu)
         setDataDipinjam(mappedDipinjam)
@@ -108,45 +111,6 @@ export default function HomePage() {
   )
   const filteredPengembalian = dataPengembalian.filter((item) =>
     item.judul.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const TableSkeleton = () => (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <div className="h-6 bg-gray-200 rounded w-48 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-64 animate-pulse"></div>
-        </div>
-        <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-      </div>
-      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 p-4 border-b">
-          <div className="grid grid-cols-4 gap-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-4 bg-gray-200 rounded animate-pulse"></div>
-            ))}
-          </div>
-        </div>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="p-4 border-b last:border-b-0">
-            <div className="grid grid-cols-4 gap-4">
-              {Array.from({ length: 4 }).map((_, j) => (
-                <div key={j} className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-        <div className="flex gap-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
-          ))}
-        </div>
-      </div>
-    </div>
   )
 
   return (
@@ -174,70 +138,57 @@ export default function HomePage() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {isLoading ? (
-            <div className="p-6">
-              <div className="flex gap-4 mb-6 border-b pb-4">
-                <div className="h-10 bg-gray-200 rounded w-24 animate-pulse"></div>
-                <div className="h-10 bg-gray-200 rounded w-24 animate-pulse"></div>
-                <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
-              </div>
-              <TableSkeleton />
-            </div>
+            <div className="p-6">Loading...</div>
           ) : (
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
               <div className="border-b border-gray-200 bg-gray-50/50">
                 <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
-                  <TabsTrigger value="menunggu" className="...">Menunggu</TabsTrigger>
-                  <TabsTrigger value="dipinjam" className="...">Dipinjam</TabsTrigger>
-                  <TabsTrigger value="pengembalian" className="...">Pengembalian</TabsTrigger>
+                  <TabsTrigger value="menunggu">Menunggu</TabsTrigger>
+                  <TabsTrigger value="dipinjam">Dipinjam</TabsTrigger>
+                  <TabsTrigger value="pengembalian">Pengembalian</TabsTrigger>
                 </TabsList>
               </div>
 
-              <TabsContent value="menunggu" className="mt-0">
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold text-[#0E4D97] mb-2">Konfirmasi Peminjaman</h2>
-                  <Input placeholder="Cari berdasarkan judul buku..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="mb-6 pl-10" />
-                  <DataTableHome
-                    columns={columnsMenunggu}
-                    data={filteredMenunggu.slice((pagination.menunggu.page - 1) * pagination.menunggu.perPage, pagination.menunggu.page * pagination.menunggu.perPage)}
-                    page={pagination.menunggu.page}
-                    setPage={(p) => setPagination(prev => ({ ...prev, menunggu: { ...prev.menunggu, page: p } }))}
-                    perPage={pagination.menunggu.perPage}
-                    setPerPage={(pp) => setPagination(prev => ({ ...prev, menunggu: { page: 1, perPage: pp } }))}
-                    total={filteredMenunggu.length}
-                  />
-                </div>
+              <TabsContent value="menunggu" className="mt-0 p-6">
+                <h2 className="text-xl font-semibold text-[#0E4D97] mb-2">Konfirmasi Peminjaman</h2>
+                <Input placeholder="Cari berdasarkan judul buku..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="mb-6 pl-10" />
+                <DataTableHome
+                  columns={columnsMenunggu}
+                  data={filteredMenunggu.slice((pagination.menunggu.page - 1) * pagination.menunggu.perPage, pagination.menunggu.page * pagination.menunggu.perPage)}
+                  page={pagination.menunggu.page}
+                  setPage={(p) => setPagination(prev => ({ ...prev, menunggu: { ...prev.menunggu, page: p } }))}
+                  perPage={pagination.menunggu.perPage}
+                  setPerPage={(pp) => setPagination(prev => ({ ...prev, menunggu: { page: 1, perPage: pp } }))}
+                  total={filteredMenunggu.length}
+                />
               </TabsContent>
 
-              <TabsContent value="dipinjam" className="mt-0">
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold text-[#0E4D97] mb-2">Saat Ini Dipinjam</h2>
-                  <Input placeholder="Cari berdasarkan judul buku..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="mb-6 pl-10" />
-                  <DataTableHome
-                    columns={columnsDipinjam}
-                    data={filteredDipinjam.slice((pagination.dipinjam.page - 1) * pagination.dipinjam.perPage, pagination.dipinjam.page * pagination.dipinjam.perPage)}
-                    page={pagination.dipinjam.page}
-                    setPage={(p) => setPagination(prev => ({ ...prev, dipinjam: { ...prev.dipinjam, page: p } }))}
-                    perPage={pagination.dipinjam.perPage}
-                    setPerPage={(pp) => setPagination(prev => ({ ...prev, dipinjam: { page: 1, perPage: pp } }))}
-                    total={filteredDipinjam.length}
-                  />
-                </div>
+              <TabsContent value="dipinjam" className="mt-0 p-6">
+                <h2 className="text-xl font-semibold text-[#0E4D97] mb-2">Saat Ini Dipinjam</h2>
+                <Input placeholder="Cari berdasarkan judul buku..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="mb-6 pl-10" />
+                <DataTableHome
+                  columns={columnsDipinjam}
+                  data={filteredDipinjam.slice((pagination.dipinjam.page - 1) * pagination.dipinjam.perPage, pagination.dipinjam.page * pagination.dipinjam.perPage)}
+                  page={pagination.dipinjam.page}
+                  setPage={(p) => setPagination(prev => ({ ...prev, dipinjam: { ...prev.dipinjam, page: p } }))}
+                  perPage={pagination.dipinjam.perPage}
+                  setPerPage={(pp) => setPagination(prev => ({ ...prev, dipinjam: { page: 1, perPage: pp } }))}
+                  total={filteredDipinjam.length}
+                />
               </TabsContent>
 
-              <TabsContent value="pengembalian" className="mt-0">
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold text-[#0E4D97] mb-2">Pengembalian</h2>
-                  <Input placeholder="Cari berdasarkan judul buku..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="mb-6 pl-10" />
-                  <DataTableHome
-                    columns={columnsPengembalian}
-                    data={filteredPengembalian.slice((pagination.pengembalian.page - 1) * pagination.pengembalian.perPage, pagination.pengembalian.page * pagination.pengembalian.perPage)}
-                    page={pagination.pengembalian.page}
-                    setPage={(p) => setPagination(prev => ({ ...prev, pengembalian: { ...prev.pengembalian, page: p } }))}
-                    perPage={pagination.pengembalian.perPage}
-                    setPerPage={(pp) => setPagination(prev => ({ ...prev, pengembalian: { page: 1, perPage: pp } }))}
-                    total={filteredPengembalian.length}
-                  />
-                </div>
+              <TabsContent value="pengembalian" className="mt-0 p-6">
+                <h2 className="text-xl font-semibold text-[#0E4D97] mb-2">Pengembalian</h2>
+                <Input placeholder="Cari berdasarkan judul buku..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="mb-6 pl-10" />
+                <DataTableHome
+                  columns={columnsPengembalian}
+                  data={filteredPengembalian.slice((pagination.pengembalian.page - 1) * pagination.pengembalian.perPage, pagination.pengembalian.page * pagination.pengembalian.perPage)}
+                  page={pagination.pengembalian.page}
+                  setPage={(p) => setPagination(prev => ({ ...prev, pengembalian: { ...prev.pengembalian, page: p } }))}
+                  perPage={pagination.pengembalian.perPage}
+                  setPerPage={(pp) => setPagination(prev => ({ ...prev, pengembalian: { page: 1, perPage: pp } }))}
+                  total={filteredPengembalian.length}
+                />
               </TabsContent>
             </Tabs>
           )}
