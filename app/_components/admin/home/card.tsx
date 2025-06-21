@@ -78,7 +78,7 @@ export function StatCard({
               </div>
               <div>
                 <h3 className={`font-medium ${textColor} opacity-90`}>Total</h3>
-                <h2 className={`text-xl font-semibold ${textColor}`}>member</h2>
+                <h2 className={`text-xl font-semibold ${textColor}`}>Akun Terdaftar</h2>
               </div>
             </div>
           </div>

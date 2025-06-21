@@ -169,7 +169,7 @@ export default function ClientHomeAdmin() {
           <div className="grid grid-cols-3 gap-4 h-[200px]">
             <div className="col-span-1 row-span-2">
               <StatCard
-                title="Total member"
+                title="Total user"
                 value={totalUsers}
                 icon={<Users size={28} />}
                 textColor="text-white"
@@ -185,7 +185,7 @@ export default function ClientHomeAdmin() {
             </div>
 
             <StatCard
-              title="Total Buku"
+              title="Total Judul Buku"
               value={totalBooks}
               icon={<Book size={20} />}
               textColor="text-[#4338CA]"
