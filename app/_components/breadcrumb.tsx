@@ -36,21 +36,22 @@ export function DynamicBreadcrumb() {
   // Split path dan filter empty strings
   const pathSegments = pathname.split("/").filter(Boolean)
 
-  // Build breadcrumb items
+  
   const breadcrumbItems = []
   let currentPath = ""
 
   for (let i = 0; i < pathSegments.length; i++) {
-  if (i === pathSegments.length - 2 && pathSegments[i] === "buku") {
-    const combinedLabel = `buku ${pathSegments[i + 1]}`
+  if (i === pathSegments.length - 2 && ["buku", "detail-buku"].includes(pathSegments[i])) {
+    const combinedLabel = `${pathSegments[i]} ${pathSegments[i + 1]}`
     const combinedPath = `/${pathSegments.slice(0, i + 2).join("/")}`
     breadcrumbItems.push({
       path: combinedPath,
       label: combinedLabel,
       isLast: true,
     })
-    break 
+    break
   }
+
 
   currentPath += `/${pathSegments[i]}`
   const label = pathLabels[currentPath] || pathSegments[i]

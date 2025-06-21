@@ -16,7 +16,9 @@ import {
 import { X, Upload, ImageIcon } from "lucide-react"
 import Image from "next/image"
 import type { DataBuku } from "./columns-buku"
-import { toast } from "sonner" 
+import { toast } from "sonner"
+import axios from "axios"
+import Cookies from "js-cookie"
 
 interface EditBukuDialogProps {
   isOpen: boolean
@@ -29,7 +31,6 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
   const [formData, setFormData] = useState({
     no: 0,
     idBuku: "",
-    stok: "",
     judulBuku: "",
     penulis: "",
     penerbit: "",
@@ -46,7 +47,6 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       setFormData({
         no: bukuData.no,
         idBuku: bukuData.idBuku,
-        stok: bukuData.stok.toString(),
         judulBuku: bukuData.judulBuku,
         penulis: bukuData.penulis,
         penerbit: bukuData.penerbit,
@@ -59,28 +59,6 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     }
   }, [bukuData])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    let finalImageCover = formData.imageCover
-    if (selectedFile) {
-      finalImageCover = `/uploads/covers/${selectedFile.name}`
-    }
-
-    onSubmit({
-      ...formData,
-      stok: Number.parseInt(formData.stok) || 0,
-      imageCover: finalImageCover,
-    })
-
-    toast.success("Data buku berhasil diperbarui!", {
-      description: `Buku dengan ID "${formData.idBuku}" telah diupdate.`,
-      duration: 3000,
-    })
-
-    onClose()
-  }
-
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -91,12 +69,8 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Harap pilih file gambar yang valid (JPG, PNG, etc.)")
-        return
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Ukuran file terlalu besar. Maksimal 5MB.")
+      if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
+        alert("File tidak valid. Maksimal 5MB dan harus berupa gambar.")
         return
       }
       setSelectedFile(file)
@@ -114,100 +88,115 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     setSelectedFile(null)
     setPreviewImage(formData.imageCover)
     const fileInput = document.getElementById("imageCover") as HTMLInputElement
-    if (fileInput) {
-      fileInput.value = ""
+    if (fileInput) fileInput.value = ""
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const token = Cookies.get("token")
+    if (!token) {
+      toast.error("Token tidak ditemukan. Silakan login ulang.")
+      return
+    }
+
+    const idBukuNumber = Number(formData.idBuku.replace(/[^\d]/g, ""))
+    const form = new FormData()
+
+    // Kirim sebagai string kosong atau null agar backend bisa update
+    form.append("judul", formData.judulBuku || "")
+    form.append("penulis", formData.penulis || "")
+    form.append("penerbit", formData.penerbit || "")
+    form.append("tahun_terbit", formData.tahunTerbit || "")
+    form.append("deskripsi", formData.sinopsis || "")
+
+    if (selectedFile) {
+      form.append("image", selectedFile)
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/books/${idBukuNumber}?_method=PUT`,
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+
+      console.log("RESPON UPDATE:", response.data)
+
+      toast.success("Buku berhasil diperbarui", {
+  description: `Buku dengan ID "${formData.idBuku}" telah diupdate.`,
+})
+
+      onSubmit({
+        ...formData,
+        stok: bukuData?.stok ?? 0,
+        imageCover: selectedFile ? URL.createObjectURL(selectedFile) : formData.imageCover,
+      })
+
+      onClose()
+    } catch (error: any) {
+      console.error("Gagal update:", error)
+      if (error.response?.status === 422) {
+        toast.error("Validasi gagal", {
+          description: JSON.stringify(error.response.data.errors),
+        })
+      } else {
+        toast.error("Gagal memperbarui buku. Silakan coba lagi.")
+      }
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-4 border border-gray-200 shadow-lg rounded-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-4 rounded-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
-          <DialogTitle className="text-[#0E4D97] font-semibold text-base leading-relaxed">Edit Buku</DialogTitle>
+          <DialogTitle className="text-[#0E4D97] font-semibold text-base">Edit Buku</DialogTitle>
           <DialogDescription className="text-xs text-gray-600">
-            Ubah data buku <span className="font-medium text-[#0E4D97]">{bukuData?.judulBuku}</span>
+            Ubah data buku <span className="font-medium text-[#0E4D97]">{formData.judulBuku}</span>
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-4">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <Label htmlFor="idBuku" className="text-xs font-medium text-[#0E4D97]">ID Buku</Label>
+          {[
+            { label: "Judul Buku", id: "judulBuku", field: "judulBuku" },
+            { label: "Penulis", id: "penulis", field: "penulis" },
+            { label: "Penerbit", id: "penerbit", field: "penerbit" },
+            { label: "Tahun Terbit", id: "tahunTerbit", field: "tahunTerbit" },
+          ].map(({ label, id, field }) => (
+            <div className="space-y-1" key={id}>
+              <Label htmlFor={id} className="text-xs font-medium text-[#0E4D97]">{label}</Label>
               <Input
-                id="idBuku"
-                value={formData.idBuku}
-                onChange={(e) => handleInputChange("idBuku", e.target.value)}
+                id={id}
+                value={(formData as any)[field]}
+                onChange={(e) => handleInputChange(field, e.target.value)}
                 className="h-8 text-sm border-[#0E4D97]"
-                required
               />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="stok" className="text-xs font-medium text-[#0E4D97]">Stok</Label>
-              <Input
-                id="stok"
-                type="number"
-                value={formData.stok}
-                onChange={(e) => handleInputChange("stok", e.target.value)}
-                className="h-8 text-sm border-[#0E4D97]"
-                required
-              />
-            </div>
-          </div>
+          ))}
 
           <div className="space-y-1">
-            <Label htmlFor="judulBuku" className="text-xs font-medium text-[#0E4D97]">Judul Buku</Label>
-            <Input
-              id="judulBuku"
-              value={formData.judulBuku}
-              onChange={(e) => handleInputChange("judulBuku", e.target.value)}
-              className="h-8 text-sm border-[#0E4D97]"
-              required
+            <Label htmlFor="sinopsis" className="text-xs font-medium text-[#0E4D97]">Sinopsis</Label>
+            <Textarea
+              id="sinopsis"
+              value={formData.sinopsis}
+              onChange={(e) => handleInputChange("sinopsis", e.target.value)}
+              className="min-h-[60px] text-sm border-[#0E4D97]"
             />
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="penulis" className="text-xs font-medium text-[#0E4D97]">Penulis</Label>
-            <Input
-              id="penulis"
-              value={formData.penulis}
-              onChange={(e) => handleInputChange("penulis", e.target.value)}
-              className="h-8 text-sm border-[#0E4D97]"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <Label htmlFor="penerbit" className="text-xs font-medium text-[#0E4D97]">Penerbit</Label>
-              <Input
-                id="penerbit"
-                value={formData.penerbit}
-                onChange={(e) => handleInputChange("penerbit", e.target.value)}
-                className="h-8 text-sm border-[#0E4D97]"
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="tahunTerbit" className="text-xs font-medium text-[#0E4D97]">Tahun Terbit</Label>
-              <Input
-                id="tahunTerbit"
-                value={formData.tahunTerbit}
-                onChange={(e) => handleInputChange("tahunTerbit", e.target.value)}
-                className="h-8 text-sm border-[#0E4D97]"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="imageCover" className="text-xs font-medium text-[#0E4D97]">Cover Buku</Label>
+            <Label className="text-xs font-medium text-[#0E4D97]">Cover Buku</Label>
             <div className="relative">
               <input id="imageCover" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => document.getElementById("imageCover")?.click()}
-                className="w-full h-8 text-xs border-[#0E4D97] text-[#0E4D97] hover:bg-[#0E4D97] hover:text-white"
+                className="w-full h-8 text-xs border-[#0E4D97] text-[#0E4D97]"
               >
                 <Upload className="h-3 w-3 mr-2" />
                 {selectedFile ? "Ganti Cover" : "Pilih Cover Baru"}
@@ -225,7 +214,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
                   variant="ghost"
                   size="sm"
                   onClick={handleRemoveImage}
-                  className="h-5 w-5 p-0 text-red-500 hover:text-red-700"
+                  className="h-5 w-5 p-0 text-red-500"
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -235,13 +224,11 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
 
           {previewImage && (
             <div className="space-y-1">
-              <Label className="text-xs font-medium text-[#0E4D97]">
-                Preview Cover {selectedFile && <span className="text-green-600">(Baru)</span>}
-              </Label>
+              <Label className="text-xs font-medium text-[#0E4D97]">Preview Cover</Label>
               <div className="relative w-20 h-28 mx-auto">
                 <Image
                   src={previewImage || "/placeholder.svg"}
-                  alt="Cover preview"
+                  alt="Preview"
                   fill
                   className="object-cover rounded border border-gray-300"
                   onError={() => setPreviewImage("/placeholder.svg")}
@@ -250,33 +237,9 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
             </div>
           )}
 
-          <div className="space-y-1">
-            <Label htmlFor="sinopsis" className="text-xs font-medium text-[#0E4D97]">Sinopsis</Label>
-            <Textarea
-              id="sinopsis"
-              value={formData.sinopsis}
-              onChange={(e) => handleInputChange("sinopsis", e.target.value)}
-              className="min-h-[60px] text-sm border-[#0E4D97]"
-              required
-            />
-          </div>
-
           <div className="flex gap-2 justify-center mt-6 pt-2">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="ghost"
-              className="bg-red-500 hover:bg-red-600 text-white font-medium px-6 py-2 rounded-md text-sm"
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="ghost"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-md text-sm"
-            >
-              Update
-            </Button>
+            <Button type="button" onClick={onClose} className="bg-red-500 hover:bg-red-700 text-white">Batal</Button>
+            <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white">Update</Button>
           </div>
         </form>
       </DialogContent>

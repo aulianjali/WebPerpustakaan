@@ -336,7 +336,7 @@ export default function ClientManajemenUsers() {
                     value="member"
                     className="data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white data-[state=active]:text-[#0E4D97] data-[state=active]:shadow-none px-6 py-4 rounded-none border-b-2 border-transparent font-medium text-gray-600 hover:text-[#0E4D97] transition-colors"
                   >
-                    member
+                    Member
                   </TabsTrigger>
                   <TabsTrigger
                     value="pustakawan"
@@ -352,7 +352,7 @@ export default function ClientManajemenUsers() {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-xl font-semibold text-[#0E4D97]">Data member</h2>
+                      <h2 className="text-xl font-semibold text-[#0E4D97]">Data Member</h2>
                       <p className="text-sm text-gray-600 mt-1">Kelola data member perpustakaan</p>
                     </div>
                   </div>
