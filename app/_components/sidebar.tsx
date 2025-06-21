@@ -2,11 +2,22 @@
 
 import type React from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { BookOpen, Home, FileCheck, History, Users, BookMarked, LogOut, ClipboardList } from "lucide-react"
+import { useState } from "react"
+import {
+  BookOpen,
+  Home,
+  FileCheck,
+  History,
+  Users,
+  BookMarked,
+  LogOut,
+  ClipboardList,
+  Loader2,
+} from "lucide-react"
 import { Poppins } from "next/font/google"
 import Cookies from "js-cookie"
+import axios from "axios"
 
-// Inisialisasi font Poppins
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
@@ -19,9 +30,6 @@ type MenuItem = {
   path: string
 }
 
-type Role = "member" | "admin" | "pustakawan"
-
-// Komponen Role-Specific
 export function Sidebarmember() {
   const menumember: MenuItem[] = [
     { label: "Home", icon: <Home size={20} />, path: "/member" },
@@ -52,28 +60,50 @@ export function SidebarPustakawan() {
   return <Sidebar menu={menuPustakawan} />
 }
 
-// Komponen Sidebar Utama
 function Sidebar({ menu }: { menu: MenuItem[] }) {
   const router = useRouter()
   const pathname = usePathname()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-  const handleLogout = () => {
-  Cookies.remove("token")
-  Cookies.remove("role")
-  localStorage.removeItem("refreshToken") // Jika kamu masih pakai untuk API
-  router.push("/")
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+
+      const token = Cookies.get("token")
+
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      )
+
+      setTimeout(() => {
+      Cookies.remove("token")
+      Cookies.remove("role")
+      localStorage.removeItem("refreshToken")
+      router.push("/")
+    }, 900)
+  } catch (error) {
+    console.error("Gagal logout:", error)
+    setIsLoggingOut(false)
+    }
   }
 
   return (
     <aside className={`${poppins.className} w-[270px] h-full bg-[#0E4D97] text-white flex flex-col`}>
-      {/* Logo Section - Inspired by the image */}
+      {/* Logo */}
       <div className="p-6 border-b border-[#1E5CA9]/30">
         <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
           <BookOpen size={20} className="text-white" />
         </div>
       </div>
 
-      {/* Menu Section */}
+      {/* Menu */}
       <div className="flex-1 p-4">
         <div className="flex flex-col gap-1">
           {menu.map((item) => (
@@ -93,14 +123,27 @@ function Sidebar({ menu }: { menu: MenuItem[] }) {
         </div>
       </div>
 
-      {/* Logout Section */}
+      {/* Logout */}
       <div className="p-4 border-t border-[#1E5CA9]/30">
         <div
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all text-white/80 hover:bg-white/5 hover:text-white"
+          onClick={isLoggingOut ? undefined : handleLogout}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all ${
+            isLoggingOut
+              ? "opacity-70 pointer-events-none"
+              : "text-white/80 hover:bg-white/5 hover:text-white"
+          }`}
         >
-          <LogOut size={20} className="text-current" />
-          <span className="font-medium">Logout</span>
+          {isLoggingOut ? (
+            <>
+              <Loader2 size={20} className="animate-spin" />
+              <span className="font-medium">Logging out...</span>
+            </>
+          ) : (
+            <>
+              <LogOut size={20} className="text-current" />
+              <span className="font-medium">Logout</span>
+            </>
+          )}
         </div>
       </div>
     </aside>
