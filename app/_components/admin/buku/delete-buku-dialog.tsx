@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { AlertTriangle } from "lucide-react"
 import type { DataBuku } from "./columns-buku"
-import { toast } from "sonner" 
+import { toast } from "sonner"
+import axios from "axios"
+import Cookies from "js-cookie"
 
 interface DeleteBukuDialogProps {
   isOpen: boolean
@@ -20,16 +22,33 @@ interface DeleteBukuDialogProps {
 }
 
 export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: DeleteBukuDialogProps) {
-  const handleConfirm = () => {
-    if (bukuData) {
+  const handleConfirm = async () => {
+    if (!bukuData) return
+
+    const token = Cookies.get("token")
+    const id = bukuData.idBuku.replace(/[^\d]/g, "") // Ambil angka saja dari ID (misal: "BK12" → "12")
+
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      })
+
       toast.success("Data berhasil dihapus!", {
-        description: `Buku dengan ID "${bukuData.idBuku}" telah dihapus dari koleksi.`,
+        description: `Buku "${bukuData.judulBuku}" telah dihapus dari koleksi.`,
         duration: 3000,
       })
-    }
 
-    onConfirm()  // Jalankan aksi penghapusan
-    onClose()    // Tutup dialog
+      onConfirm() // Trigger parent state update
+      onClose()
+    } catch (error: any) {
+      console.error("Gagal menghapus buku:", error)
+      toast.error("Gagal menghapus buku", {
+        description: error.response?.data?.message || "Terjadi kesalahan saat menghapus data.",
+      })
+    }
   }
 
   return (
@@ -44,27 +63,23 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
 
           <AlertDialogTitle className="text-[#0E4D97] font-semibold text-lg leading-relaxed">
             Apakah kamu yakin
-            <br />
             untuk menghapus "{bukuData?.judulBuku}"?
           </AlertDialogTitle>
 
-          <p className="text-sm text-gray-600 mt-2">
-            Buku dengan ID <span className="font-medium text-[#0E4D97]">{bukuData?.idBuku}</span> akan dihapus permanen
-            dari koleksi
+          <p className="text-sm text-gray-600">
+            Buku dengan ID <span className="font-medium text-[#0E4D97]">{bukuData?.idBuku}</span> akan dihapus permanen dari koleksi.
           </p>
         </AlertDialogHeader>
 
-        <AlertDialogFooter className="flex gap-3 justify-center mt-6 pt-2">
+        <AlertDialogFooter className="flex gap-3 justify-center mt-4 pt-2">
           <Button
             onClick={onClose}
-            variant="ghost"
             className="bg-red-500 hover:bg-red-600 text-white font-medium px-8 py-2.5 rounded-md transition-colors duration-200 min-w-[80px]"
           >
             Tidak
           </Button>
           <Button
             onClick={handleConfirm}
-            variant="ghost"
             className="bg-green-500 hover:bg-green-600 text-white font-medium px-8 py-2.5 rounded-md transition-colors duration-200 min-w-[80px]"
           >
             Iya

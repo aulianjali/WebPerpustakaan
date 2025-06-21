@@ -215,9 +215,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="text-center space-y-2">
-            <button className="text-[#0E4D97] hover:underline text-sm transition-colors">Lupa password?</button>
-          </div>
         </div>
       </div>
     </div>
