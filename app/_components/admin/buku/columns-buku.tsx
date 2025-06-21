@@ -14,6 +14,7 @@ export type DataBuku = {
   penulis: string
   penerbit: string
   tahunTerbit: string
+  kategori: string
   sinopsis: string
   imageCover: string
 }

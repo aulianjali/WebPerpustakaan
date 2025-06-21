@@ -1,7 +1,8 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
+import axios from "axios"
+import Cookies from "js-cookie"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,44 +20,27 @@ interface AddUserDialogProps {
   dataPustakawan: DataPustakawan[]
 }
 
-export function AddUserDialog({ isOpen, onClose, onSubmit, datamember, dataPustakawan }: AddUserDialogProps) {
+export function AddUserDialog({
+  isOpen,
+  onClose,
+  onSubmit,
+  datamember,
+  dataPustakawan,
+}: AddUserDialogProps) {
   const [formData, setFormData] = useState({
     nama: "",
     gmail: "",
     role: "" as "member" | "pustakawan" | "",
   })
 
-  // Function to generate next ID based on role
-  const generateNextId = (role: "member" | "pustakawan"): string => {
-    if (role === "member") {
-      const lastId =
-        datamember
-          .map((user) => Number.parseInt(user.idPerpus.substring(1))) // Remove 'A' and convert to number
-          .filter((num) => !isNaN(num))
-          .sort((a, b) => b - a)[0] || 0 // Get highest number or 0 if none
-
-      return `A${String(lastId + 1).padStart(3, "0")}` // Format as A001, A002, etc.
-    } else {
-      const lastId =
-        dataPustakawan
-          .map((user) => Number.parseInt(user.idPerpus.substring(1))) // Remove 'P' and convert to number
-          .filter((num) => !isNaN(num))
-          .sort((a, b) => b - a)[0] || 0 // Get highest number or 0 if none
-
-      return `P${String(lastId + 1).padStart(3, "0")}` // Format as P001, P002, etc.
-    }
-  }
-
-  // Function to generate username from name
   const generateUsername = (nama: string): string => {
     return nama
       .toLowerCase()
-      .replace(/\s+/g, "_") // Replace spaces with underscores
-      .replace(/[^a-z0-9_]/g, "") // Remove special characters
-      .substring(0, 20) // Limit length
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "")
+      .substring(0, 20)
   }
 
-  // Function to generate random password
   const generatePassword = (): string => {
     const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     let password = ""
@@ -66,7 +50,7 @@ export function AddUserDialog({ isOpen, onClose, onSubmit, datamember, dataPusta
     return password
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.role) {
@@ -74,46 +58,73 @@ export function AddUserDialog({ isOpen, onClose, onSubmit, datamember, dataPusta
       return
     }
 
-    const idPerpus = generateNextId(formData.role)
     const username = generateUsername(formData.nama)
     const password = generatePassword()
 
     const userData = {
-      idPerpus,
-      nama: formData.nama,
-      gmail: formData.gmail,
+      name: formData.nama,
+      email: formData.gmail,
       username,
       password,
+      role: formData.role,
     }
 
-    onSubmit(userData)
+    const token = Cookies.get("token")
 
-    toast.success("Data user berhasil ditambah!", {
-      description: `User dengan ID "${idPerpus}" telah ditambah.`,
-      duration: 3000,
-    })
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/users`,
+        userData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      )
 
-    onClose()
-    // Reset form
-    setFormData({
-      nama: "",
-      gmail: "",
-      role: "",
-    })
+      if (response.data && response.data.data) {
+        const createdUser = response.data.data
+
+        onSubmit({
+          id: createdUser.id,
+          nama: createdUser.name,
+          gmail: createdUser.email,
+          username: createdUser.username,
+          password: createdUser.password,
+          role: createdUser.role,
+        })
+
+        console.log("✅ User berhasil ditambahkan:", createdUser)
+
+        toast.success("User berhasil ditambahkan!", {
+          description: `User dengan ID "${createdUser.id}" berhasil dibuat.`,
+          duration: 3000,
+        })
+
+        setFormData({ nama: "", gmail: "", role: "" })
+        onClose()
+      } else {
+        toast.error("Gagal menambahkan user.")
+      }
+    } catch (error: any) {
+      console.error("Gagal menambahkan user:", error)
+      toast.error("Terjadi kesalahan saat mengirim data ke server.")
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#FEFCF3] max-w-md w-full mx-4 p-4 border border-gray-200 shadow-lg rounded-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
-          <DialogTitle className="text-[#0E4D97] font-semibold text-base leading-relaxed">Tambah User Baru</DialogTitle>
+          <DialogTitle className="text-[#0E4D97] font-semibold text-base leading-relaxed">
+            Tambah User Baru
+          </DialogTitle>
           <DialogDescription className="text-xs text-gray-600">
             Lengkapi form di bawah untuk menambah user baru ke sistem
           </DialogDescription>
@@ -158,7 +169,7 @@ export function AddUserDialog({ isOpen, onClose, onSubmit, datamember, dataPusta
                 <SelectValue placeholder="Pilih role user" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="member">member</SelectItem>
+                <SelectItem value="member">Member</SelectItem>
                 <SelectItem value="pustakawan">Pustakawan</SelectItem>
               </SelectContent>
             </Select>
@@ -168,15 +179,15 @@ export function AddUserDialog({ isOpen, onClose, onSubmit, datamember, dataPusta
             <Button
               type="button"
               onClick={onClose}
-              variant="ghost"
-              className="bg-red-500 hover:bg-red-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+              
+              className="bg-red-500 hover:bg-red-600 text-white font-medium px-6 py-2 rounded-md text-sm"
             >
               Batal
             </Button>
             <Button
               type="submit"
-              variant="ghost"
-              className="bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+            
+              className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-md text-sm"
             >
               Simpan
             </Button>

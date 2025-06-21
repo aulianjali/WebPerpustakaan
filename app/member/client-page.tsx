@@ -1,4 +1,3 @@
-// Revisi lengkap client-page.tsx dengan <Image> dari next/image
 "use client"
 
 import { useState, useEffect } from "react"
@@ -30,14 +29,22 @@ interface User {
 }
 
 export default function ClientHomemember() {
-  const token = Cookies.get("token")
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({})
   const [books, setBooks] = useState<Book[]>([])
   const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
-  const router = useRouter()
+  const [greeting, setGreeting] = useState("")
+
+  useEffect(() => {
+    const hour = new Date().getHours()
+    if (hour < 12) setGreeting("Selamat pagi")
+    else if (hour < 15) setGreeting("Selamat siang")
+    else if (hour < 18) setGreeting("Selamat sore")
+    else setGreeting("Selamat malam")
+  }, [])
 
   const getUserData = async () => {
     try {
@@ -53,14 +60,12 @@ export default function ClientHomemember() {
         setUser(userData)
         return
       }
-      await fetchUserDataFromAPI()
     } catch (error) {
       console.error("Error getting user data:", error)
     }
   }
 
-  const fetchUserDataFromAPI = async () => {
-    if (!token) return
+  const fetchUserDataFromAPI = async (token: string) => {
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/profile`, {
         headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
@@ -76,17 +81,19 @@ export default function ClientHomemember() {
     }
   }
 
-  const fetchBooks = async () => {
-    if (!token) {
-      setError("Token tidak tersedia")
-      return
-    }
+  const fetchBooks = async (token: string) => {
     setIsLoading(true)
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
         headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
       })
-      setBooks(Array.isArray(response.data.data) ? response.data.data : [])
+
+      const booksData = response.data?.data?.data
+      if (Array.isArray(booksData)) {
+        setBooks(booksData)
+      } else {
+        setBooks([])
+      }
     } catch (error: any) {
       setError(`Gagal memuat data buku: ${error.response?.data?.message || error.message}`)
     } finally {
@@ -94,9 +101,16 @@ export default function ClientHomemember() {
     }
   }
 
+  // Init data
   useEffect(() => {
-    fetchBooks()
-    getUserData()
+    const token = Cookies.get("token")
+    if (token) {
+      fetchBooks(token)
+      getUserData()
+      fetchUserDataFromAPI(token)
+    } else {
+      setError("Token tidak tersedia")
+    }
   }, [])
 
   const filteredBooks = books.filter(
@@ -104,14 +118,6 @@ export default function ClientHomemember() {
       book.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.penulis?.toLowerCase().includes(searchQuery.toLowerCase())
   )
-
-  const getGreeting = () => {
-    const hour = new Date().getHours()
-    if (hour < 12) return "Selamat pagi"
-    if (hour < 15) return "Selamat siang"
-    if (hour < 18) return "Selamat sore"
-    return "Selamat malam"
-  }
 
   const handleImageLoaded = (bookId: number) => {
     setLoadedImages((prev) => ({ ...prev, [bookId]: true }))
@@ -122,8 +128,8 @@ export default function ClientHomemember() {
     console.error(`Failed to load image for book ID: ${bookId}`)
   }
 
-    const getImageUrl = (imageUrl: string) => {
-    if (!imageUrl) return "/placeholder.svg" // gunakan file lokal
+  const getImageUrl = (imageUrl: string) => {
+    if (!imageUrl) return "/placeholder.svg"
     const backendHost = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:8000"
     try {
       const url = new URL(imageUrl)
@@ -144,11 +150,16 @@ export default function ClientHomemember() {
       <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[#0E4D97]">
-            {user ? `${getGreeting()}, ${user.name}!` : "Selamat datang kembali!"}
+            {user ? `${greeting}, ${user.name}!` : "Selamat datang kembali!"}
           </h1>
           <p className="text-gray-600 text-sm mt-2">Temukan dan pinjam buku favoritmu hari ini</p>
         </div>
-        <SearchInput type="text" placeholder="Cari judul atau penulis..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+        <SearchInput
+          type="text"
+          placeholder="Cari judul atau penulis..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
       {!isLoading && !error && (
@@ -156,41 +167,42 @@ export default function ClientHomemember() {
           {filteredBooks.map((book) => {
             const imageLoaded = loadedImages[book.id]
             return (
-    <div
-      key={book.id}
-      onClick={() => router.push(`/member/buku/${book.id}`)}
-      className="relative w-[150px] h-[220px] group cursor-pointer overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1"
-    >
-      {!imageLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
-          <Loader2 className="h-8 w-8 text-[#0E4D97] animate-spin" />
-        </div>
-      )}
+              <div
+                key={book.id}
+                onClick={() => router.push(`/member/buku/${book.id}`)}
+                className="relative w-[150px] h-[220px] group cursor-pointer overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1"
+              >
+                {!imageLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+                    <Loader2 className="h-8 w-8 text-[#0E4D97] animate-spin" />
+                  </div>
+                )}
 
-      <Image
-        src={getImageUrl(book.image)}
-        alt={book.judul}
-        width={150}
-        height={220}
-        className={`w-full h-full object-cover transition-opacity duration-300 ${
-          imageLoaded ? "opacity-100" : "opacity-0"
-        }`}
-        onLoad={() => handleImageLoaded(book.id)}
-        onError={() => handleImageError(book.id)}
-        unoptimized
-      />
+                <Image
+                  src={getImageUrl(book.image)}
+                  alt={book.judul}
+                  width={150}
+                  height={220}
+                  className={`w-full h-full object-cover transition-opacity duration-300 ${
+                    imageLoaded ? "opacity-100" : "opacity-0"
+                  }`}
+                  onLoad={() => handleImageLoaded(book.id)}
+                  onError={() => handleImageError(book.id)}
+                  // unoptimized
+                  priority={book.id === filteredBooks[0]?.id}
+                />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0E4D97]/80 to-transparent flex items-end justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-        <div className="p-3 w-full text-center">
-          <span className="text-white text-sm font-medium line-clamp-2 mb-1">{book.judul}</span>
-          {book.penulis && (
-            <span className="text-white/80 text-xs line-clamp-1">{book.penulis}</span>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-})}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0E4D97]/80 to-transparent flex items-end justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="p-3 w-full text-center">
+                    <span className="text-white text-sm font-medium line-clamp-2 mb-1">{book.judul}</span>
+                    {book.penulis && (
+                      <span className="text-white/80 text-xs line-clamp-1">{book.penulis}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
     </main>

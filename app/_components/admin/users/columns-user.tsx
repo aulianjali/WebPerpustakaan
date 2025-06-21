@@ -3,24 +3,31 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export type Datamember = {
   no: number
-  idPerpus: string
+  id: number
   nama: string
   gmail: string
   username?: string
   password?: string
+  role?: "member"
 }
 
 export type DataPustakawan = {
   no: number
-  idPerpus: string
+  id: number
   nama: string
   gmail: string
   username?: string
   password?: string
+  role?: "pustakawan"
 }
 
 export const columnsmember = (
@@ -29,15 +36,15 @@ export const columnsmember = (
   onDetail?: (user: Datamember) => void,
 ): ColumnDef<Datamember>[] => [
   {
-    accessorKey: "idPerpus",
-    header: () => <div className="pl-4">ID Perpus</div>,
+    accessorKey: "id",
+    header: () => <div className="pl-4">ID User</div>,
     cell: ({ row }) => {
-      return <div className="text-black pl-4">{row.getValue("idPerpus")}</div>
+      return <div className="text-black pl-8">{row.getValue("id")}</div>
     },
   },
   {
     accessorKey: "nama",
-    header: "Nama",
+    header: () => <div className="pl-2">Nama</div>, // Header kiri
     cell: ({ row }) => {
       return <div className="text-black">{row.getValue("nama")}</div>
     },
@@ -47,13 +54,6 @@ export const columnsmember = (
     header: "Email",
     cell: ({ row }) => {
       return <div className="text-black">{row.getValue("gmail")}</div>
-    },
-  },
-  {
-    accessorKey: "username",
-    header: "Username",
-    cell: ({ row }) => {
-      return <div className="text-black">{row.getValue("username")}</div>
     },
   },
   {
@@ -105,15 +105,15 @@ export const columnsPustakawan = (
   onDetail?: (user: DataPustakawan) => void,
 ): ColumnDef<DataPustakawan>[] => [
   {
-    accessorKey: "idPerpus",
-    header: () => <div className="pl-4">ID Perpus</div>,
+    accessorKey: "id",
+    header: () => <div className="pl-4">ID User</div>,
     cell: ({ row }) => {
-      return <div className="text-black pl-4">{row.getValue("idPerpus")}</div>
+      return <div className="text-black pl-8">{row.getValue("id")}</div>
     },
   },
   {
     accessorKey: "nama",
-    header: "Nama",
+    header: () => <div className="pl-2">Nama</div>,
     cell: ({ row }) => {
       return <div className="text-black">{row.getValue("nama")}</div>
     },
@@ -123,13 +123,6 @@ export const columnsPustakawan = (
     header: "Email",
     cell: ({ row }) => {
       return <div className="text-black">{row.getValue("gmail")}</div>
-    },
-  },
-  {
-    accessorKey: "username",
-    header: "Username",
-    cell: ({ row }) => {
-      return <div className="text-black">{row.getValue("username")}</div>
     },
   },
   {

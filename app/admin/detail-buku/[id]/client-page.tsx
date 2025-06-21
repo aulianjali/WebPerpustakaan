@@ -206,7 +206,7 @@ export default function ClientDetailBuku() {
               </div>
             )}
 
-            <div className="flex justify-end mt-6">
+            <div className="flex justify-end">
               <button
                 onClick={() => router.back()}
                 className="px-4 py-2 text-sm font-medium text-white bg-[#0E4D97] rounded-md hover:bg-[#0E4D97]/90 transition-colors"

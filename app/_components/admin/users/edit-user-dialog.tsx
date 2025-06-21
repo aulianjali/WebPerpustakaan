@@ -5,9 +5,17 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import type { Datamember, DataPustakawan } from "./columns-user"
-import { toast } from "sonner" 
+import { toast } from "sonner"
+import axios from "axios"
+import Cookies from "js-cookie"
 
 interface EditUserDialogProps {
   isOpen: boolean
@@ -17,41 +25,28 @@ interface EditUserDialogProps {
   userType: "member" | "pustakawan"
 }
 
-export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }: EditUserDialogProps) {
+export function EditUserDialog({
+  isOpen,
+  onClose,
+  onSubmit,
+  userData,
+  userType,
+}: EditUserDialogProps) {
   const [formData, setFormData] = useState({
-    no: 0,
-    idPerpus: "",
     nama: "",
     gmail: "",
-    username: "",
     password: "",
   })
 
-  // Update form data ketika userData berubah
   useEffect(() => {
     if (userData) {
       setFormData({
-        no: userData.no,
-        idPerpus: userData.idPerpus,
         nama: userData.nama,
         gmail: userData.gmail,
-        username: userData.username || "",
         password: userData.password || "",
       })
     }
   }, [userData])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-
-    toast.success("Data user berhasil diperbarui!", {
-          description: `User "${formData.nama}" telah diupdate.`,
-          duration: 3000,
-        })
-
-    onClose()
-  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -60,15 +55,59 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
     }))
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!userData?.id) {
+      toast.error("ID user tidak ditemukan.")
+      return
+    }
+
+    try {
+      const token = Cookies.get("token")
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/${userData.id}`,
+        {
+          nama: formData.nama,
+          gmail: formData.gmail,
+          password: formData.password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      )
+
+      toast.success("Data user berhasil diperbarui!", {
+        description: `User "${formData.nama}" telah diupdate.`,
+        duration: 3000,
+      })
+
+      onSubmit({
+        ...userData,
+        nama: formData.nama,
+        gmail: formData.gmail,
+        password: formData.password,
+      })
+
+      onClose()
+    } catch (error: any) {
+      console.error("Gagal update:", error)
+      toast.error("Gagal memperbarui data user.")
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-4 border border-gray-200 shadow-lg rounded-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <DialogTitle className="text-[#0E4D97] font-semibold text-base leading-relaxed">
-            Edit {userType === "member" ? "member" : "Pustakawan"}
+            Edit {userType === "member" ? "Member" : "Pustakawan"}
           </DialogTitle>
           <DialogDescription className="text-xs text-gray-600">
-            Ubah data {userType === "member" ? "member" : "pustakawan"}{" "}
+            Ubah data {userType}{" "}
             <span className="font-medium text-[#0E4D97]">{userData?.nama}</span>
           </DialogDescription>
         </DialogHeader>
@@ -83,7 +122,7 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
               placeholder="Masukkan nama lengkap"
               value={formData.nama}
               onChange={(e) => handleInputChange("nama", e.target.value)}
-              className="focus-visible:ring-1 focus-visible:ring-[#0E4D97] focus-visible:ring-offset-0 border-[#0E4D97] focus:border-[#0E4D97] h-8 text-sm"
+              className="h-8 text-sm border-[#0E4D97]"
               required
             />
           </div>
@@ -98,22 +137,22 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
               placeholder="Masukkan alamat email"
               value={formData.gmail}
               onChange={(e) => handleInputChange("gmail", e.target.value)}
-              className="focus-visible:ring-1 focus-visible:ring-[#0E4D97] focus-visible:ring-offset-0 border-[#0E4D97] focus:border-[#0E4D97] h-8 text-sm"
+              className="h-8 text-sm border-[#0E4D97]"
               required
             />
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="username" className="text-xs font-medium text-[#0E4D97]">
-              Username
+            <Label htmlFor="password" className="text-xs font-medium text-[#0E4D97]">
+              Password
             </Label>
             <Input
-              id="username"
-              placeholder="Masukkan username"
-              value={formData.username}
-              onChange={(e) => handleInputChange("username", e.target.value)}
-              className="focus-visible:ring-1 focus-visible:ring-[#0E4D97] focus-visible:ring-offset-0 border-[#0E4D97] focus:border-[#0E4D97] h-8 text-sm"
-              required
+              id="password"
+              type="password"
+              placeholder="Masukkan password baru (opsional)"
+              value={formData.password}
+              onChange={(e) => handleInputChange("password", e.target.value)}
+              className="h-8 text-sm border-[#0E4D97]"
             />
           </div>
 
@@ -121,15 +160,13 @@ export function EditUserDialog({ isOpen, onClose, onSubmit, userData, userType }
             <Button
               type="button"
               onClick={onClose}
-              variant="ghost"
-              className="bg-red-500 hover:bg-red-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+              className="bg-red-500 hover:bg-red-600 text-white"
             >
               Batal
             </Button>
             <Button
               type="submit"
-              variant="ghost"
-              className="bg-blue-500 hover:bg-blue-600 text-white hover:text-white font-medium px-6 py-2 rounded-md transition-colors duration-200 text-sm"
+              className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               Update
             </Button>

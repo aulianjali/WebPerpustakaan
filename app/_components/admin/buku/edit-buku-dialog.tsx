@@ -35,6 +35,8 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     penulis: "",
     penerbit: "",
     tahunTerbit: "",
+    kategori: "",
+    stok: 0,
     sinopsis: "",
     imageCover: "",
   })
@@ -51,6 +53,8 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
         penulis: bukuData.penulis,
         penerbit: bukuData.penerbit,
         tahunTerbit: bukuData.tahunTerbit,
+        kategori: bukuData.kategori || "",
+        stok: bukuData.stok || 0,
         sinopsis: bukuData.sinopsis,
         imageCover: bukuData.imageCover,
       })
@@ -59,10 +63,10 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     }
   }, [bukuData])
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: field === "stok" ? Number(value) : value,
     }))
   }
 
@@ -102,13 +106,13 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     const idBukuNumber = Number(formData.idBuku.replace(/[^\d]/g, ""))
     const form = new FormData()
 
-    // Kirim sebagai string kosong atau null agar backend bisa update
     form.append("judul", formData.judulBuku || "")
     form.append("penulis", formData.penulis || "")
     form.append("penerbit", formData.penerbit || "")
     form.append("tahun_terbit", formData.tahunTerbit || "")
+    form.append("kategori", formData.kategori || "")
+    form.append("stock", String(formData.stok))
     form.append("deskripsi", formData.sinopsis || "")
-
     if (selectedFile) {
       form.append("image", selectedFile)
     }
@@ -125,15 +129,12 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
         }
       )
 
-      console.log("RESPON UPDATE:", response.data)
-
       toast.success("Buku berhasil diperbarui", {
-  description: `Buku dengan ID "${formData.idBuku}" telah diupdate.`,
-})
+        description: `Buku dengan ID "${formData.idBuku}" telah diupdate.`,
+      })
 
       onSubmit({
         ...formData,
-        stok: bukuData?.stok ?? 0,
         imageCover: selectedFile ? URL.createObjectURL(selectedFile) : formData.imageCover,
       })
 
@@ -166,6 +167,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
             { label: "Penulis", id: "penulis", field: "penulis" },
             { label: "Penerbit", id: "penerbit", field: "penerbit" },
             { label: "Tahun Terbit", id: "tahunTerbit", field: "tahunTerbit" },
+            { label: "Kategori", id: "kategori", field: "kategori" },
           ].map(({ label, id, field }) => (
             <div className="space-y-1" key={id}>
               <Label htmlFor={id} className="text-xs font-medium text-[#0E4D97]">{label}</Label>
@@ -177,6 +179,18 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
               />
             </div>
           ))}
+
+          <div className="space-y-1">
+            <Label htmlFor="stok" className="text-xs font-medium text-[#0E4D97]">Stok</Label>
+            <Input
+              id="stok"
+              type="number"
+              min="0"
+              value={formData.stok}
+              onChange={(e) => handleInputChange("stok", e.target.value)}
+              className="h-8 text-sm border-[#0E4D97]"
+            />
+          </div>
 
           <div className="space-y-1">
             <Label htmlFor="sinopsis" className="text-xs font-medium text-[#0E4D97]">Sinopsis</Label>
@@ -238,7 +252,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
           )}
 
           <div className="flex gap-2 justify-center mt-6 pt-2">
-            <Button type="button" onClick={onClose} className="bg-red-500 hover:bg-red-700 text-white">Batal</Button>
+            <Button type="button" onClick={onClose} className="bg-red-500 hover:bg-red-600 text-white">Batal</Button>
             <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white">Update</Button>
           </div>
         </form>

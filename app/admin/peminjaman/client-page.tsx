@@ -209,7 +209,6 @@ export default function ClientPeminjamanAdmin() {
                       <h2 className="text-xl font-semibold text-[#0E4D97]">Konfirmasi Peminjaman</h2>
                       <p className="text-sm text-gray-600 mt-1">Daftar peminjaman buku yang harus di konfirmasi</p>
                     </div>
-
                   </div>
 
                   <div className="relative mb-6 w-full">
