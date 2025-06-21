@@ -42,13 +42,13 @@ export default function HomePage() {
 
       try {
         const [resMenunggu, resDipinjam, resPengembalian] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/borrow/need-confirm`, {
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/pustakawan/borrow/need-confirm`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/borrow/active`, {
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/pustakawan/borrow/active`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/borrow/returned`, {
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/pustakawan/borrow/returned`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ])
