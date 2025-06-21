@@ -23,6 +23,7 @@ export default function ClientManajemenBuku() {
 
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(5)
+
   const [dataBuku, setDataBuku] = useState<DataBuku[]>([])
 
   useEffect(() => {
@@ -30,39 +31,42 @@ export default function ClientManajemenBuku() {
   }, [])
 
   const fetchBooks = async () => {
-    const token = Cookies.get("token")
-    if (!token) {
-      setIsLoading(false)
-      return
-    }
-
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json"
-        }
-      })
-
-      const fetchedBooks = response.data.data.data.map((book: any, index: number) => ({
-        no: index + 1,
-        idBuku: `${book.id}`,
-        judulBuku: book.judul,
-        penulis: book.penulis,
-        stok: book.stock,
-        penerbit: book.penerbit || "",
-        tahunTerbit: book.tahun_terbit || "",
-        sinopsis: book.sinopsis || "",
-        imageCover: book.image || "/placeholder.svg"
-      }))
-
-      setDataBuku(fetchedBooks)
-    } catch (error: any) {
-      console.error("Gagal memuat data buku:", error.response?.data || error.message)
-    } finally {
-      setIsLoading(false)
-    }
+  const token = Cookies.get("token")
+  if (!token) {
+    setIsLoading(false)
+    return
   }
+
+  try {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json"
+      }
+    })
+
+    console.log("RESPON BUKU:", response.data)
+
+    const fetchedBooks = response.data.data.data.map((book: any, index: number) => ({
+      no: index + 1,
+      idBuku: `${String(book.id)}`,
+      judulBuku: book.judul,
+      penulis: book.penulis,
+      stok: book.stock,
+      penerbit: book.penerbit || "",
+      tahunTerbit: book.tahun_terbit || "",
+      sinopsis: book.sinopsis || "",
+      imageCover: book.image || "/placeholder.svg"
+    }))
+
+    setDataBuku(fetchedBooks)
+  } catch (error: any) {
+    console.error("Gagal memuat data buku:", error.response?.data || error.message)
+  } finally {
+    setIsLoading(false)
+  }
+}
+
 
   const handleAddBuku = (bukuData: Omit<DataBuku, "no">) => {
     const newBuku: DataBuku = {
@@ -94,9 +98,11 @@ export default function ClientManajemenBuku() {
     }
   }
 
-  const filteredData = dataBuku.filter((item) =>
-    [item.judulBuku, item.idBuku, item.penulis]
-      .some((text) => text.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredData = dataBuku.filter(
+    (item) =>
+      item.judulBuku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.idBuku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.penulis.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
