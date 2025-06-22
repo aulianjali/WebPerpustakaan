@@ -46,7 +46,7 @@ export default function ClientRiwayat() {
           no: index + 1,
           judul: item.judul,
           tanggalPinjam: new Date(item.tanggal_peminjaman).toLocaleDateString("id-ID"),
-          deadlineKembali: new Date(item.batas_pengembalian).toLocaleDateString("id-ID"),
+          deadlineKembali: new Date(item.deadline_waktu).toLocaleDateString("id-ID"),
         }))
         setDataDipinjam(formattedData)
       } else {
@@ -77,7 +77,7 @@ export default function ClientRiwayat() {
           no: index + 1,
           judul: item.judul,
           tanggalPinjam: new Date(item.tanggal_peminjaman).toLocaleDateString("id-ID"),
-          tanggalKembali: new Date(item.tanggal_pengembalian).toLocaleDateString("id-ID"),
+          tanggalKembali: new Date(item.tanggal_dikembalikan).toLocaleDateString("id-ID"),
           status: item.terlambat ? "Terlambat" : "Tidak Terlambat",
         }))
         setDataRiwayat(formattedData)
