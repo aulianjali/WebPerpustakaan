@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -29,11 +28,10 @@ export default function LoginPage() {
     password: "",
   })
 
-  // Redirect kalau sudah login (token tersedia di cookies)
+  // Redirect kalau sudah login
   useEffect(() => {
     const token = Cookies.get("token")
-    const role = Cookies.get("role") // role bisa disimpan saat login
-
+    const role = Cookies.get("role")
     if (token && role) {
       router.replace(`/${role}`)
     }
@@ -83,28 +81,36 @@ export default function LoginPage() {
     try {
       const result = await login(formData.email, formData.password)
 
-      console.log("Login response:", result) // Debug log
-
       const user = result.data.user
       const token = result.data.token
 
-      // Simpan token dan role ke cookies
-      Cookies.set("token", token, { expires: 1 }) // 1 hari
+      Cookies.set("token", token, { expires: 1 })
       Cookies.set("role", user.role.toLowerCase(), { expires: 1 })
-
-      // 🔥 TAMBAHAN: Simpan data user lengkap
       Cookies.set("user", JSON.stringify(user), { expires: 1 })
       localStorage.setItem("user", JSON.stringify(user))
 
-      console.log("User data saved:", user) // Debug log
-
       toast.success(`Login berhasil! Selamat datang, ${user.name}`)
-
-      // Redirect ke halaman sesuai role
       router.push(`/${user.role.toLowerCase()}`)
     } catch (error: any) {
-      console.error("Login error:", error) // Debug log
-      toast.error(error.message || "Login gagal. Silakan coba lagi.")
+      console.error("Login error:", error)
+
+      const responseMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        "Login gagal. Silakan coba lagi."
+
+      toast.error(responseMessage)
+
+      setErrors({
+        email: responseMessage.toLowerCase().includes("email")
+          ? responseMessage
+          : "",
+        password:
+          responseMessage.toLowerCase().includes("password") ||
+          responseMessage.toLowerCase().includes("salah")
+            ? responseMessage
+            : "",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -112,7 +118,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex animate-in fade-in duration-1000">
-      {/* Kiri: ilustrasi */}
+      {/* Kiri: Ilustrasi */}
       <div className="hidden lg:flex lg:w-1/2 bg-blue-600 items-center justify-center p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
@@ -136,11 +142,13 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Kanan: form login */}
+      {/* Kanan: Form Login */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
         <div className="w-full max-w-md space-y-6 animate-in slide-in-from-right duration-1000 delay-500">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-blue-600 mb-2 rounded px-4 py-1 inline-block">Login</h1>
+            <h1 className="text-3xl font-bold text-blue-600 mb-2 rounded px-4 py-1 inline-block">
+              Login
+            </h1>
             <p className="text-gray-600">Masuk ke akun Anda</p>
           </div>
 
@@ -163,7 +171,9 @@ export default function LoginPage() {
                 disabled={isLoading}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">{errors.email}</p>
+                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">
+                  {errors.email}
+                </p>
               )}
             </div>
 
@@ -177,7 +187,9 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Masukkan password Anda"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   className={`h-12 pr-12 transition-all duration-300 ${
                     errors.password
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500"
@@ -195,7 +207,9 @@ export default function LoginPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">{errors.password}</p>
+                <p className="text-red-500 text-sm animate-in slide-in-from-top duration-300">
+                  {errors.password}
+                </p>
               )}
             </div>
 
@@ -205,16 +219,15 @@ export default function LoginPage() {
               className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
             >
               {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Memproses...
-              </>
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Memproses...
+                </>
               ) : (
-              "Login"
+                "Login"
               )}
             </Button>
           </form>
-
         </div>
       </div>
     </div>

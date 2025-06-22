@@ -29,7 +29,7 @@ export default function HeaderAlternative() {
           <div className="text-right hidden sm:block">
           </div>
           <Button
-            className="bg-blue-600 hover:bg-blue-700 shadow-lg px-8 py-2 min-w-[120px]"
+            className="bg-blue-600 hover:bg-blue-700 shadow-lg px-8 py-2 min-w-[100px]"
             onClick={handleLoginClick}
           >
             Login
