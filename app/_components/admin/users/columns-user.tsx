@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react"
+import { MoreHorizontal, RotateCcw, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -11,22 +11,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export type Datamember = {
-  no: number
   id: number
-  nama: string
-  gmail: string
-  username?: string
-  password?: string
+  name: string
+  email: string
   role?: "member"
 }
 
 export type DataPustakawan = {
-  no: number
   id: number
-  nama: string
-  gmail: string
-  username?: string
-  password?: string
+  name: string
+  email: string
   role?: "pustakawan"
 }
 
@@ -43,17 +37,17 @@ export const columnsmember = (
     },
   },
   {
-    accessorKey: "nama",
-    header: () => <div className="pl-2">Nama</div>, // Header kiri
+    accessorKey: "name",
+    header: () => <div className="pl-2">Nama</div>,
     cell: ({ row }) => {
-      return <div className="text-black">{row.getValue("nama")}</div>
+      return <div className="text-black">{row.getValue("name")}</div>
     },
   },
   {
-    accessorKey: "gmail",
+    accessorKey: "email",
     header: "Email",
     cell: ({ row }) => {
-      return <div className="text-black">{row.getValue("gmail")}</div>
+      return <div className="text-black">{row.getValue("email")}</div>
     },
   },
   {
@@ -65,7 +59,7 @@ export const columnsmember = (
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-8 w-8 p-0 focus-visible:ring-0 focus-visible:outline-none">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -73,21 +67,21 @@ export const columnsmember = (
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => onDetail?.(member)}
-              className="text-[#0E4D97] hover:bg-[#E8F1FB] focus:text-[#0E4D97]"
+              className="text-[#0E4D97] hover:bg-[#E8F1FB]"
             >
-              <Eye className="mr-2 h-4 w-4 text-[#0E4D97]" />
-              Detail
+              <RotateCcw className="mr-2 h-4 w-4 text-[#0E4D97]" />
+              Reset Password
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => onEdit?.(member.no)}
-              className="text-[#F4B400] hover:bg-[#FFF8E1] focus:text-[#F4B400]"
+              onClick={() => onEdit?.(member.id)}
+              className="text-[#F4B400] hover:bg-[#FFF8E1]"
             >
               <Edit className="mr-2 h-4 w-4 text-[#F4B400]" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => onDelete?.(member.no)}
-              className="text-[#D32F2F] hover:bg-[#FFEBEE] focus:text-[#D32F2F]"
+              onClick={() => onDelete?.(member.id)}
+              className="text-[#D32F2F] hover:bg-[#FFEBEE]"
             >
               <Trash2 className="mr-2 h-4 w-4 text-[#D32F2F]" />
               Hapus
@@ -112,17 +106,17 @@ export const columnsPustakawan = (
     },
   },
   {
-    accessorKey: "nama",
+    accessorKey: "name",
     header: () => <div className="pl-2">Nama</div>,
     cell: ({ row }) => {
-      return <div className="text-black">{row.getValue("nama")}</div>
+      return <div className="text-black">{row.getValue("name")}</div>
     },
   },
   {
-    accessorKey: "gmail",
+    accessorKey: "email",
     header: "Email",
     cell: ({ row }) => {
-      return <div className="text-black">{row.getValue("gmail")}</div>
+      return <div className="text-black">{row.getValue("email")}</div>
     },
   },
   {
@@ -142,20 +136,20 @@ export const columnsPustakawan = (
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => onDetail?.(pustakawan)}
-              className="text-[#0E4D97] hover:bg-[#E8F1FB] focus:text-[#0E4D97]"
+              className="text-[#0E4D97] hover:bg-[#E8F1FB]  focus:text-[#0E4D97]"
             >
-              <Eye className="mr-2 h-4 w-4 text-[#0E4D97]" />
-              Detail
+              <RotateCcw className="mr-2 h-4 w-4 text-[#0E4D97]" />
+              Reset Password
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => onEdit?.(pustakawan.no)}
-              className="text-[#F4B400] hover:bg-[#FFF8E1] focus:text-[#F4B400]"
+              onClick={() => onEdit?.(pustakawan.id)}
+              className="text-[#F4B400] hover:bg-[#FFF8E1] hover:text-[#F4B400]"
             >
               <Edit className="mr-2 h-4 w-4 text-[#F4B400]" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => onDelete?.(pustakawan.no)}
+              onClick={() => onDelete?.(pustakawan.id)}
               className="text-[#D32F2F] hover:bg-[#FFEBEE] focus:text-[#D32F2F]"
             >
               <Trash2 className="mr-2 h-4 w-4 text-[#D32F2F]" />

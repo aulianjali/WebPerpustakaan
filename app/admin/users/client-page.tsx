@@ -11,7 +11,7 @@ import { DataTableUsers } from "@/app/_components/admin/users/data-table-user"
 import { AddUserDialog } from "@/app/_components/admin/users/add-user-dialog"
 import { EditUserDialog } from "@/app/_components/admin/users/edit-user-dialog"
 import { DeleteUserDialog } from "@/app/_components/admin/users/delete-user-dialog"
-import { DetailUserDialog } from "@/app/_components/admin/users/detail-user-dialog"
+import { DetailUserDialog } from "@/app/_components/admin/users/reset-pw-dialog"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 
 import {
@@ -64,20 +64,17 @@ export default function ClientManajemenUsers() {
 
       users.forEach((user: any) => {
         const baseData = {
-          no: 0,
           id: user.id,
-          nama: user.name,
-          gmail: user.email,
-          username: user.username ?? "",
-          password: user.password ?? "",
+          name: user.name,
+          email: user.email,
           role: user.role,
         }
 
         if (user.role === "member") {
-          memberList.push({ ...baseData, no: noMember++ })
-        } else if (user.role === "pustakawan") {
-          pustakawanList.push({ ...baseData, no: noPustakawan++ })
-        }
+  memberList.push(baseData)
+} else if (user.role === "pustakawan") {
+  pustakawanList.push(baseData)
+}
       })
 
       setDatamember(memberList)
@@ -92,23 +89,17 @@ export default function ClientManajemenUsers() {
   const handleAddUser = (userData: Omit<Datamember | DataPustakawan, "no">) => {
   if (userData.role === "member") {
     const newUser: Datamember = {
-      no: Math.max(...datamember.map((u) => u.no), 0) + 1,
       id: userData.id,
-      nama: userData.nama,
-      gmail: userData.gmail,
-      username: userData.username ?? "",
-      password: userData.password ?? "",
+      name: userData.name,
+      email: userData.email,
       role: "member",
     }
     setDatamember((prev) => [...prev, newUser])
   } else if (userData.role === "pustakawan") {
     const newUser: DataPustakawan = {
-      no: Math.max(...dataPustakawan.map((u) => u.no), 0) + 1,
       id: userData.id,
-      nama: userData.nama,
-      gmail: userData.gmail,
-      username: userData.username ?? "",
-      password: userData.password ?? "",
+      name: userData.name,
+      email: userData.email,
       role: "pustakawan",
     }
     setDataPustakawan((prev) => [...prev, newUser])
@@ -119,9 +110,9 @@ export default function ClientManajemenUsers() {
     let user: Datamember | DataPustakawan | undefined
 
     if (activeTab === "member") {
-      user = datamember.find((u) => u.no === id)
+      user = datamember.find((u) => u.id === id)
     } else {
-      user = dataPustakawan.find((u) => u.no === id)
+      user = dataPustakawan.find((u) => u.id === id)
     }
 
     if (user) {
@@ -133,11 +124,11 @@ export default function ClientManajemenUsers() {
   const handleUpdateUser = (updatedUser: Datamember | DataPustakawan) => {
   if (activeTab === "member" && "role" in updatedUser && updatedUser.role === "member") {
     setDatamember((prev: Datamember[]) =>
-      prev.map((user) => (user.no === updatedUser.no ? updatedUser as Datamember : user))
+      prev.map((user) => (user.id === updatedUser.id ? updatedUser as Datamember : user))
     )
   } else if (activeTab === "pustakawan" && "role" in updatedUser && updatedUser.role === "pustakawan") {
     setDataPustakawan((prev: DataPustakawan[]) =>
-      prev.map((user) => (user.no === updatedUser.no ? updatedUser as DataPustakawan : user))
+      prev.map((user) => (user.id === updatedUser.id ? updatedUser as DataPustakawan : user))
     )
   }
 }
@@ -147,9 +138,9 @@ export default function ClientManajemenUsers() {
     let user: Datamember | DataPustakawan | undefined
 
     if (activeTab === "member") {
-      user = datamember.find((u) => u.no === id)
+      user = datamember.find((u) => u.id === id)
     } else {
-      user = dataPustakawan.find((u) => u.no === id)
+      user = dataPustakawan.find((u) => u.id === id)
     }
 
     if (user) {
@@ -161,9 +152,9 @@ export default function ClientManajemenUsers() {
   const handleConfirmDelete = () => {
     if (selectedUser) {
       if (activeTab === "member") {
-        setDatamember((prev) => prev.filter((user) => user.no !== selectedUser.no))
+        setDatamember((prev) => prev.filter((user) => user.id !== selectedUser.id))
       } else {
-        setDataPustakawan((prev) => prev.filter((user) => user.no !== selectedUser.no))
+        setDataPustakawan((prev) => prev.filter((user) => user.id !== selectedUser.id))
       }
       setSelectedUser(null)
       setIsDeleteDialogOpen(false)
@@ -177,14 +168,14 @@ export default function ClientManajemenUsers() {
 
   const filteredDatamember = datamember.filter(
     (item) =>
-      item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.gmail.toLowerCase().includes(searchQuery.toLowerCase()),
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.email.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   const filteredDataPustakawan = dataPustakawan.filter(
     (item) =>
-      item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.gmail.toLowerCase().includes(searchQuery.toLowerCase()),
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.email.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   return (
