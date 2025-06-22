@@ -16,7 +16,7 @@ import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 import axios from "axios"
 import Cookies from "js-cookie"
 
-export default function ClientPage() {
+export default function HomePage() {
   const token = Cookies.get("token")
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<"menunggu" | "dipinjam" | "pengembalian">("menunggu")
@@ -31,6 +31,13 @@ export default function ClientPage() {
   const [dataMenunggu, setDataMenunggu] = useState<DataMenunggu[]>([])
   const [dataDipinjam, setDataDipinjam] = useState<DataDipinjam[]>([])
   const [dataPengembalian, setDataPengembalian] = useState<DataPengembalian[]>([])
+
+  // Fungsi realtime
+  const realtimeDate = new Date().toLocaleDateString("id-ID")
+  const realtimeTime = new Date().toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "-"
@@ -67,28 +74,24 @@ export default function ClientPage() {
           }),
         ])
 
-        const now = new Date()
-        const realtimeDate = now.toLocaleDateString("id-ID")
-        const realtimeTime = now.toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-
         setDataMenunggu(Array.isArray(resMenunggu.data.data)
-          ? resMenunggu.data.data.map((item: any, i: number) => ({
-              no: i + 1,
-              judul: item.buku,
-              peminjam: item.user.name,
-              tanggalPinjam: realtimeDate,
-              waktuPinjam: realtimeTime,
-            }))
+          ? resMenunggu.data.data.map((item: any, i: number) => {
+              const peminjam = item.user?.name ?? "Tidak diketahui"
+              return {
+                no: i + 1,
+                judul: item.buku,
+                peminjam,
+                tanggalPinjam: realtimeDate,
+                waktuPinjam: realtimeTime,
+              }
+            })
           : [])
 
         setDataDipinjam(Array.isArray(resDipinjam.data.data)
           ? resDipinjam.data.data.map((item: any, i: number) => ({
               no: i + 1,
               judul: item.buku,
-              peminjam: item.user.name,
+              peminjam: item.user?.name ?? "Tidak diketahui",
               sisaWaktu: item.sisa_waktu ?? "-",
             }))
           : [])
@@ -97,7 +100,7 @@ export default function ClientPage() {
           ? resPengembalian.data.data.map((item: any, i: number) => ({
               no: i + 1,
               judul: item.buku,
-              peminjam: item.user.name,
+              peminjam: item.user?.name ?? "Tidak diketahui",
               tanggalKembali: formatDate(item.waktu_kembali),
               waktuKembali: formatTime(item.waktu_kembali),
               status: item.terlambat ? "Terlambat" : "Tidak Terlambat",
