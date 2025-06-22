@@ -1,10 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import axios from "axios"
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { Eye, EyeOff, Key, X } from "lucide-react"
+import Cookies from "js-cookie"
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { Key, X } from "lucide-react"
+import { toast } from "sonner"
 import type { Datamember, DataPustakawan } from "./columns-user"
 
 interface DetailUserDialogProps {
@@ -14,38 +23,40 @@ interface DetailUserDialogProps {
 }
 
 export function DetailUserDialog({ isOpen, onClose, userData }: DetailUserDialogProps) {
-  const [showPassword, setShowPassword] = useState(false)
-  const [password, setPassword] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Fetch password saat dialog terbuka
-  useEffect(() => {
-    const fetchPassword = async () => {
-      if (!userData) return
+  const handleConfirmReset = async () => {
+    if (!userData) return
 
-      try {
-        const role = userData?.role || "member" // default "member"
-        const url =
-          role === "pustakawan"
-            ? `${process.env.NEXT_PUBLIC_API_URL}/users/pustakawan`
-            : `${process.env.NEXT_PUBLIC_API_URL}/users/member`
+    try {
+      setIsSubmitting(true)
+      const token = Cookies.get("token")
 
-        const response = await axios.get(url)
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/reset/${userData.id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      )
 
-        const foundUser = response.data.data.find((u: any) => u.id === userData.id)
-        setPassword(foundUser?.password ?? null)
-      } catch (error) {
-        console.error("Gagal fetch password:", error)
-        setPassword(null)
-      }
+      console.log("✅ Password berhasil di-reset:", response.data)
+
+      toast.success("Password berhasil di-reset!", {
+        description: `Password user "${userData.name}" telah diperbarui.`,
+      })
+
+      onClose()
+    } catch (error: any) {
+      console.error("❌ Gagal reset password:", error)
+      toast.error("Gagal reset password.")
+    } finally {
+      setIsSubmitting(false)
     }
-
-    if (isOpen) {
-      fetchPassword()
-    } else {
-      setPassword(null)
-      setShowPassword(false)
-    }
-  }, [isOpen, userData])
+  }
 
   if (!userData) return null
 
@@ -63,6 +74,7 @@ export function DetailUserDialog({ isOpen, onClose, userData }: DetailUserDialog
         </Button>
 
         <AlertDialogHeader className="text-center space-y-4">
+          {/* Ikon kunci */}
           <div className="flex justify-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 border-2 border-blue-200">
               <Key className="h-6 w-6 text-[#0E4D97]" />
@@ -70,31 +82,30 @@ export function DetailUserDialog({ isOpen, onClose, userData }: DetailUserDialog
           </div>
 
           <AlertDialogTitle className="text-[#0E4D97] font-semibold text-lg leading-relaxed">
-            Password untuk username "{userData.username}"
+            Reset Password untuk "{userData.name}"
           </AlertDialogTitle>
 
-          {/* Password Display */}
-          <div className="space-y-2">
-            <div className="relative">
-              <div className="w-full px-4 py-3 text-base bg-white border-2 border-[#0E4D97] rounded-md font-mono text-center tracking-wider">
-                {showPassword ? password : password?.replace(/./g, "•")}
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-200 rounded-full"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-600" />
-                ) : (
-                  <Eye className="h-4 w-4 text-gray-600" />
-                )}
-                <span className="sr-only">{showPassword ? "Sembunyikan" : "Tampilkan"}</span>
-              </Button>
-            </div>
-          </div>
+          <AlertDialogDescription className="text-sm text-gray-600">
+            Apakah kamu yakin ingin me-reset password user ini? Tindakan ini tidak dapat dibatalkan.
+          </AlertDialogDescription>
         </AlertDialogHeader>
+
+        <AlertDialogFooter className="flex justify-center mt-6 pt-2 gap-3">
+          <Button
+            onClick={onClose}
+            className="bg-red-500 hover:bg-red-600 text-white px-8 py-2"
+            disabled={isSubmitting}
+          >
+            Batal
+          </Button>
+          <Button
+            onClick={handleConfirmReset}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2"
+            disabled={isSubmitting}
+          >
+            Iya, Reset Password
+          </Button>
+        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )

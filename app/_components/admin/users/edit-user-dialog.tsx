@@ -33,17 +33,15 @@ export function EditUserDialog({
   userType,
 }: EditUserDialogProps) {
   const [formData, setFormData] = useState({
-    nama: "",
-    gmail: "",
-    password: "",
+    name: "",
+    email: "",
   })
 
   useEffect(() => {
     if (userData) {
       setFormData({
-        nama: userData.nama,
-        gmail: userData.gmail,
-        password: userData.password || "",
+        name: userData.name || "",
+        email: userData.email || "",
       })
     }
   }, [userData])
@@ -65,12 +63,12 @@ export function EditUserDialog({
 
     try {
       const token = Cookies.get("token")
-      await axios.put(
+
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/users/${userData.id}`,
         {
-          nama: formData.nama,
-          gmail: formData.gmail,
-          password: formData.password,
+          name: formData.name,
+          email: formData.email,
         },
         {
           headers: {
@@ -80,16 +78,16 @@ export function EditUserDialog({
         }
       )
 
+      console.log("RESPON UPDATE:", response.data)
+
       toast.success("Data user berhasil diperbarui!", {
-        description: `User "${formData.nama}" telah diupdate.`,
-        duration: 3000,
+        description: `User "${formData.name}" telah diupdate.`,
       })
 
       onSubmit({
         ...userData,
-        nama: formData.nama,
-        gmail: formData.gmail,
-        password: formData.password,
+        name: formData.name,
+        email: formData.email,
       })
 
       onClose()
@@ -108,51 +106,37 @@ export function EditUserDialog({
           </DialogTitle>
           <DialogDescription className="text-xs text-gray-600">
             Ubah data {userType}{" "}
-            <span className="font-medium text-[#0E4D97]">{userData?.nama}</span>
+            <span className="font-medium text-[#0E4D97]">{formData.name}</span>
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-4">
           <div className="space-y-1">
-            <Label htmlFor="nama" className="text-xs font-medium text-[#0E4D97]">
+            <Label htmlFor="name" className="text-xs font-medium text-[#0E4D97]">
               Nama Lengkap
             </Label>
             <Input
-              id="nama"
-              placeholder="Masukkan nama lengkap"
-              value={formData.nama}
-              onChange={(e) => handleInputChange("nama", e.target.value)}
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               className="h-8 text-sm border-[#0E4D97]"
+              placeholder="Masukkan nama lengkap"
               required
             />
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="gmail" className="text-xs font-medium text-[#0E4D97]">
+            <Label htmlFor="email" className="text-xs font-medium text-[#0E4D97]">
               Email
             </Label>
             <Input
-              id="gmail"
+              id="email"
               type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              className="h-8 text-sm border-[#0E4D97]"
               placeholder="Masukkan alamat email"
-              value={formData.gmail}
-              onChange={(e) => handleInputChange("gmail", e.target.value)}
-              className="h-8 text-sm border-[#0E4D97]"
               required
-            />
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="password" className="text-xs font-medium text-[#0E4D97]">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Masukkan password baru (opsional)"
-              value={formData.password}
-              onChange={(e) => handleInputChange("password", e.target.value)}
-              className="h-8 text-sm border-[#0E4D97]"
             />
           </div>
 

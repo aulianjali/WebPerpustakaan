@@ -41,10 +41,10 @@ export async function login(email: string, password: string) {
 /**
  * Fungsi logout dengan menghapus semua cookies terkait auth
  */
-export function logout() {
-  Cookies.remove("token")
-  Cookies.remove("role")
-  Cookies.remove("name") // kalau kamu simpan nama
-  Cookies.remove("user") // kalau sebelumnya pernah simpan user
+// export function logout() {
+//   Cookies.remove("token")
+//   Cookies.remove("role")
+//   Cookies.remove("name") // kalau kamu simpan nama
+//   Cookies.remove("user") // kalau sebelumnya pernah simpan user
 
-}
+// }

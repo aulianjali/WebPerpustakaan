@@ -89,10 +89,8 @@ export function AddUserDialog({
 
         onSubmit({
           id: createdUser.id,
-          nama: createdUser.name,
-          gmail: createdUser.email,
-          username: createdUser.username,
-          password: createdUser.password,
+          name: createdUser.name,
+          email: createdUser.email,
           role: createdUser.role,
         })
 
