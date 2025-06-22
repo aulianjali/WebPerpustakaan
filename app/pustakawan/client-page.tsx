@@ -16,7 +16,7 @@ import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 import axios from "axios"
 import Cookies from "js-cookie"
 
-export default function HomePage() {
+export default function ClientPage() {
   const token = Cookies.get("token")
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<"menunggu" | "dipinjam" | "pengembalian">("menunggu")
@@ -32,7 +32,6 @@ export default function HomePage() {
   const [dataDipinjam, setDataDipinjam] = useState<DataDipinjam[]>([])
   const [dataPengembalian, setDataPengembalian] = useState<DataPengembalian[]>([])
 
-  // Format date dan time dengan validasi
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "-"
     const date = new Date(dateStr)
@@ -68,13 +67,20 @@ export default function HomePage() {
           }),
         ])
 
+        const now = new Date()
+        const realtimeDate = now.toLocaleDateString("id-ID")
+        const realtimeTime = now.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+
         setDataMenunggu(Array.isArray(resMenunggu.data.data)
           ? resMenunggu.data.data.map((item: any, i: number) => ({
               no: i + 1,
               judul: item.buku,
               peminjam: item.user.name,
-              tanggalPinjam: formatDate(item.waktu_peminjaman),
-              waktuPinjam: formatTime(item.waktu_peminjaman),
+              tanggalPinjam: realtimeDate,
+              waktuPinjam: realtimeTime,
             }))
           : [])
 
@@ -122,8 +128,7 @@ export default function HomePage() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Manajemen Peminjaman</h1>
           <p className="text-gray-600 text-sm mt-2">
-            Kelola daftar buku yang harus dikonfirmasi, sedang dipinjam, atau
-            sudah dikembalikan
+            Kelola daftar buku yang harus dikonfirmasi, sedang dipinjam, atau sudah dikembalikan
           </p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
