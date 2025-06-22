@@ -14,6 +14,7 @@ export type DataBuku = {
   penulis: string
   penerbit: string
   tahunTerbit: string
+  kategori: string
   sinopsis: string
   imageCover: string
 }
@@ -26,7 +27,7 @@ export const columnsBuku = (
     accessorKey: "idBuku",
     header: () => <div className="pl-4">ID Buku</div>,
     cell: ({ row }) => {
-      return <div className=" text-black pl-4">{row.getValue("idBuku")}</div>
+      return <div className=" text-black pl-8">{row.getValue("idBuku")}</div>
     },
   },
   {
@@ -59,10 +60,10 @@ export const columnsBuku = (
     },
   },
   {
-    accessorKey: "tahunTerbit",
-    header: "Tahun Terbit",
+    accessorKey: "penulis",
+    header: "Penulis",
     cell: ({ row }) => {
-      return <div className=" text-black">{row.getValue("tahunTerbit")}</div>
+      return <div className=" text-black">{row.getValue("penulis")}</div>
     },
   },
   {
@@ -73,7 +74,7 @@ export const columnsBuku = (
       const router = useRouter()
 
       const handleDetail = () => {
-        router.push(`//detail-buku/${buku.idBuku}`)
+        router.push(`/admin/detail-buku/${buku.idBuku}`)
       }
 
    return (

@@ -34,23 +34,17 @@ export type DataPengembalian = {
 
 function handleKonfirmasi(data: any) {
   console.log("Konfirmasi:", data)
-  // Tambahkan aksi lain seperti fetch/axios untuk update status
-  // Toast sudah dihandle di dalam dialog component
 }
 
 function handleKonfirmasiPengembalian(data: any) {
   console.log("Konfirmasi Pengembalian:", data)
-  // Tambahkan aksi lain seperti fetch/axios untuk update status
-  // Toast sudah dihandle di dalam dialog component
 }
 
-// Component untuk Action Cell Menunggu
 function ActionCellMenunggu({ data }: { data: DataMenunggu }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const handleConfirm = () => {
     handleKonfirmasi(data)
-    // Dialog akan tertutup otomatis dari component dialog
   }
 
   return (
@@ -63,27 +57,21 @@ function ActionCellMenunggu({ data }: { data: DataMenunggu }) {
       >
         <Check className="w-4 h-4" />
       </Button>
-      
       <ConfirmPeminjamanDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         onConfirm={handleConfirm}
-        peminjamanData={{
-          judul: data.judul,
-          peminjam: data.peminjam
-        }}
+        peminjamanData={{ judul: data.judul, peminjam: data.peminjam }}
       />
     </>
   )
 }
 
-// Component untuk Action Cell Dipinjam
 function ActionCellDipinjam({ data }: { data: DataDipinjam }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const handleConfirm = () => {
     handleKonfirmasiPengembalian(data)
-    // Dialog akan tertutup otomatis dari component dialog
   }
 
   return (
@@ -96,156 +84,60 @@ function ActionCellDipinjam({ data }: { data: DataDipinjam }) {
       >
         <Check className="w-4 h-4" />
       </Button>
-      
       <ConfirmPengembalianDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         onConfirm={handleConfirm}
-        pengembalianData={{
-          judul: data.judul,
-          peminjam: data.peminjam
-        }}
+        pengembalianData={{ judul: data.judul, peminjam: data.peminjam }}
       />
     </>
   )
 }
 
 export const columnsMenunggu: ColumnDef<DataMenunggu>[] = [
-  {
-    accessorKey: "no",
-    header: () => <div className="pl-4">No</div>,
-    cell: ({ row }) => <div className=" text-black pl-5">{row.getValue("no")}</div>,
-  },
-  {
-    accessorKey: "judul",
-    header: "Judul",
-    cell: ({ row }) => <div className=" text-black">{row.getValue("judul")}</div>,
-  },
-  {
-    accessorKey: "peminjam",
-    header: "Peminjam",
-    cell: ({ row }) => <div className=" text-black">{row.getValue("peminjam")}</div>,
-  },
-  {
-    accessorKey: "tanggalPinjam",
-    header: "Tanggal Pinjam",
-    cell: ({ row }) => <div className=" text-black">{row.getValue("tanggalPinjam")}</div>,
-  },
-  {
-    accessorKey: "waktuPinjam",
-    header: "Waktu Pinjam",
-    cell: ({ row }) => <div className=" text-black">{row.getValue("waktuPinjam")}</div>,
-  },
-  {
-    id: "aksi",
-    header: "Aksi",
-    cell: ({ row }) => {
-      const data = row.original
-      return <ActionCellMenunggu data={data} />
-    },
-  },
+  { accessorKey: "no", header: () => <div className="pl-4">No</div>, cell: ({ row }) => <div className="pl-5">{row.getValue("no")}</div> },
+  { accessorKey: "judul", header: "Judul", cell: ({ row }) => <div>{row.getValue("judul")}</div> },
+  { accessorKey: "peminjam", header: "Peminjam", cell: ({ row }) => <div>{row.getValue("peminjam")}</div> },
+  { accessorKey: "tanggalPinjam", header: "Tanggal Pinjam", cell: ({ row }) => <div>{row.getValue("tanggalPinjam")}</div> },
+  { accessorKey: "waktuPinjam", header: "Waktu Pinjam", cell: ({ row }) => <div>{row.getValue("waktuPinjam")}</div> },
+  { id: "aksi", header: "Aksi", cell: ({ row }) => <ActionCellMenunggu data={row.original} /> },
 ]
 
 export const columnsDipinjam: ColumnDef<DataDipinjam>[] = [
+  { accessorKey: "no", header: () => <div className="pl-4">No</div>, cell: ({ row }) => <div className="pl-5">{row.getValue("no")}</div> },
+  { accessorKey: "judul", header: "Judul", cell: ({ row }) => <div>{row.getValue("judul")}</div> },
+  { accessorKey: "peminjam", header: "Peminjam", cell: ({ row }) => <div>{row.getValue("peminjam")}</div> },
   {
-    accessorKey: "no",
-    header: () => <div className="pl-4">No</div>,
-    cell: ({ row }) => <div className=" text-black pl-5">{row.getValue("no")}</div>,
-  },
-  {
-    accessorKey: "judul",
-    header: "Judul",
-    cell: ({ row }) => <div className="text-black">{row.getValue("judul")}</div>,
-  },
-  {
-    accessorKey: "peminjam",
-    header: "Peminjam",
-    cell: ({ row }) => <div className="text-black">{row.getValue("peminjam")}</div>,
-  },
- 
-  // Versi yang lebih simple dan clean
-{
-  accessorKey: "sisaWaktu",
-  header: "Sisa Waktu",
-  cell: ({ row }) => {
-    const sisaWaktu = row.getValue("sisaWaktu") as string
-
-    // Cek kondisi berdasarkan format yang ada
-const isOverdue = /^\s*-\d+/.test(sisaWaktu) || sisaWaktu.toLowerCase().includes('lewat')
-const isToday = sisaWaktu.includes('0 hari') || sisaWaktu.toLowerCase().includes('hari ini')
-const isNearDeadline = !isOverdue && !isToday && sisaWaktu.match(/^[12]\s+hari/)
-
-let badgeClass = ''
-
-if (isOverdue || isToday) {
-  badgeClass = 'bg-red-100 text-red-700 border border-red-200'
-} else if (isNearDeadline) {
-  badgeClass = 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-} else {
-  badgeClass = 'bg-green-100 text-green-700 border border-green-200'
-}
-
-    return (
-      <div>
-        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${badgeClass}`}>
-          {sisaWaktu}
-        </span>
-      </div>
-    )
-  },
-},
-  {
-    id: "aksi",
-    header: "Aksi",
+    accessorKey: "sisaWaktu",
+    header: "Sisa Waktu",
     cell: ({ row }) => {
-      const data = row.original
-      return <ActionCellDipinjam data={data} />
+      const sisaWaktu = row.getValue("sisaWaktu") as string
+      const isOverdue = /^\s*-\d+/.test(sisaWaktu) || sisaWaktu.toLowerCase().includes('lewat')
+      const isToday = sisaWaktu.includes('0 hari') || sisaWaktu.toLowerCase().includes('hari ini')
+      const isNearDeadline = !isOverdue && !isToday && sisaWaktu.match(/^[12]\s+hari/)
+      let badgeClass = ''
+      if (isOverdue || isToday) badgeClass = 'bg-red-100 text-red-700 border border-red-200'
+      else if (isNearDeadline) badgeClass = 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+      else badgeClass = 'bg-green-100 text-green-700 border border-green-200'
+      return <span className={`px-3 py-1 rounded-full text-sm font-semibold ${badgeClass}`}>{sisaWaktu}</span>
     },
   },
+  { id: "aksi", header: "Aksi", cell: ({ row }) => <ActionCellDipinjam data={row.original} /> },
 ]
 
 export const columnsPengembalian: ColumnDef<DataPengembalian>[] = [
-  {
-    accessorKey: "no",
-    header: () => <div className="pl-4">No</div>,
-    cell: ({ row }) => <div className="text-black pl-5">{row.getValue("no")}</div>,
-  },
-  {
-    accessorKey: "judul",
-    header: "Judul",
-    cell: ({ row }) => <div className="text-black">{row.getValue("judul")}</div>,
-  },
-  {
-    accessorKey: "peminjam",
-    header: "Peminjam",
-    cell: ({ row }) => <div className="text-black">{row.getValue("peminjam")}</div>,
-  },
-  {
-    accessorKey: "tanggalKembali",
-    header: "Tanggal Kembali",
-    cell: ({ row }) => <div className="text-black">{row.getValue("tanggalKembali")}</div>,
-  },
-  {
-    accessorKey: "waktuKembali",
-    header: "Waktu Kembali",
-    cell: ({ row }) => <div className="text-black">{row.getValue("waktuKembali")}</div>,
-  },
+  { accessorKey: "no", header: () => <div className="pl-4">No</div>, cell: ({ row }) => <div className="pl-5">{row.getValue("no")}</div> },
+  { accessorKey: "judul", header: "Judul", cell: ({ row }) => <div>{row.getValue("judul")}</div> },
+  { accessorKey: "peminjam", header: "Peminjam", cell: ({ row }) => <div>{row.getValue("peminjam")}</div> },
+  { accessorKey: "tanggalKembali", header: "Tanggal Kembali", cell: ({ row }) => <div>{row.getValue("tanggalKembali")}</div> },
+  { accessorKey: "waktuKembali", header: "Waktu Kembali", cell: ({ row }) => <div>{row.getValue("waktuKembali")}</div> },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as string
-      return (
-        <div className="text-black">
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              status === "Terlambat" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
-            }`}
-          >
-            {status}
-          </span>
-        </div>
-      )
+      const style = status === "Terlambat" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+      return <span className={`px-3 py-1 rounded-full text-sm font-semibold ${style}`}>{status}</span>
     },
   },
 ]
