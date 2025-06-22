@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTableHome } from "@/app/_components/pustakawan/home/data-table-home"
@@ -33,6 +32,22 @@ export default function HomePage() {
   const [dataDipinjam, setDataDipinjam] = useState<DataDipinjam[]>([])
   const [dataPengembalian, setDataPengembalian] = useState<DataPengembalian[]>([])
 
+  // Format date dan time dengan validasi
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return "-"
+    const date = new Date(dateStr)
+    return isNaN(date.getTime()) ? "-" : date.toLocaleDateString("id-ID")
+  }
+
+  const formatTime = (dateStr: string) => {
+    if (!dateStr) return "-"
+    const date = new Date(dateStr)
+    return isNaN(date.getTime()) ? "-" : date.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
+
   useEffect(() => {
     const fetchAllData = async () => {
       if (!token) {
@@ -52,14 +67,6 @@ export default function HomePage() {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ])
-
-        const formatDate = (dateStr: string) =>
-          new Date(dateStr).toLocaleDateString("id-ID")
-        const formatTime = (dateStr: string) =>
-          new Date(dateStr).toLocaleTimeString("id-ID", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
 
         setDataMenunggu(Array.isArray(resMenunggu.data.data)
           ? resMenunggu.data.data.map((item: any, i: number) => ({
