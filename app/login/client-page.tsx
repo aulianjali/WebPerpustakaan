@@ -113,7 +113,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex animate-in fade-in duration-1000">
       {/* Kiri: ilustrasi */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#0E4D97] items-center justify-center p-8 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-blue-600 items-center justify-center p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
         <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
@@ -140,7 +140,7 @@ export default function LoginPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
         <div className="w-full max-w-md space-y-6 animate-in slide-in-from-right duration-1000 delay-500">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-[#0E4D97] mb-2">Login</h1>
+            <h1 className="text-3xl font-bold text-blue-600 mb-2 rounded px-4 py-1 inline-block">Login</h1>
             <p className="text-gray-600">Masuk ke akun Anda</p>
           </div>
 
@@ -202,15 +202,15 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-[#0E4D97] hover:bg-[#0E4D97]/90 text-white font-medium text-base transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
             >
               {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Memproses...
-                </>
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Memproses...
+              </>
               ) : (
-                "Login"
+              "Login"
               )}
             </Button>
           </form>

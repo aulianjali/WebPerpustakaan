@@ -1,130 +1,222 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { type DataBuku } from "@/app/_components/pustakawan/buku/columns-buku"
-import { Button } from "@/components/ui/button"
+import Image from "next/image"
+import { Loader2 } from "lucide-react"
+import { Card } from "@/app/_components/member/card"
+import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
+import axios from "axios"
+import Cookies from "js-cookie"
 
-const dummyDataBuku: DataBuku[] = [
-  {
-    no: 1,
-    idBuku: "BK001",
-    stok: 5,
-    judulBuku: "The Psychology of Money",
-    penulis: "Morgan Housel",
-    penerbit: "Harriman House",
-    tahunTerbit: "2020",
-    sinopsis: "Buku tentang psikologi keuangan dan investasi yang mengubah cara pandang tentang uang.",
-    imageCover: "/books/book-1.jpg",
-  },
-  {
-    no: 2,
-    idBuku: "BK002",
-    stok: 3,
-    judulBuku: "Laut Bercerita",
-    penulis: "Leila S. Chudori",
-    penerbit: "Kepustakaan Populer Gramedia",
-    tahunTerbit: "2017",
-    sinopsis: "Novel tentang kisah mahasiswa aktivis yang hilang pada masa Orde Baru.",
-    imageCover: "/placeholder.svg?height=300&width=200",
-  },
-  {
-      no: 3,
-      idBuku: "BK003",
-      stok: 7,
-      judulBuku: "Hujan",
-      penulis: "Tere Liye",
-      penerbit: "Gramedia Pustaka Utama",
-      tahunTerbit: "2016",
-      sinopsis: "Novel fantasi tentang petualangan di dunia paralel yang penuh misteri.",
-      imageCover: "/placeholder.svg?height=300&width=200",
-    },
-    {
-      no: 4,
-      idBuku: "BK004",
-      stok: 2,
-      judulBuku: "Filosofi Teras",
-      penulis: "Henry Manampiring",
-      penerbit: "Kompas Gramedia",
-      tahunTerbit: "2018",
-      sinopsis: "Panduan praktis filosofi Stoikisme untuk kehidupan sehari-hari.",
-      imageCover: "/placeholder.svg?height=300&width=200",
-    },
-    {
-      no: 5,
-      idBuku: "BK005",
-      stok: 4,
-      judulBuku: "Dunia Sophie",
-      penulis: "Jostein Gaarder",
-      penerbit: "Mizan",
-      tahunTerbit: "2015",
-      sinopsis: "Novel filosofi yang mengajarkan sejarah pemikiran filosofis dengan cara yang menarik.",
-      imageCover: "/placeholder.svg?height=300&width=200",
-    },
-    {
-      no: 6,
-      idBuku: "BK006",
-      stok: 0,
-      judulBuku: "Emotional Intelligence",
-      penulis: "Daniel Goleman",
-      penerbit: "Bantam Books",
-      tahunTerbit: "1995",
-      sinopsis: "Buku tentang pentingnya kecerdasan emosional dalam kehidupan dan karir.",
-      imageCover: "/placeholder.svg?height=300&width=200",
-    },
-    {
-      no: 7,
-      idBuku: "BK007",
-      stok: 0,
-      judulBuku: "Atomic Habits",
-      penulis: "James Clear",
-      penerbit: "Avery",
-      tahunTerbit: "2018",
-      sinopsis: "Panduan praktis untuk membangun kebiasaan baik dan menghilangkan kebiasaan buruk.",
-      imageCover: "/placeholder.svg?height=300&width=200",
-    },
-]
+interface BookDetail {
+  id: number
+  judul: string
+  penulis: string
+  penerbit: string | null
+  tahun_terbit: number | null
+  kategori: string | null
+  stock: number
+  image: string
+  sinopsis: string
+}
 
 export default function ClientDetailBuku() {
   const params = useParams()
   const router = useRouter()
-  const { id } = params
-  const [buku, setBuku] = useState<DataBuku | null>(null)
+  const bookId = params.id as string
+  const token = Cookies.get("token")
 
-  useEffect(() => {
-    if (typeof id === "string") {
-      const found = dummyDataBuku.find((b) => b.idBuku === id)
-      setBuku(found ?? null)
+  const [book, setBook] = useState<BookDetail | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
+  const fetchBookDetail = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      if (!token || !bookId) {
+        setError("Token atau ID buku tidak tersedia")
+        return
+      }
+
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/books/${bookId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      })
+
+      const bookData = response.data.data || response.data
+      setBook(bookData)
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setError("Buku tidak ditemukan")
+      } else {
+        setError("Gagal memuat detail buku. Silakan coba lagi.")
+      }
+    } finally {
+      setIsLoading(false)
     }
-  }, [id])
-
-  if (!buku) {
-    return (
-      <div className="p-6">
-        <h1 className="text-xl font-bold">Buku tidak ditemukan</h1>
-        <Button onClick={() => router.back()} className="mt-4">Kembali</Button>
-      </div>
-    )
   }
 
-  return (
-    <div className="min-h-screen bg-[#F5F7FA] text-[#0E4D97] p-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
-        <div className="flex items-start gap-6">
-          <img src={buku.imageCover} alt={buku.judulBuku} className="w-48 h-auto rounded shadow" />
-          <div className="flex-1 space-y-2">
-            <h1 className="text-2xl font-bold">{buku.judulBuku}</h1>
-            <p><strong>ID Buku:</strong> {buku.idBuku}</p>
-            <p><strong>Penulis:</strong> {buku.penulis}</p>
-            <p><strong>Penerbit:</strong> {buku.penerbit}</p>
-            <p><strong>Tahun Terbit:</strong> {buku.tahunTerbit}</p>
-            <p><strong>Stok:</strong> {buku.stok}</p>
-            <p><strong>Sinopsis:</strong></p>
-            <p className="text-gray-700">{buku.sinopsis}</p>
-            <Button onClick={() => router.back()} className="mt-4">Kembali</Button>
+  useEffect(() => {
+    if (bookId) {
+      fetchBookDetail()
+    }
+  }, [bookId])
+
+  const handleRetry = () => {
+    fetchBookDetail()
+  }
+
+  const LoadingSkeleton = () => (
+    <Card className="p-6 md:p-8 flex flex-col gap-8 max-w-6xl mx-auto shadow-md rounded-xl">
+      <div className="flex flex-col md:flex-row gap-8 md:gap-10">
+        <div className="flex flex-col items-center w-full md:w-[240px] flex-shrink-0">
+          <div className="w-[200px] h-[280px] md:w-[220px] md:h-[310px] rounded-lg shadow-md overflow-hidden bg-gray-200 animate-pulse" />
+        </div>
+        <div className="flex flex-col justify-center w-full space-y-3.5">
+          <div className="h-8 bg-gray-200 rounded animate-pulse mb-2" />
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex gap-2">
+                <div className="h-6 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
+              </div>
+            ))}
           </div>
         </div>
       </div>
+      <div className="border-t border-gray-200 pt-6">
+        <div className="h-6 w-24 bg-gray-200 rounded animate-pulse mb-3" />
+        <div className="space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-4 bg-gray-200 rounded animate-pulse" />
+          ))}
+        </div>
+      </div>
+    </Card>
+  )
+
+  const ErrorState = () => (
+    <Card className="p-6 md:p-8 max-w-6xl mx-auto shadow-md rounded-xl">
+      <div className="text-center py-12">
+        <div className="mx-auto w-24 h-24 mb-4 bg-red-50 rounded-full flex items-center justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#dc2626"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-medium text-red-600 mb-2">Terjadi Kesalahan</h3>
+        <p className="text-gray-600 max-w-md mx-auto mb-4">{error}</p>
+        <button
+          onClick={handleRetry}
+          className="px-4 py-2 bg-[#0E4D97] text-white rounded-lg hover:bg-[#0E4D97]/90 transition-colors"
+        >
+          Coba Lagi
+        </button>
+      </div>
+    </Card>
+  )
+
+  return (
+    <div className="flex bg-[#D9DBF3] text-[#0E4D97] min-h-screen">
+      <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10">
+        <div className="mb-2">
+          <DynamicBreadcrumb />
+        </div>
+
+        {isLoading && <LoadingSkeleton />}
+        {error && !isLoading && <ErrorState />}
+
+        {book && !isLoading && !error && (
+          <Card className="p-6 md:p-8 flex flex-col gap-8 max-w-6xl mx-auto shadow-md rounded-xl">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-10">
+              <div className="flex flex-col items-center w-full md:w-[240px] flex-shrink-0">
+                <div className="w-[200px] h-[280px] md:w-[220px] md:h-[310px] rounded-lg shadow-md overflow-hidden flex items-center justify-center bg-white border border-gray-100 relative">
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                      <Loader2 className="h-8 w-8 text-[#0E4D97] animate-spin" />
+                    </div>
+                  )}
+                  <Image
+                    src={book.image || `/placeholder.svg?height=310&width=220`}
+                    alt={book.judul}
+                    width={220}
+                    height={310}
+                    className={`object-contain transition-opacity duration-300 ${
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    }`}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => setImageLoaded(true)}
+                    priority
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-center w-full space-y-3.5">
+                <h1 className="text-xl md:text-2xl font-semibold text-[#0E4D97] mb-2 leading-tight">
+                  {book.judul}
+                </h1>
+
+                <div className="space-y-2 text-base">
+                  <p>
+                    <span className="font-semibold">Penulis:</span> {book.penulis}
+                  </p>
+                  {book.penerbit && (
+                    <p>
+                      <span className="font-semibold">Penerbit:</span> {book.penerbit}
+                    </p>
+                  )}
+                  {book.tahun_terbit && (
+                    <p>
+                      <span className="font-semibold">Tahun Terbit:</span> {book.tahun_terbit}
+                    </p>
+                  )}
+                  {book.kategori && (
+                    <p>
+                      <span className="font-semibold">Kategori:</span> {book.kategori}
+                    </p>
+                  )}
+                  <p>
+                    <span className="font-semibold">Stok:</span> {book.stock}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {book.sinopsis && (
+              <div className="border-t border-gray-200 pt-6">
+                <h2 className="mb-3 font-semibold text-lg">Sinopsis:</h2>
+                <p className="text-justify leading-relaxed">{book.sinopsis}</p>
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => router.back()}
+                className="px-4 py-2 text-sm font-medium text-white bg-[#0E4D97] rounded-md hover:bg-[#0E4D97]/90 transition-colors"
+              >
+                Kembali
+              </button>
+            </div>
+          </Card>
+        )}
+      </main>
     </div>
   )
 }

@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
 import { CheckCircle } from "lucide-react"
-import { toast } from "sonner" 
+import { toast } from "sonner"
 
 interface ConfirmPeminjamanDialogProps {
   isOpen: boolean
@@ -22,23 +22,22 @@ interface ConfirmPeminjamanDialogProps {
 }
 
 export function ConfirmPeminjamanDialog({ isOpen, onClose, onConfirm, peminjamanData }: ConfirmPeminjamanDialogProps) {
-  
+
   const handleConfirm = () => {
     if (peminjamanData) {
       toast.success("Peminjaman berhasil dikonfirmasi!", {
-        description: `Peminjaman buku "${peminjamanData?.judul}" oleh ${peminjamanData?.peminjam} telah dikonfirmasi.`,
+        description: `Peminjaman buku \"${peminjamanData?.judul}\" oleh ${peminjamanData?.peminjam} telah dikonfirmasi.`,
         duration: 3000,
       })
     }
-    onConfirm()  // Jalankan aksi konfirmasi
-    onClose()    // Tutup dialog
+    onConfirm()
+    onClose()
   }
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-6 border border-gray-200 shadow-lg rounded-lg">
         <AlertDialogHeader className="text-center space-y-4">
-          {/* Confirm Icon */}
           <div className="flex justify-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 border-2 border-green-200">
               <CheckCircle className="h-6 w-6 text-green-600" />
@@ -50,25 +49,16 @@ export function ConfirmPeminjamanDialog({ isOpen, onClose, onConfirm, peminjaman
             untuk mengonfirmasi peminjaman "{peminjamanData?.judul}"?
           </AlertDialogTitle>
 
-          {/* Additional info text */}
           <p className="text-sm text-gray-600">
             Peminjaman oleh <span className="font-medium text-[#0E4D97]">{peminjamanData?.peminjam}</span> akan dikonfirmasi dan status buku akan berubah menjadi dipinjam
           </p>
         </AlertDialogHeader>
 
         <AlertDialogFooter className="flex gap-3 justify-center mt-6 pt-2">
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            className="bg-red-500 hover:bg-red-600 text-white hover:text-white font-medium px-8 py-2.5 rounded-md transition-colors duration-200 min-w-[80px]"
-          >
+          <Button onClick={onClose} variant="ghost" className="bg-red-500 hover:bg-red-600 text-white px-8 py-2.5 rounded-md">
             Tidak
           </Button>
-          <Button
-            onClick={handleConfirm}
-            variant="ghost"
-            className="bg-green-500 hover:bg-green-600 text-white hover:text-white font-medium px-8 py-2.5 rounded-md transition-colors duration-200 min-w-[80px]"
-          >
+          <Button onClick={handleConfirm} variant="ghost" className="bg-green-500 hover:bg-green-600 text-white px-8 py-2.5 rounded-md">
             Iya
           </Button>
         </AlertDialogFooter>
