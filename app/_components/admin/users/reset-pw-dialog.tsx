@@ -33,7 +33,7 @@ export function DetailUserDialog({ isOpen, onClose, userData }: DetailUserDialog
       const token = Cookies.get("token")
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/reset/${userData.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/users/reset/${userData.id}`,
         {},
         {
           headers: {
@@ -73,20 +73,20 @@ export function DetailUserDialog({ isOpen, onClose, userData }: DetailUserDialog
           <span className="sr-only">Tutup</span>
         </Button>
 
-        <AlertDialogHeader className="text-center space-y-4">
+        <AlertDialogHeader className="text-center">
           {/* Ikon kunci */}
           <div className="flex justify-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 border-2 border-blue-200">
-              <Key className="h-6 w-6 text-[#0E4D97]" />
+              <Key className="h-6 w-6  text-[#0E4D97]" />
             </div>
           </div>
 
-          <AlertDialogTitle className="text-[#0E4D97] font-semibold text-lg leading-relaxed">
+          <AlertDialogTitle className="text-[#0E4D97] font-semibold text-lg leading-relaxed mt-2">
             Reset Password untuk "{userData.name}"
           </AlertDialogTitle>
 
           <AlertDialogDescription className="text-sm text-gray-600">
-            Apakah kamu yakin ingin me-reset password user ini? Tindakan ini tidak dapat dibatalkan.
+            Apakah anda yakin ingin me-reset password user ini?
           </AlertDialogDescription>
         </AlertDialogHeader>
 

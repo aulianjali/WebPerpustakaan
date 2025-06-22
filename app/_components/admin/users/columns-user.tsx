@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Key, Edit, Trash2 } from "lucide-react"
+import { MoreHorizontal, RotateCcw, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -69,7 +69,7 @@ export const columnsmember = (
               onClick={() => onDetail?.(member)}
               className="text-[#0E4D97] hover:bg-[#E8F1FB]"
             >
-              <Key className="mr-2 h-4 w-4 text-[#0E4D97]" />
+              <RotateCcw className="mr-2 h-4 w-4 text-[#0E4D97]" />
               Reset Password
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -138,7 +138,7 @@ export const columnsPustakawan = (
               onClick={() => onDetail?.(pustakawan)}
               className="text-[#0E4D97] hover:bg-[#E8F1FB]  focus:text-[#0E4D97]"
             >
-              <Key className="mr-2 h-4 w-4 text-[#0E4D97]" />
+              <RotateCcw className="mr-2 h-4 w-4 text-[#0E4D97]" />
               Reset Password
             </DropdownMenuItem>
             <DropdownMenuItem

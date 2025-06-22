@@ -11,7 +11,7 @@ import { DataTableUsers } from "@/app/_components/admin/users/data-table-user"
 import { AddUserDialog } from "@/app/_components/admin/users/add-user-dialog"
 import { EditUserDialog } from "@/app/_components/admin/users/edit-user-dialog"
 import { DeleteUserDialog } from "@/app/_components/admin/users/delete-user-dialog"
-import { DetailUserDialog } from "@/app/_components/admin/users/detail-user-dialog"
+import { DetailUserDialog } from "@/app/_components/admin/users/reset-pw-dialog"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 
 import {
