@@ -1,18 +1,73 @@
-import React from "react"
+"use client"
+
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import Cookies from "js-cookie"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 
-const dataKategori = [
-  { name: "Fiksi", value: 45, color: "#0E4D97" }, // Dark blue to match title
-  { name: "Non-Fiksi", value: 35, color: "#2563EB" }, // Medium blue
-  { name: "Akademik", value: 25, color: "#60A5FA" }, // Light blue
-  { name: "Referensi", value: 15, color: "#93C5FD" }, // Very light blue
+interface PieData {
+  name: string
+  value: number
+  color: string
+}
+
+const warnaKategori: Record<string, string> = {
+  Fiksi: "#123968",
+  Nonfiksi: "#0E4D97" ,
+  Akademik: "#3B82F6",
+  Referensi: "#60A5FA",
+  Lainnya: "#93C5FD",
+  Komik: "#3B82F6",
+  Biografi: "#1D4ED8",
+  Sejarah: "#1E40AF",
+}
+
+const fallbackBiru = [
+  "#0E4D97", "#1D4ED8", "#2563EB", "#3B82F6",
+  "#60A5FA", "#93C5FD", "#BFDBFE", "#DBEAFE",
 ]
 
 const ChartPie = () => {
-  // Split data for 2-row legend
-  const firstRow = dataKategori.slice(0, 2)
-  const secondRow = dataKategori.slice(2)
+  const [dataKategori, setDataKategori] = useState<PieData[]>([])
+
+  useEffect(() => {
+    const fetchKategori = async () => {
+      try {
+        const token = Cookies.get("token")
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        })
+
+        const dataBuku = res.data.data.data
+        const kategoriCount: Record<string, number> = {}
+
+        dataBuku.forEach((buku: any) => {
+          const kategori = buku.kategori ?? "Lainnya"
+          kategoriCount[kategori] = (kategoriCount[kategori] || 0) + 1
+        })
+
+        let colorIndex = 0
+
+        const chartData = Object.entries(kategoriCount).map(([name, value]) => {
+          const color = warnaKategori[name] ?? fallbackBiru[colorIndex++ % fallbackBiru.length]
+          return { name, value, color }
+        })
+
+        setDataKategori(chartData)
+      } catch (err) {
+        console.error("Gagal fetch kategori buku:", err)
+      }
+    }
+
+    fetchKategori()
+  }, [])
+
+  const firstRow = dataKategori.slice(0, 3)
+  const secondRow = dataKategori.slice(3)
 
   return (
     <Card className="bg-[#FEFCF3] border border-[#B3B5D1] rounded-lg">
@@ -43,9 +98,7 @@ const ChartPie = () => {
           </PieChart>
         </ResponsiveContainer>
 
-        {/* Legend in 2 rows */}
         <div className="flex flex-col items-center space-y-2 mt-2">
-          {/* First row */}
           <div className="flex justify-center gap-6">
             {firstRow.map((item, index) => (
               <div key={index} className="flex items-center space-x-1">
@@ -54,8 +107,6 @@ const ChartPie = () => {
               </div>
             ))}
           </div>
-          
-          {/* Second row */}
           <div className="flex justify-center gap-6">
             {secondRow.map((item, index) => (
               <div key={index} className="flex items-center space-x-1">
