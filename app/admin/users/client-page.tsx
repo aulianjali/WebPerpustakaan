@@ -239,7 +239,7 @@ export default function ClientManajemenUsers() {
                       />
                     </div>
                     <Button onClick={() => setIsAddDialogOpen(true)} className="bg-[#0E4D97] text-white">
-                      <Plus className="h-4 w-4 mr-2" /> Tambah Member
+                      <Plus className="h-4 w-4 mr-2" /> Tambah User
                     </Button>
                   </div>
 
@@ -278,7 +278,7 @@ export default function ClientManajemenUsers() {
                       />
                     </div>
                     <Button onClick={() => setIsAddDialogOpen(true)} className="bg-[#0E4D97] text-white">
-                      <Plus className="h-4 w-4 mr-2" /> Tambah Pustakawan
+                      <Plus className="h-4 w-4 mr-2" /> Tambah User
                     </Button>
                   </div>
 
