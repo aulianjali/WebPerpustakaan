@@ -137,7 +137,7 @@ export default function LoginPage() {
           </div>
           <div className="text-center mt-8 text-white animate-in slide-in-from-bottom duration-1000 delay-700">
             <h2 className="text-2xl font-bold mb-2">Selamat Datang</h2>
-            <p className="text-blue-100">di Perpustakaan Digital</p>
+            <p className="text-blue-100">di Web Aplikasi ReadWave</p>
           </div>
         </div>
       </div>

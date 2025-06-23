@@ -164,14 +164,35 @@ export default function ClientManajemenPeminjaman() {
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
             <div className="border-b border-gray-200 bg-gray-50/50">
               <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
-                <TabsTrigger value="menunggu">Menunggu</TabsTrigger>
-                <TabsTrigger value="dipinjam">Dipinjam</TabsTrigger>
-                <TabsTrigger value="pengembalian">Pengembalian</TabsTrigger>
+                <TabsTrigger
+                  value="menunggu"
+                  className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]"
+                >
+                  Menunggu
+                </TabsTrigger>
+                <TabsTrigger
+                  value="dipinjam"
+                  className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]"
+                >
+                  Dipinjam
+                </TabsTrigger>
+                <TabsTrigger
+                  value="pengembalian"
+                  className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]"
+                >
+                  Pengembalian
+                </TabsTrigger>
               </TabsList>
             </div>
 
             <TabsContent value="menunggu">
               <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-xl font-semibold text-[#0E4D97]">Manajemen Konfirmasi</h2>
+                      <p className="text-sm text-gray-600 mt-1">Kelola peminjaman yang harus di konfirmasi</p>
+                    </div>
+                </div>
                 <SearchInput value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 <DataTableHome
                   columns={columnsMenunggu}
@@ -200,6 +221,12 @@ export default function ClientManajemenPeminjaman() {
 
             <TabsContent value="dipinjam">
               <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-xl font-semibold text-[#0E4D97]">Manajemen Peminjaman</h2>
+                      <p className="text-sm text-gray-600 mt-1">Kelola peminjaman yang harus dikembalikan sesuai tenggat waktunya</p>
+                    </div>
+                </div>
                 <SearchInput value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 <DataTableHome
                   columns={columnsDipinjam}
@@ -228,6 +255,12 @@ export default function ClientManajemenPeminjaman() {
 
             <TabsContent value="pengembalian">
               <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-xl font-semibold text-[#0E4D97]">Manajemen Pengembalian</h2>
+                      <p className="text-sm text-gray-600 mt-1">Kumpulan peminjaman yang sudah dikembalikan</p>
+                    </div>
+                </div>
                 <SearchInput value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 <DataTableHome
                   columns={columnsPengembalian}

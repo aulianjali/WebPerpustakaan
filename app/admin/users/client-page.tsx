@@ -206,10 +206,14 @@ export default function ClientManajemenUsers() {
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "member" | "pustakawan")}>
               <div className="border-b border-gray-200 bg-gray-50/50">
                 <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
-                  <TabsTrigger value="member" className="px-6 py-4 font-medium text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97] data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97]">
+                  <TabsTrigger
+                    value="member"
+                    className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]">
                     Member
                   </TabsTrigger>
-                  <TabsTrigger value="pustakawan" className="px-6 py-4 font-medium text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97] data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97]">
+                  <TabsTrigger
+                    value="pustakawan"
+                    className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]">
                     Pustakawan
                   </TabsTrigger>
                 </TabsList>

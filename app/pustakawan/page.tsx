@@ -1,10 +1,10 @@
 import React from 'react'
-import ClientHome from './client-page'
+import HomePage from './client-page'
 
 const PustakawanManajemenPeminjaman = () => {
   return (
     <div>
-      <ClientHome/>
+      <HomePage/>
     </div>
   )
 }

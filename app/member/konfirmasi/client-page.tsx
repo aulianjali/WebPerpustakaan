@@ -226,20 +226,18 @@ export default function ClientKonfirmasi() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "berhasil" | "menunggu")}>
             <div className="border-b border-gray-200 bg-gray-50/50">
-              <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
-                <TabsTrigger
-                  value="berhasil"
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white data-[state=active]:text-[#0E4D97] data-[state=active]:shadow-none px-6 py-4 rounded-none border-b-2 border-transparent font-medium text-gray-600 hover:text-[#0E4D97] transition-colors"
-                >
-                  Berhasil
-                </TabsTrigger>
-                <TabsTrigger
-                  value="menunggu"
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white data-[state=active]:text-[#0E4D97] data-[state=active]:shadow-none px-6 py-4 rounded-none border-b-2 border-transparent font-medium text-gray-600 hover:text-[#0E4D97] transition-colors"
-                >
-                  Menunggu
-                </TabsTrigger>
-              </TabsList>
+                <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
+                  <TabsTrigger
+                    value="berhasil"
+                    className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]">
+                    Berhasil
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="menunggu"
+                    className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]">
+                    Menunggu
+                  </TabsTrigger>
+                </TabsList>
             </div>
 
             <TabsContent value="berhasil" className="mt-0">

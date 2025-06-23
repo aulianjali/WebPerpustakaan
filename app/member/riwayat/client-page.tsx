@@ -190,14 +190,18 @@ export default function ClientRiwayat() {
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "dipinjam" | "riwayat")}>
               <div className="border-b border-gray-200 bg-gray-50/50">
                 <TabsList className="bg-transparent border-0 p-0 h-auto w-full justify-start">
-                  <TabsTrigger value="dipinjam" className="px-6 py-4 text-gray-600 font-medium border-b-2 border-transparent data-[state=active]:text-[#0E4D97] data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white">
+                  <TabsTrigger
+                    value="dipinjam"
+                    className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]">
                     Sedang Dipinjam
                   </TabsTrigger>
-                  <TabsTrigger value="riwayat" className="px-6 py-4 text-gray-600 font-medium border-b-2 border-transparent data-[state=active]:text-[#0E4D97] data-[state=active]:border-[#0E4D97] data-[state=active]:bg-white">
+                  <TabsTrigger
+                    value="riwayat"
+                    className="text-gray-600 hover:text-[#0E4D97] data-[state=active]:text-[#0E4D97]">
                     Riwayat
                   </TabsTrigger>
                 </TabsList>
-              </div>
+            </div>
 
               {/* === DIPINJAM === */}
               <TabsContent value="dipinjam" className="mt-0">

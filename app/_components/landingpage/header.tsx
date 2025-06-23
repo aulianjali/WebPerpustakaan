@@ -11,7 +11,7 @@ export default function HeaderAlternative() {
   }
 
   return (
-    <header className="w-full py-4 px-8 bg-gradient-to-r from-blue-50 to-purple-50 border-b">
+    <header className="w-full py-4 px-8 bg-[#FEFCF3] border-b">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center space-x-3">
