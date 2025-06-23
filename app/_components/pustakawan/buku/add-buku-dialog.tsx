@@ -112,7 +112,7 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
         kategori: formData.kategori,
         sinopsis: formData.sinopsis,
         imageCover: selectedFile ? URL.createObjectURL(selectedFile) : "/placeholder.svg",
-        idBuku: " ", // Akan diganti saat refresh dari backend
+        id: response.data.data.id // Akan diganti saat refresh dari backend
       })
 
       onClose()
