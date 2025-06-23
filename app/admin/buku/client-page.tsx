@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import { Search, Plus } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { DataTableBuku } from "@/app/_components/admin/buku/data-table-buku"
-import { AddBukuDialog } from "@/app/_components/admin/buku/add-buku-dialog"
-import { EditBukuDialog } from "@/app/_components/admin/buku/edit-buku-dialog"
-import { DeleteBukuDialog } from "@/app/_components/admin/buku/delete-buku-dialog"
-import { columnsBuku, type DataBuku } from "@/app/_components/admin/buku/columns-buku"
+import { DataTableBuku } from "@/app/_components/pustakawan/buku/data-table-buku"
+import { AddBukuDialog } from "@/app/_components/pustakawan/buku/add-buku-dialog"
+import { EditBukuDialog } from "@/app/_components/pustakawan/buku/edit-buku-dialog"
+import { DeleteBukuDialog } from "@/app/_components/pustakawan/buku/delete-buku-dialog"
+import { columnsBuku, type DataBuku } from "@/app/_components/pustakawan/buku/columns-buku"
 import { DynamicBreadcrumb } from "@/app/_components/breadcrumb"
 import axios from "axios"
 import Cookies from "js-cookie"
@@ -49,7 +49,7 @@ export default function ClientManajemenBuku() {
 
     const fetchedBooks = response.data.data.data.map((book: any, index: number) => ({
       no: index + 1,
-      idBuku: `${String(book.id)}`,
+      id: book.id,
       judulBuku: book.judul,
       penulis: book.penulis,
       stok: book.stock,
@@ -101,7 +101,7 @@ export default function ClientManajemenBuku() {
   const filteredData = dataBuku.filter(
     (item) =>
       item.judulBuku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.idBuku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.penulis.toLowerCase().includes(searchQuery.toLowerCase())
   )
 

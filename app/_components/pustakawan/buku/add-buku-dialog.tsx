@@ -36,7 +36,6 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
     tahunTerbit: "",
     kategori: "",
     sinopsis: "",
-    imageCover: "",
   })
 
   const [previewImage, setPreviewImage] = useState("")
@@ -77,6 +76,20 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
     if (fileInput) fileInput.value = ""
   }
 
+  const resetForm = () => {
+    setFormData({
+      stok: "",
+      judulBuku: "",
+      penulis: "",
+      penerbit: "",
+      tahunTerbit: "",
+      kategori: "",
+      sinopsis: "",
+    })
+    setSelectedFile(null)
+    setPreviewImage("")
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -87,12 +100,12 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
     }
 
     const form = new FormData()
-    form.append("judul", formData.judulBuku || "")
-    form.append("penulis", formData.penulis || "")
-    form.append("penerbit", formData.penerbit || "")
-    form.append("tahun_terbit", formData.tahunTerbit || "")
-    form.append("sinopsis", formData.sinopsis || "")
-    form.append("kategori", formData.kategori || "")
+    form.append("judul", formData.judulBuku)
+    form.append("penulis", formData.penulis)
+    form.append("penerbit", formData.penerbit)
+    form.append("tahun_terbit", formData.tahunTerbit)
+    form.append("kategori", formData.kategori)
+    form.append("deskripsi", formData.sinopsis)
     form.append("stock", formData.stok || "0")
     if (selectedFile) {
       form.append("image", selectedFile)
@@ -106,35 +119,26 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
         },
       })
 
+      const book = response.data.data
+
       toast.success("Buku berhasil ditambahkan!", {
-        description: response.data.message || "Buku berhasil disimpan ke database.",
+        description: response.data.message || "Data berhasil disimpan.",
       })
 
       onSubmit({
-        stok: parseInt(formData.stok),
-        judulBuku: formData.judulBuku,
-        penulis: formData.penulis,
-        penerbit: formData.penerbit,
-        tahunTerbit: formData.tahunTerbit,
-        kategori: formData.kategori,
-        sinopsis: formData.sinopsis,
-        imageCover: selectedFile ? URL.createObjectURL(selectedFile) : "/placeholder.svg",
-        idBuku: " ",
+        id: book.id,
+        stok: book.stock,
+        judulBuku: book.judul,
+        penulis: book.penulis,
+        penerbit: book.penerbit,
+        tahunTerbit: book.tahun_terbit,
+        kategori: book.kategori ?? "",
+        sinopsis: book.deskripsi,
+        imageCover: book.image,
       })
 
       onClose()
-      setFormData({
-        stok: "",
-        judulBuku: "",
-        penulis: "",
-        penerbit: "",
-        tahunTerbit: "",
-        kategori: "",
-        sinopsis: "",
-        imageCover: "",
-      })
-      setSelectedFile(null)
-      setPreviewImage("")
+      resetForm()
     } catch (error: any) {
       console.error("Gagal menambahkan buku:", error)
       if (error.response?.status === 422) {
@@ -167,24 +171,21 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
             ["Tahun Terbit", "tahunTerbit"],
             ["Kategori", "kategori"],
             ["Stok", "stok"],
-          ].map(([label, field]) => {
-            console.log('Rendering field:', label, field);
-            return (
-              <div className="space-y-1" key={field}>
-                <Label htmlFor={field} className="text-xs font-medium text-[#0E4D97]">
-                  {label}
-                </Label>
-                <Input
-                  id={field}
-                  type={field === "stok" ? "number" : "text"}
-                  value={(formData as any)[field]}
-                  onChange={(e) => handleInputChange(field, e.target.value)}
-                  required
-                  className="h-8 text-sm border-[#0E4D97]"
-                />
-              </div>
-            )
-          })}
+          ].map(([label, field]) => (
+            <div className="space-y-1" key={field}>
+              <Label htmlFor={field} className="text-xs font-medium text-[#0E4D97]">
+                {label}
+              </Label>
+              <Input
+                id={field}
+                type={field === "stok" ? "number" : "text"}
+                value={(formData as any)[field]}
+                onChange={(e) => handleInputChange(field, e.target.value)}
+                required
+                className="h-8 text-sm border-[#0E4D97]"
+              />
+            </div>
+          ))}
 
           <div className="space-y-1">
             <Label htmlFor="sinopsis" className="text-xs font-medium text-[#0E4D97]">
@@ -256,7 +257,7 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
           )}
 
           <div className="flex gap-2 justify-center mt-6 pt-2">
-            <Button type="button" onClick={onClose} className="bg-red-500 hover:bg-red-600 text-white">
+            <Button type="button" onClick={() => { onClose(); resetForm() }} className="bg-red-500 hover:bg-red-600 text-white">
               Batal
             </Button>
             <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white">

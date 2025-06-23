@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 
 export type DataBuku = {
   no: number
-  idBuku: string
+  id: number
   stok: number
   judulBuku: string
   penulis: string
@@ -24,10 +24,10 @@ export const columnsBuku = (
   onDelete?: (buku: DataBuku) => void,
 ): ColumnDef<DataBuku>[] => [
   {
-    accessorKey: "idBuku",
+    accessorKey: "id",
     header: () => <div className="pl-4">ID Buku</div>,
     cell: ({ row }) => {
-      return <div className=" text-black pl-8">{row.getValue("idBuku")}</div>
+      return <div className=" text-black pl-8">{row.getValue("id")}</div>
     },
   },
   {
@@ -74,13 +74,13 @@ export const columnsBuku = (
       const router = useRouter()
 
       const handleDetail = () => {
-        router.push(`/admin/detail-buku/${buku.idBuku}`)
+        router.push(`/pustakawan/detail-buku/${buku.id}`)
       }
 
    return (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Button variant="ghost" className="h-8 w-8 p-0 focus-visible:ring-0 focus-visible:outline-none">
+      <Button variant="ghost" className="h-8 w-8 p-0">
         <span className="sr-only">Open menu</span>
         <MoreHorizontal className="h-4 w-4" />
       </Button>

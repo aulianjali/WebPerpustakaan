@@ -26,7 +26,7 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
     if (!bukuData) return
 
     const token = Cookies.get("token")
-    const id = bukuData.idBuku.replace(/[^\d]/g, "") // Ambil angka saja dari ID (misal: "BK12" → "12")
+    const id = bukuData.id // langsung pakai id (number)
 
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`, {
@@ -41,7 +41,7 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
         duration: 3000,
       })
 
-      onConfirm() // Trigger parent state update
+      onConfirm()
       onClose()
     } catch (error: any) {
       console.error("Gagal menghapus buku:", error)
@@ -67,7 +67,7 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
           </AlertDialogTitle>
 
           <p className="text-sm text-gray-600">
-            Buku dengan ID <span className="font-medium text-[#0E4D97]">{bukuData?.idBuku}</span> akan dihapus permanen dari koleksi.
+            Buku dengan ID <span className="font-medium text-[#0E4D97]">BK{bukuData?.id}</span> akan dihapus permanen dari koleksi.
           </p>
         </AlertDialogHeader>
 
