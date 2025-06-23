@@ -28,9 +28,9 @@ interface EditBukuDialogProps {
 }
 
 export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBukuDialogProps) {
-  const [formData, setFormData] = useState<DataBuku>({
-    id: 0,
+  const [formData, setFormData] = useState({
     no: 0,
+    id: 0,
     judulBuku: "",
     penulis: "",
     penerbit: "",
@@ -46,16 +46,27 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
 
   useEffect(() => {
     if (bukuData) {
-      setFormData({ ...bukuData })
+      setFormData({
+        no: bukuData.no,
+        id: bukuData.id,
+        judulBuku: bukuData.judulBuku,
+        penulis: bukuData.penulis,
+        penerbit: bukuData.penerbit,
+        tahunTerbit: bukuData.tahunTerbit,
+        kategori: bukuData.kategori || "",
+        stok: bukuData.stok || 0,
+        sinopsis: bukuData.sinopsis,
+        imageCover: bukuData.imageCover,
+      })
       setPreviewImage(bukuData.imageCover)
       setSelectedFile(null)
     }
   }, [bukuData])
 
-  const handleInputChange = (field: keyof DataBuku, value: string | number) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: field === "stok" || field === "id" || field === "no" ? Number(value) : value,
+      [field]: field === "stok" ? Number(value) : value,
     }))
   }
 
@@ -92,7 +103,9 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       return
     }
 
+    const idBukuNumber = formData.id
     const form = new FormData()
+
     form.append("judul", formData.judulBuku || "")
     form.append("penulis", formData.penulis || "")
     form.append("penerbit", formData.penerbit || "")
@@ -106,7 +119,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/books/${formData.id}?_method=PUT`,
+        `${process.env.NEXT_PUBLIC_API_URL}/books/${idBukuNumber}?_method=PUT`,
         form,
         {
           headers: {
@@ -150,18 +163,18 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-4">
           {[
-            { label: "Judul Buku", field: "judulBuku" },
-            { label: "Penulis", field: "penulis" },
-            { label: "Penerbit", field: "penerbit" },
-            { label: "Tahun Terbit", field: "tahunTerbit" },
-            { label: "Kategori", field: "kategori" },
-          ].map(({ label, field }) => (
-            <div className="space-y-1" key={field}>
-              <Label htmlFor={field} className="text-xs font-medium text-[#0E4D97]">{label}</Label>
+            { label: "Judul Buku", id: "judulBuku", field: "judulBuku" },
+            { label: "Penulis", id: "penulis", field: "penulis" },
+            { label: "Penerbit", id: "penerbit", field: "penerbit" },
+            { label: "Tahun Terbit", id: "tahunTerbit", field: "tahunTerbit" },
+            { label: "Kategori", id: "kategori", field: "kategori" },
+          ].map(({ label, id, field }) => (
+            <div className="space-y-1" key={id}>
+              <Label htmlFor={id} className="text-xs font-medium text-[#0E4D97]">{label}</Label>
               <Input
-                id={field}
+                id={id}
                 value={(formData as any)[field]}
-                onChange={(e) => handleInputChange(field as keyof DataBuku, e.target.value)}
+                onChange={(e) => handleInputChange(field, e.target.value)}
                 className="h-8 text-sm border-[#0E4D97]"
               />
             </div>

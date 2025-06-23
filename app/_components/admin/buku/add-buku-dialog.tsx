@@ -121,9 +121,9 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
 
       const book = response.data.data
 
-      toast.success("Buku berhasil ditambahkan!", {
-    description: `Buku dengan judul "${formData.judulBuku}" berhasil ditambahkan.`,
-  })
+      toast.success("Buku berhasil ditambah", {
+              description: `Buku dengan judul "${formData.judulBuku}" telah ditambahkan.`,
+            })
 
       onSubmit({
         id: book.id,

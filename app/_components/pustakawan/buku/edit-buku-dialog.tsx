@@ -130,7 +130,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       )
 
       toast.success("Buku berhasil diperbarui", {
-        description: `Buku dengan ID "${formData.id}" telah diupdate.`,
+        description: `Buku dengan judul "${formData.judulBuku}" telah diupdate.`,
       })
 
       onSubmit({
