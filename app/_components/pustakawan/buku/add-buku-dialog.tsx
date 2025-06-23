@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { X, Upload, ImageIcon } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
@@ -85,7 +91,8 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
     form.append("penulis", formData.penulis || "")
     form.append("penerbit", formData.penerbit || "")
     form.append("tahun_terbit", formData.tahunTerbit || "")
-    form.append("deskripsi", formData.sinopsis || "")
+    form.append("sinopsis", formData.sinopsis || "")
+    form.append("kategori", formData.kategori || "")
     form.append("stock", formData.stok || "0")
     if (selectedFile) {
       form.append("image", selectedFile)
@@ -112,7 +119,7 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
         kategori: formData.kategori,
         sinopsis: formData.sinopsis,
         imageCover: selectedFile ? URL.createObjectURL(selectedFile) : "/placeholder.svg",
-        idBuku: " ", // Akan diganti saat refresh dari backend
+        idBuku: " ",
       })
 
       onClose()
@@ -144,15 +151,29 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#FEFCF3] max-w-sm w-full mx-4 p-4 rounded-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
-          <DialogTitle className="text-[#0E4D97] font-semibold text-base">Tambah Buku</DialogTitle>
-          <DialogDescription className="text-xs text-gray-600">Lengkapi form untuk menambahkan buku baru.</DialogDescription>
+          <DialogTitle className="text-[#0E4D97] font-semibold text-base">
+            Tambah Buku
+          </DialogTitle>
+          <DialogDescription className="text-xs text-gray-600">
+            Lengkapi form untuk menambahkan buku baru.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-4">
-          {[["Judul Buku", "judulBuku"], ["Penulis", "penulis"], ["Penerbit", "penerbit"], ["Tahun Terbit", "tahunTerbit"], ["Stok", "stok"]].map(
-            ([label, field]) => (
+          {[
+            ["Judul Buku", "judulBuku"],
+            ["Penulis", "penulis"],
+            ["Penerbit", "penerbit"],
+            ["Tahun Terbit", "tahunTerbit"],
+            ["Kategori", "kategori"],
+            ["Stok", "stok"],
+          ].map(([label, field]) => {
+            console.log('Rendering field:', label, field);
+            return (
               <div className="space-y-1" key={field}>
-                <Label htmlFor={field} className="text-xs font-medium text-[#0E4D97]">{label}</Label>
+                <Label htmlFor={field} className="text-xs font-medium text-[#0E4D97]">
+                  {label}
+                </Label>
                 <Input
                   id={field}
                   type={field === "stok" ? "number" : "text"}
@@ -163,10 +184,12 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
                 />
               </div>
             )
-          )}
+          })}
 
           <div className="space-y-1">
-            <Label htmlFor="sinopsis" className="text-xs font-medium text-[#0E4D97]">Sinopsis</Label>
+            <Label htmlFor="sinopsis" className="text-xs font-medium text-[#0E4D97]">
+              Sinopsis
+            </Label>
             <Textarea
               id="sinopsis"
               value={formData.sinopsis}
@@ -177,8 +200,16 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="imageCover" className="text-xs font-medium text-[#0E4D97]">Cover Buku</Label>
-            <input id="imageCover" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+            <Label htmlFor="imageCover" className="text-xs font-medium text-[#0E4D97]">
+              Cover Buku
+            </Label>
+            <input
+              id="imageCover"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
             <Button
               type="button"
               variant="outline"
@@ -193,7 +224,9 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
               <div className="flex items-center justify-between bg-blue-50 p-2 rounded text-xs">
                 <div className="flex items-center gap-1">
                   <ImageIcon className="h-3 w-3 text-blue-600" />
-                  <span className="text-blue-700 truncate max-w-[120px]">{selectedFile.name}</span>
+                  <span className="text-blue-700 truncate max-w-[120px]">
+                    {selectedFile.name}
+                  </span>
                 </div>
                 <Button
                   type="button"
@@ -223,8 +256,12 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
           )}
 
           <div className="flex gap-2 justify-center mt-6 pt-2">
-            <Button type="button" onClick={onClose} className="bg-red-500 hover:bg-red-600 text-white">Batal</Button>
-            <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white">Simpan</Button>
+            <Button type="button" onClick={onClose} className="bg-red-500 hover:bg-red-600 text-white">
+              Batal
+            </Button>
+            <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white">
+              Simpan
+            </Button>
           </div>
         </form>
       </DialogContent>
