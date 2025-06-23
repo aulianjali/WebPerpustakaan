@@ -28,7 +28,6 @@ export default function LoginPage() {
     password: "",
   })
 
-  // Redirect kalau sudah login
   useEffect(() => {
     const token = Cookies.get("token")
     const role = Cookies.get("role")
@@ -227,6 +226,20 @@ export default function LoginPage() {
                 "Login"
               )}
             </Button>
+
+            <div className="text-center">
+              <p className="text-gray-600 mt-4">
+                Belum punya akun?{" "}
+                <button
+                  type="button"
+                  onClick={() => router.push("/register")}
+                  className="text-blue-600 hover:underline font-medium transition-colors"
+                  disabled={isLoading}
+                >
+                  Daftar
+                </button>
+              </p>
+            </div>
           </form>
         </div>
       </div>
