@@ -51,6 +51,8 @@ export default function ClientDetailBuku() {
 
       const bookData = response.data.data || response.data
       setBook(bookData)
+      console.log("Detail Buku:", bookData.image);
+      
     } catch (error: any) {
       if (error.response?.status === 404) {
         setError("Buku tidak ditemukan")

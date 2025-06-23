@@ -30,7 +30,7 @@ interface EditBukuDialogProps {
 export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBukuDialogProps) {
   const [formData, setFormData] = useState({
     no: 0,
-    idBuku: "",
+    id: 0,
     judulBuku: "",
     penulis: "",
     penerbit: "",
@@ -48,7 +48,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
     if (bukuData) {
       setFormData({
         no: bukuData.no,
-        idBuku: bukuData.idBuku,
+        id: bukuData.id,
         judulBuku: bukuData.judulBuku,
         penulis: bukuData.penulis,
         penerbit: bukuData.penerbit,
@@ -103,7 +103,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       return
     }
 
-    const idBukuNumber = Number(formData.idBuku.replace(/[^\d]/g, ""))
+    const idBukuNumber = formData.id
     const form = new FormData()
 
     form.append("judul", formData.judulBuku || "")
@@ -130,7 +130,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       )
 
       toast.success("Buku berhasil diperbarui", {
-        description: `Buku dengan ID "${formData.idBuku}" telah diupdate.`,
+        description: `Buku dengan ID "${formData.id}" telah diupdate.`,
       })
 
       onSubmit({

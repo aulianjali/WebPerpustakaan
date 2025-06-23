@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 
 export type DataBuku = {
   no: number
-  idBuku: string
+  id: number
   stok: number
   judulBuku: string
   penulis: string
@@ -24,10 +24,10 @@ export const columnsBuku = (
   onDelete?: (buku: DataBuku) => void,
 ): ColumnDef<DataBuku>[] => [
   {
-    accessorKey: "idBuku",
+    accessorKey: "id",
     header: () => <div className="pl-4">ID Buku</div>,
     cell: ({ row }) => {
-      return <div className=" text-black pl-8">{row.getValue("idBuku")}</div>
+      return <div className=" text-black pl-8">{row.getValue("id")}</div>
     },
   },
   {
@@ -74,7 +74,7 @@ export const columnsBuku = (
       const router = useRouter()
 
       const handleDetail = () => {
-        router.push(`/admin/detail-buku/${buku.idBuku}`)
+        router.push(`/pustakawan/detail-buku/${buku.id}`)
       }
 
    return (

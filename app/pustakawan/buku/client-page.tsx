@@ -49,7 +49,7 @@ export default function ClientManajemenBuku() {
 
     const fetchedBooks = response.data.data.data.map((book: any, index: number) => ({
       no: index + 1,
-      idBuku: `${String(book.id)}`,
+      id: book.id,
       judulBuku: book.judul,
       penulis: book.penulis,
       stok: book.stock,
@@ -101,7 +101,7 @@ export default function ClientManajemenBuku() {
   const filteredData = dataBuku.filter(
     (item) =>
       item.judulBuku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.idBuku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.penulis.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
