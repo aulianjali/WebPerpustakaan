@@ -29,11 +29,11 @@ interface AddBukuDialogProps {
 
 export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps) {
   const [formData, setFormData] = useState({
-    stok: "",
-    judulBuku: "",
+    stock_awal: "",
+    judul: "",
     penulis: "",
     penerbit: "",
-    tahunTerbit: "",
+    tahun_terbit: "",
     kategori: "",
     sinopsis: "",
   })
@@ -78,11 +78,11 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
 
   const resetForm = () => {
     setFormData({
-      stok: "",
-      judulBuku: "",
+      stock_awal: "",
+      judul: "",
       penulis: "",
       penerbit: "",
-      tahunTerbit: "",
+      tahun_terbit: "",
       kategori: "",
       sinopsis: "",
     })
@@ -100,13 +100,13 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
     }
 
     const form = new FormData()
-    form.append("judul", formData.judulBuku)
+    form.append("judul", formData.judul)
     form.append("penulis", formData.penulis)
     form.append("penerbit", formData.penerbit)
-    form.append("tahun_terbit", formData.tahunTerbit)
+    form.append("tahun_terbit", formData.tahun_terbit)
     form.append("kategori", formData.kategori)
     form.append("deskripsi", formData.sinopsis)
-    form.append("stock", formData.stok || "0")
+    form.append("stock_awal", formData.stock_awal || "0")
     if (selectedFile) {
       form.append("image", selectedFile)
     }
@@ -122,19 +122,20 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
       const book = response.data.data
 
       toast.success("Buku berhasil ditambah", {
-              description: `Buku dengan judul "${formData.judulBuku}" telah ditambahkan.`,
-            })
+        description: `Buku dengan judul "${book.judul}" telah ditambahkan.`,
+      })
 
       onSubmit({
         id: book.id,
-        stok: book.stock,
-        judulBuku: book.judul,
+        stock: book.stock,
+        stock_awal: book.stock_awal,
+        judul: book.judul,
         penulis: book.penulis,
         penerbit: book.penerbit,
-        tahunTerbit: book.tahun_terbit,
+        tahun_terbit: book.tahun_terbit,
         kategori: book.kategori ?? "",
         sinopsis: book.deskripsi,
-        imageCover: book.image,
+        image: book.image,
       })
 
       onClose()
@@ -165,12 +166,12 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-4">
           {[
-            ["Judul Buku", "judulBuku"],
+            ["Judul Buku", "judul"],
             ["Penulis", "penulis"],
             ["Penerbit", "penerbit"],
-            ["Tahun Terbit", "tahunTerbit"],
+            ["Tahun Terbit", "tahun_terbit"],
             ["Kategori", "kategori"],
-            ["Stok", "stok"],
+            ["Stok Awal", "stock_awal"],
           ].map(([label, field]) => (
             <div className="space-y-1" key={field}>
               <Label htmlFor={field} className="text-xs font-medium text-[#0E4D97]">
@@ -178,7 +179,7 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
               </Label>
               <Input
                 id={field}
-                type={field === "stok" ? "number" : "text"}
+                type={field === "stock_awal" ? "number" : "text"}
                 value={(formData as any)[field]}
                 onChange={(e) => handleInputChange(field, e.target.value)}
                 required

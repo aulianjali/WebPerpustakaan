@@ -31,14 +31,15 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
   const [formData, setFormData] = useState({
     no: 0,
     id: 0,
-    judulBuku: "",
+    judul: "",
     penulis: "",
     penerbit: "",
-    tahunTerbit: "",
+    tahun_terbit: "",
     kategori: "",
-    stok: 0,
+    stock: 0,
+    stock_awal: 0,
     sinopsis: "",
-    imageCover: "",
+    image: "",
   })
 
   const [previewImage, setPreviewImage] = useState("")
@@ -49,16 +50,17 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       setFormData({
         no: bukuData.no,
         id: bukuData.id,
-        judulBuku: bukuData.judulBuku,
+        judul: bukuData.judul,
         penulis: bukuData.penulis,
         penerbit: bukuData.penerbit,
-        tahunTerbit: bukuData.tahunTerbit,
-        kategori: bukuData.kategori || "",
-        stok: bukuData.stok || 0,
+        tahun_terbit: bukuData.tahun_terbit,
+        kategori: bukuData.kategori,
+        stock: bukuData.stock,
+        stock_awal: bukuData.stock_awal,
         sinopsis: bukuData.sinopsis,
-        imageCover: bukuData.imageCover,
+        image: bukuData.image,
       })
-      setPreviewImage(bukuData.imageCover)
+      setPreviewImage(bukuData.image)
       setSelectedFile(null)
     }
   }, [bukuData])
@@ -66,7 +68,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
   const handleInputChange = (field: string, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: field === "stok" ? Number(value) : value,
+      [field]: field === "stock_awal" ? Number(value) : value,
     }))
   }
 
@@ -90,7 +92,7 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
 
   const handleRemoveImage = () => {
     setSelectedFile(null)
-    setPreviewImage(formData.imageCover)
+    setPreviewImage(formData.image)
     const fileInput = document.getElementById("imageCover") as HTMLInputElement
     if (fileInput) fileInput.value = ""
   }
@@ -103,23 +105,21 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       return
     }
 
-    const idBukuNumber = formData.id
     const form = new FormData()
-
-    form.append("judul", formData.judulBuku || "")
+    form.append("judul", formData.judul || "")
     form.append("penulis", formData.penulis || "")
     form.append("penerbit", formData.penerbit || "")
-    form.append("tahun_terbit", formData.tahunTerbit || "")
+    form.append("tahun_terbit", formData.tahun_terbit || "")
     form.append("kategori", formData.kategori || "")
-    form.append("stock", String(formData.stok))
     form.append("deskripsi", formData.sinopsis || "")
+    form.append("stock_awal", String(formData.stock_awal))
     if (selectedFile) {
       form.append("image", selectedFile)
     }
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/books/${idBukuNumber}?_method=PUT`,
+        `${process.env.NEXT_PUBLIC_API_URL}/books/${formData.id}?_method=PUT`,
         form,
         {
           headers: {
@@ -130,12 +130,12 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
       )
 
       toast.success("Buku berhasil diperbarui", {
-        description: `Buku dengan judul "${formData.judulBuku}" telah diupdate.`,
+        description: `Buku dengan judul "${formData.judul}" telah diupdate.`,
       })
 
       onSubmit({
         ...formData,
-        imageCover: selectedFile ? URL.createObjectURL(selectedFile) : formData.imageCover,
+        image: selectedFile ? URL.createObjectURL(selectedFile) : formData.image,
       })
 
       onClose()
@@ -157,16 +157,16 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
         <DialogHeader className="text-center">
           <DialogTitle className="text-[#0E4D97] font-semibold text-base">Edit Buku</DialogTitle>
           <DialogDescription className="text-xs text-gray-600">
-            Ubah data buku <span className="font-medium text-[#0E4D97]">{formData.judulBuku}</span>
+            Ubah data buku <span className="font-medium text-[#0E4D97]">{formData.judul}</span>
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-3 mt-4">
           {[
-            { label: "Judul Buku", id: "judulBuku", field: "judulBuku" },
+            { label: "Judul Buku", id: "judul", field: "judul" },
             { label: "Penulis", id: "penulis", field: "penulis" },
             { label: "Penerbit", id: "penerbit", field: "penerbit" },
-            { label: "Tahun Terbit", id: "tahunTerbit", field: "tahunTerbit" },
+            { label: "Tahun Terbit", id: "tahun_terbit", field: "tahun_terbit" },
             { label: "Kategori", id: "kategori", field: "kategori" },
           ].map(({ label, id, field }) => (
             <div className="space-y-1" key={id}>
@@ -181,13 +181,27 @@ export function EditBukuDialog({ isOpen, onClose, onSubmit, bukuData }: EditBuku
           ))}
 
           <div className="space-y-1">
-            <Label htmlFor="stok" className="text-xs font-medium text-[#0E4D97]">Stok</Label>
+            <Label htmlFor="stock" className="text-xs font-medium text-[#0E4D97]">
+              Stok Sekarang (info)
+            </Label>
             <Input
-              id="stok"
+              id="stock"
+              value={formData.stock}
+              readOnly
+              className="h-8 text-sm border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="stock_awal" className="text-xs font-medium text-[#0E4D97]">
+              Stok Awal
+            </Label>
+            <Input
+              id="stock_awal"
               type="number"
               min="0"
-              value={formData.stok}
-              onChange={(e) => handleInputChange("stok", e.target.value)}
+              value={formData.stock_awal}
+              onChange={(e) => handleInputChange("stock_awal", e.target.value)}
               className="h-8 text-sm border-[#0E4D97]"
             />
           </div>

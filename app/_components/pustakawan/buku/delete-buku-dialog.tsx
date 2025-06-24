@@ -37,11 +37,11 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
       })
 
       toast.success("Data berhasil dihapus!", {
-        description: `Buku "${bukuData.judulBuku}" telah dihapus dari koleksi.`,
+        description: `Buku "${bukuData.judul}" telah dihapus dari koleksi.`,
         duration: 3000,
       })
 
-      onConfirm() // Trigger parent state update
+      onConfirm()
       onClose()
     } catch (error: any) {
       console.error("Gagal menghapus buku:", error)
@@ -63,7 +63,7 @@ export function DeleteBukuDialog({ isOpen, onClose, onConfirm, bukuData }: Delet
 
           <AlertDialogTitle className="text-[#0E4D97] font-semibold text-lg leading-relaxed">
             Apakah kamu yakin
-            untuk menghapus "{bukuData?.judulBuku}"?
+            untuk menghapus "{bukuData?.judul}"?
           </AlertDialogTitle>
 
           <p className="text-sm text-gray-600">

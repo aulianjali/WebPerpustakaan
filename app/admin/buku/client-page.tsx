@@ -31,42 +31,41 @@ export default function ClientManajemenBuku() {
   }, [])
 
   const fetchBooks = async () => {
-  const token = Cookies.get("token")
-  if (!token) {
-    setIsLoading(false)
-    return
+    const token = Cookies.get("token")
+    if (!token) {
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json"
+        }
+      })
+
+      const fetchedBooks = response.data.data.data.map((book: any, index: number) => ({
+        no: index + 1,
+        id: book.id,
+        judul: book.judul,
+        penulis: book.penulis,
+        stock: book.stock,
+        stock_awal: book.stock_awal ?? book.stock, // default jika null
+        penerbit: book.penerbit || "",
+        tahun_terbit: book.tahun_terbit || "",
+        kategori: book.kategori || "",
+        sinopsis: book.sinopsis || "",
+        image: book.image || "/placeholder.svg"
+      }))
+
+      setDataBuku(fetchedBooks)
+    } catch (error: any) {
+      console.error("Gagal memuat data buku:", error.response?.data || error.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
-
-  try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json"
-      }
-    })
-
-    console.log("RESPON BUKU:", response.data)
-
-    const fetchedBooks = response.data.data.data.map((book: any, index: number) => ({
-      no: index + 1,
-      id: book.id,
-      judulBuku: book.judul,
-      penulis: book.penulis,
-      stok: book.stock,
-      penerbit: book.penerbit || "",
-      tahunTerbit: book.tahun_terbit || "",
-      sinopsis: book.sinopsis || "",
-      imageCover: book.image || "/placeholder.svg"
-    }))
-
-    setDataBuku(fetchedBooks)
-  } catch (error: any) {
-    console.error("Gagal memuat data buku:", error.response?.data || error.message)
-  } finally {
-    setIsLoading(false)
-  }
-}
-
 
   const handleAddBuku = (bukuData: Omit<DataBuku, "no">) => {
     const newBuku: DataBuku = {
@@ -100,7 +99,7 @@ export default function ClientManajemenBuku() {
 
   const filteredData = dataBuku.filter(
     (item) =>
-      item.judulBuku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.penulis.toLowerCase().includes(searchQuery.toLowerCase())
   )
