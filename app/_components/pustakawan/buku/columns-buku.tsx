@@ -33,7 +33,7 @@ export const columnsBuku = (
   },
   {
   id: "stock",
-  header: () => <div className="pl-3">Stok</div>,
+  header: () => <div className="pl-5">Stok</div>,
   cell: ({ row }) => {
     const stock = row.original.stock
     const stockAwal = row.original.stock_awal ?? stock // fallback kalau null

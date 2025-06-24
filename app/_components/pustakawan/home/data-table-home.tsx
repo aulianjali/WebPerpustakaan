@@ -39,6 +39,7 @@ interface DataTableHomeProps<TData, TValue> {
   perPage?: number
   setPerPage?: (perPage: number) => void
   total?: number
+  onRefresh?: () => void | Promise<void>
 }
 
 export function DataTableHome<TData, TValue>({
@@ -49,6 +50,7 @@ export function DataTableHome<TData, TValue>({
   perPage = 5,
   setPerPage,
   total = 0,
+  onRefresh,
 }: DataTableHomeProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])

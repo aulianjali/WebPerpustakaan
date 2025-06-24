@@ -30,6 +30,7 @@ interface AddBukuDialogProps {
 export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps) {
   const [formData, setFormData] = useState({
     stock_awal: "",
+    stock: "", // stock otomatis ngikut stock_awal
     judul: "",
     penulis: "",
     penerbit: "",
@@ -42,7 +43,15 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    if (field === "stock_awal") {
+      setFormData((prev) => ({
+        ...prev,
+        stock_awal: value,
+        stock: value, // otomatis ikut
+      }))
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }))
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +88,7 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
   const resetForm = () => {
     setFormData({
       stock_awal: "",
+      stock: "",
       judul: "",
       penulis: "",
       penerbit: "",
@@ -107,6 +117,7 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
     form.append("kategori", formData.kategori)
     form.append("deskripsi", formData.sinopsis)
     form.append("stock_awal", formData.stock_awal || "0")
+    form.append("stock", formData.stock || "0") // ikut dikirim walau tidak ada input
     if (selectedFile) {
       form.append("image", selectedFile)
     }
@@ -258,7 +269,14 @@ export function AddBukuDialog({ isOpen, onClose, onSubmit }: AddBukuDialogProps)
           )}
 
           <div className="flex gap-2 justify-center mt-6 pt-2">
-            <Button type="button" onClick={() => { onClose(); resetForm() }} className="bg-red-500 hover:bg-red-600 text-white">
+            <Button
+              type="button"
+              onClick={() => {
+                onClose()
+                resetForm()
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
               Batal
             </Button>
             <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white">

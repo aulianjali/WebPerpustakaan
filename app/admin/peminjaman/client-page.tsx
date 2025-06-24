@@ -65,82 +65,78 @@ export default function ClientManajemenPeminjaman() {
     return `${hour}:${minute}`
   }
 
-  useEffect(() => {
-    const fetchDataByTab = async () => {
-      if (!token) {
-        console.error("Token tidak tersedia")
-        return
-      }
+  const refreshData = async () => {
+    if (!token) return
+    setIsLoading(true)
 
-      setIsLoading(true)
+    try {
+      if (activeTab === "menunggu") {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/pending`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setDataMenunggu(
+          Array.isArray(res.data.data)
+            ? res.data.data.map((item: any, i: number) => ({
+                id: item.id_peminjaman,
+                no: i + 1,
+                judul: item.buku,
+                peminjam: item.user ?? "Tidak diketahui",
+                tanggalPesan: formatDate(item.tanggal_pesan),
+                waktuPesan: formatTime(item.waktu_pesan),
+              }))
+            : []
+        )
+      } else if (activeTab === "dipinjam") {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/borrowed`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setDataDipinjam(
+          Array.isArray(res.data.data)
+            ? res.data.data.map((item: any, i: number) => {
+                let sisaWaktuLabel = "-"
+                if (typeof item.sisa_hari === "number") {
+                  if (item.sisa_hari < 0) sisaWaktuLabel = `${Math.abs(item.sisa_hari)} hari lewat`
+                  else if (item.sisa_hari === 0) sisaWaktuLabel = "Hari ini"
+                  else sisaWaktuLabel = `${item.sisa_hari} hari lagi`
+                }
 
-      try {
-        if (activeTab === "menunggu") {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/pending`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          setDataMenunggu(
-            Array.isArray(res.data.data)
-              ? res.data.data.map((item: any, i: number) => ({
+                return {
                   id: item.id_peminjaman,
                   no: i + 1,
                   judul: item.buku,
                   peminjam: item.user ?? "Tidak diketahui",
-                  tanggalPesan: formatDate(item.tanggal_pesan),
-                  waktuPesan: formatTime(item.waktu_pesan),
-                }))
-              : []
-          )
-        } else if (activeTab === "dipinjam") {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/borrowed`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          setDataDipinjam(
-            Array.isArray(res.data.data)
-              ? res.data.data.map((item: any, i: number) => {
-                  let sisaWaktuLabel = "-"
-                  if (typeof item.sisa_hari === "number") {
-                    if (item.sisa_hari < 0) sisaWaktuLabel = `${Math.abs(item.sisa_hari)} hari lewat`
-                    else if (item.sisa_hari === 0) sisaWaktuLabel = "Hari ini"
-                    else sisaWaktuLabel = `${item.sisa_hari} hari lagi`
-                  }
-
-                  return {
-                    id: item.id_peminjaman,
-                    no: i + 1,
-                    judul: item.buku,
-                    peminjam: item.user ?? "Tidak diketahui",
-                    sisaWaktu: sisaWaktuLabel,
-                  }
-                })
-              : []
-          )
-        } else if (activeTab === "pengembalian") {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/returned`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          setDataPengembalian(
-            Array.isArray(res.data.data)
-              ? res.data.data.map((item: any, i: number) => ({
-                  id: item.id_peminjaman,
-                  no: i + 1,
-                  judul: item.buku,
-                  peminjam: item.user ?? "Tidak diketahui",
-                  tanggalKembali: formatDate(item.tanggal_dikembalikan),
-                  waktuKembali: formatTime(item.waktu_dikembalikan),
-                  status: item.terlambat ? "Terlambat" : "Tidak Terlambat",
-                }))
-              : []
-          )
-        }
-      } catch (err) {
-        console.error("Gagal fetch data:", err)
-      } finally {
-        setIsLoading(false)
+                  sisaWaktu: sisaWaktuLabel,
+                }
+              })
+            : []
+        )
+      } else if (activeTab === "pengembalian") {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/returned`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setDataPengembalian(
+          Array.isArray(res.data.data)
+            ? res.data.data.map((item: any, i: number) => ({
+                id: item.id_peminjaman,
+                no: i + 1,
+                judul: item.buku,
+                peminjam: item.user ?? "Tidak diketahui",
+                tanggalKembali: formatDate(item.tanggal_dikembalikan),
+                waktuKembali: formatTime(item.waktu_dikembalikan),
+                status: item.terlambat ? "Terlambat" : "Tidak Terlambat",
+              }))
+            : []
+        )
       }
+    } catch (err) {
+      console.error("Gagal fetch data:", err)
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    fetchDataByTab()
+  useEffect(() => {
+    refreshData()
   }, [activeTab])
 
   const filterByQuery = (data: any[]) =>
@@ -185,17 +181,12 @@ export default function ClientManajemenPeminjaman() {
               </TabsList>
             </div>
 
+            {/** TABS CONTENT */}
             <TabsContent value="menunggu">
               <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-xl font-semibold text-[#0E4D97]">Manajemen Konfirmasi</h2>
-                      <p className="text-sm text-gray-600 mt-1">Kelola peminjaman yang harus di konfirmasi</p>
-                    </div>
-                </div>
                 <SearchInput value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 <DataTableHome
-                  columns={columnsMenunggu}
+                  columns={columnsMenunggu(refreshData)}
                   data={filterByQuery(dataMenunggu).slice(
                     (pagination.menunggu.page - 1) * pagination.menunggu.perPage,
                     pagination.menunggu.page * pagination.menunggu.perPage
@@ -215,21 +206,16 @@ export default function ClientManajemenPeminjaman() {
                     }))
                   }
                   total={filterByQuery(dataMenunggu).length}
+                  onRefresh={refreshData}
                 />
               </div>
             </TabsContent>
 
             <TabsContent value="dipinjam">
               <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-xl font-semibold text-[#0E4D97]">Manajemen Peminjaman</h2>
-                      <p className="text-sm text-gray-600 mt-1">Kelola peminjaman yang harus dikembalikan sesuai tenggat waktunya</p>
-                    </div>
-                </div>
                 <SearchInput value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 <DataTableHome
-                  columns={columnsDipinjam}
+                  columns={columnsDipinjam(refreshData)}
                   data={filterByQuery(dataDipinjam).slice(
                     (pagination.dipinjam.page - 1) * pagination.dipinjam.perPage,
                     pagination.dipinjam.page * pagination.dipinjam.perPage
@@ -249,18 +235,13 @@ export default function ClientManajemenPeminjaman() {
                     }))
                   }
                   total={filterByQuery(dataDipinjam).length}
+                  onRefresh={refreshData}
                 />
               </div>
             </TabsContent>
 
             <TabsContent value="pengembalian">
               <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h2 className="text-xl font-semibold text-[#0E4D97]">Manajemen Pengembalian</h2>
-                      <p className="text-sm text-gray-600 mt-1">Kumpulan peminjaman yang sudah dikembalikan</p>
-                    </div>
-                </div>
                 <SearchInput value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 <DataTableHome
                   columns={columnsPengembalian}
@@ -283,6 +264,7 @@ export default function ClientManajemenPeminjaman() {
                     }))
                   }
                   total={filterByQuery(dataPengembalian).length}
+                  onRefresh={refreshData}
                 />
               </div>
             </TabsContent>
