@@ -1,6 +1,7 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
+import axios from "axios"
 import {
   Bar,
   BarChart,
@@ -17,48 +18,26 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card"
-
 import { SelectChartFilter } from "@/app/_components/admin/home/select-chart"
+import { toast } from "sonner"
+import Cookies from "js-cookie"
 
-// Data per tahun (bisa ambil dari API nantinya)
-const dataPerTahun: Record<string, { name: string; peminjaman: number; terlambat: number }[]> = {
-  "2023": [
-    { name: "Jan", peminjaman: 15, terlambat: 2 },
-    { name: "Feb", peminjaman: 25, terlambat: 1 },
-    { name: "Mar", peminjaman: 30, terlambat: 2 },
-    { name: "Apr", peminjaman: 28, terlambat: 3 },
-    { name: "May", peminjaman: 32, terlambat: 2 },
-    { name: "Jun", peminjaman: 36, terlambat: 1 },
-    { name: "Jul", peminjaman: 40, terlambat: 3 },
-    { name: "Aug", peminjaman: 38, terlambat: 2 },
-    { name: "Sep", peminjaman: 45, terlambat: 4 },
-    { name: "Oct", peminjaman: 48, terlambat: 3 },
-    { name: "Nov", peminjaman: 44, terlambat: 2 },
-    { name: "Dec", peminjaman: 50, terlambat: 5 },
-  ],
-  "2024": [
-    { name: "Jan", peminjaman: 18, terlambat: 2 },
-    { name: "Feb", peminjaman: 30, terlambat: 3 },
-    { name: "Mar", peminjaman: 27, terlambat: 1 },
-    { name: "Apr", peminjaman: 33, terlambat: 2 },
-    { name: "May", peminjaman: 40, terlambat: 4 },
-    { name: "Jun", peminjaman: 42, terlambat: 3 },
-    { name: "Jul", peminjaman: 39, terlambat: 2 },
-    { name: "Aug", peminjaman: 35, terlambat: 2 },
-    { name: "Sep", peminjaman: 37, terlambat: 1 },
-    { name: "Oct", peminjaman: 44, terlambat: 3 },
-    { name: "Nov", peminjaman: 46, terlambat: 3 },
-    { name: "Dec", peminjaman: 52, terlambat: 4 },
-  ],
-  "2025": [
-    { name: "Jan", peminjaman: 20, terlambat: 2 },
-    { name: "Feb", peminjaman: 35, terlambat: 3 },
-    { name: "Mar", peminjaman: 30, terlambat: 1 },
-    { name: "Apr", peminjaman: 40, terlambat: 4 },
-    { name: "May", peminjaman: 55, terlambat: 5 },
-    { name: "Jun", peminjaman: 45, terlambat: 3 },
-  ],
+type RecapItem = {
+  bulan: string // "2025-06"
+  total_berhasil: string // string from API, will be parsed to number
+  total_terlambat: string
 }
+
+type ChartData = {
+  name: string // e.g. "Jan"
+  peminjaman: number
+  terlambat: number
+}
+
+const monthMap = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+]
 
 const renderLegend = (props: any) => {
   const { payload } = props
@@ -66,10 +45,7 @@ const renderLegend = (props: any) => {
     <div className="flex justify-center gap-6 pt-4">
       {payload.map((entry: any, index: number) => (
         <div key={`item-${index}`} className="flex items-center gap-2">
-          <span
-            className="inline-block w-4 h-4 rounded"
-            style={{ backgroundColor: entry.color }}
-          />
+          <span className="inline-block w-4 h-4 rounded" style={{ backgroundColor: entry.color }} />
           <span className="text-sm text-[#0E4D97] font-medium">
             {entry.value === "peminjaman" ? "Peminjaman" : "Terlambat"}
           </span>
@@ -80,12 +56,60 @@ const renderLegend = (props: any) => {
 }
 
 export function ChartBar() {
-  const [selectedYear, setSelectedYear] = React.useState("2024")
+  const [selectedYear, setSelectedYear] = useState("2025")
+  const [dataPerTahun, setDataPerTahun] = useState<Record<string, ChartData[]>>({})
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const token = Cookies.get("token")
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/loans/recap`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        })
+
+        const recap: RecapItem[] = response.data.data
+
+        const groupedByYear: Record<string, ChartData[]> = {}
+
+        recap.forEach((item) => {
+          const [year, month] = item.bulan.split("-")
+          const monthIndex = parseInt(month, 10) - 1
+
+          const entry: ChartData = {
+            name: monthMap[monthIndex] || month,
+            peminjaman: parseInt(item.total_berhasil),
+            terlambat: parseInt(item.total_terlambat),
+          }
+
+          if (!groupedByYear[year]) groupedByYear[year] = []
+          groupedByYear[year].push(entry)
+        })
+
+        // Urutkan bulan per tahun (Jan–Dec)
+        Object.keys(groupedByYear).forEach((year) => {
+          groupedByYear[year].sort(
+            (a, b) => monthMap.indexOf(a.name) - monthMap.indexOf(b.name)
+          )
+        })
+
+        setDataPerTahun(groupedByYear)
+      } catch (error: any) {
+        console.error("❌ Gagal fetch chart data:", error)
+        toast.error("Gagal memuat data grafik peminjaman.")
+      }
+    }
+
+    fetchChartData()
+  }, [])
+
   const data = dataPerTahun[selectedYear] || []
 
   return (
     <Card className="w-full bg-[#FEFCF3] border border-[#B3B5D1] rounded-lg h-full">
-      <CardHeader className="pb-2 flex flex-col md:flex-row  md:justify-between gap-2">
+      <CardHeader className="pb-2 flex flex-col md:flex-row md:justify-between gap-2">
         <CardTitle className="text-lg font-semibold text-[#0E4D97]">
           Tren Peminjaman Buku
         </CardTitle>
@@ -94,15 +118,8 @@ export function ChartBar() {
 
       <CardContent className="flex flex-col items-center justify-start">
         <ResponsiveContainer width="100%" height={280}>
-          <BarChart
-            data={data}
-            margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              stroke="#e5e7eb"
-            />
+          <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
             <XAxis
               dataKey="name"
               stroke="#0E4D97"
